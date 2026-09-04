@@ -1,0 +1,50 @@
+# CI to build the site
+image: ghcr.io/quarto-dev/quarto-full:1.8.17
+
+variables:
+  R_LIBS_USER: "$CI_PROJECT_DIR/.cache/R"  # Custom R library path
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+    - changes:
+        - content/**
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - .cache/R/             # Cache R libraries here
+
+
+stages:
+  - test
+  - deploy
+
+# Job de test (rendu sans déploiement)
+test-render:
+  stage: test
+  before_script:
+    - mkdir -p "$R_LIBS_USER"
+    - echo "R_LIBS_USER='$R_LIBS_USER'" > ~/.Renviron
+    - Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org",'https://ropensci.r-universe.dev')); if (!requireNamespace("knitr", quietly = TRUE)) install.packages("knitr"); if (!requireNamespace("rmarkdown", quietly = TRUE)) install.packages("rmarkdown"); if (!requireNamespace("babelquarto", quietly = TRUE)) install.packages("babelquarto")'
+
+  script:
+    - quarto check
+    - quarto render
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+
+# Déploiement uniquement sur la branche principale
+pages:
+  stage: deploy
+  before_script:
+    - mkdir -p "$R_LIBS_USER"
+    - echo "R_LIBS_USER='$R_LIBS_USER'" > ~/.Renviron
+    - Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); if (!requireNamespace("knitr", quietly = TRUE)) install.packages("knitr"); if (!requireNamespace("rmarkdown", quietly = TRUE)) install.packages("rmarkdown")'
+  script:
+    - quarto check
+    - quarto render  # builds your site into _site/ or output_dir from _quarto.yml
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH

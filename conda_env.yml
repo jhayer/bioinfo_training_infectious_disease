@@ -1,0 +1,8 @@
+# conda env create -f conda_env.yml
+name: quarto
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - quarto

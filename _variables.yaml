@@ -1,0 +1,12 @@
+# Project information
+site_name: "Bioinformatics for Infectious Disease Ecology Research" # Displayed at the very top of the page and in the title of the browser tab. Used also for top of index page.
+site_author: "Mathis Arnal, Jacques Dainat, Juliette Hayer, Praveen Rahi, Tam Thi Thanh Tran" # list authors 
+site_url: https://jhayer.github.io/bioinfo_training_infectious_disease
+site_description: "Tutorial pages for the training: Bioinformatics for Infectious Disease Ecology Research - based on Galaxy" # short site description
+site_dir: public # When you build your site, all of the files are written to the directory assigned to the site_dir configuration option (defaults to "site")
+use_directory_urls: true
+
+# Repository
+repo_name: 'bioinfo_training_infectious_disease' # Displayed in the top right corner of the page, can be set to false to hide it
+repo_url: https://github.com/jhayer/bioinfo_training_infectious_disease # URL of the repository, used to generate the "Edit on GitHub" links
+edit_uri: edit/main/docs/ # Allow to replace edit/master/docs use by default

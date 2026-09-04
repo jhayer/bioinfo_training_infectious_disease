@@ -1,0 +1,14 @@
+# Various
+**/.DS_Store
+**/~$*
+**.DS_Store
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+_site
+_freeze
+public
+/.quarto/
+
+**/*.quarto_ipynb

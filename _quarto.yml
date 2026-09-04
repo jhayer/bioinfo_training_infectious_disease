@@ -1,0 +1,65 @@
+project:
+  type: website
+  output-dir: public
+
+website:
+  title: "Bioinformatics for Infectious Disease Ecology Research"
+  description: "Description"
+  page-navigation: true
+
+  navbar:
+    background: "#01A9F5"
+    foreground: "white"
+
+    left:
+      - text: Home
+        href: docs/index.md
+      - text: Tutorial
+        menu:
+          - text: Introduction
+            href: docs/pages/course/introduction.md
+          - text: Content1
+            href: docs/pages/course/content.md
+      - text:  Cheat sheets
+        menu:
+          - text: Bash
+            href: docs/pages/cheat_sheet/bash/bash.md
+          - text: gxf
+            href: docs/pages/cheat_sheet/gxf.md
+
+    right:
+      - icon: github
+        menu:
+          - text: Source Code
+            href:  https://github.com/jhayer/bioinfo_training_infectious_disease # e.g.https://forge.ird.fr/rado/website
+          - text: Report a Bug
+            href:  https://github.com/jhayer/bioinfo_training_infectious_disease/-/issues/new
+      - icon: github
+
+  sidebar:
+    style: "floating"
+    tools:
+      - icon: ""
+        text: ""
+    logo: docs/pages/images/IRD.png
+
+format:
+  html:
+    allow-html: true
+    theme: 
+      light: flatly
+      dark: darkly
+    grid:
+      body-width: 1400px
+    respect-user-color-scheme: true
+    css: styles.css
+    toc: true
+    page-layout: full
+    html-math-method: mathjax
+    execute:
+      echo: false
+    
+editor: source
+
+params:
+  siteurl: "https://jhayer.github.io/bioinfo_training_infectious_disease" # e.g. https://forge.ird.fr/itrop-website
