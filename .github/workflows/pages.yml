@@ -38,52 +38,12 @@ jobs:
     needs: render
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Check GitHub Pages configuration
-        id: pages
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          response_file="$(mktemp)"
-          authorization_prefix="Authorization: Bearer"
-          auth_header="${authorization_prefix} ${GITHUB_TOKEN}"
-          status_code="$(
-            curl --silent --show-error --location \
-              --output "$response_file" \
-              --write-out "%{http_code}" \
-              --header "Accept: application/vnd.github+json" \
-              --header "$auth_header" \
-              --header "X-GitHub-Api-Version: 2022-11-28" \
-              "https://api.github.com/repos/${{ github.repository }}/pages"
-          )"
-
-          if [ "$status_code" = "200" ]; then
-            build_type="$(
-              jq -r '.build_type // ""' "$response_file"
-            )"
-
-            if [ "$build_type" = "workflow" ]; then
-              echo "enabled=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "::notice title=GitHub Pages source is not GitHub Actions::Enable GitHub Pages in Settings > Pages and set Source to GitHub Actions before deployment."
-              echo "enabled=false" >> "$GITHUB_OUTPUT"
-            fi
-          elif [ "$status_code" = "404" ]; then
-            echo "::notice title=GitHub Pages is not enabled::Enable GitHub Pages in Settings > Pages and set Source to GitHub Actions before deployment."
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "Unexpected response while checking GitHub Pages configuration (HTTP $status_code)." >&2
-            cat "$response_file" >&2
-            exit 1
-          fi
-
       - name: Deploy to GitHub Pages
-        if: steps.pages.outputs.enabled == 'true'
         id: deployment
         uses: actions/deploy-pages@v5.0.1
