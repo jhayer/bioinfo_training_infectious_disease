@@ -13,7 +13,7 @@ website:
 
     left:
       - text: Home
-        href: docs/index.md if gitlab
+        href: docs/index.md
       - text: Tutorial
         menu:
           - text: Introduction
@@ -60,6 +60,3 @@ format:
       echo: false
     
 editor: source
-
-params:
-  siteurl: "https://jhayer.github.io/bioinfo_training_infectious_disease" # e.g. https://forge.ird.fr/itrop-website

@@ -27,19 +27,17 @@ jobs:
       - name: Render site
         uses: quarto-dev/quarto-actions/render@v2.2.0
 
-      - name: Reorganize output 
+      - name: Prepare deployment
         run: |
-          cd public
-          if [ -d "docs" ]; then
-            cp -r docs/* .
-            rm -rf docs
-          fi
+          cp -r public/site_libs public/docs/
+          cp public/styles.css public/docs/ 2>/dev/null || true
+          cp public/search.json public/docs/ 2>/dev/null || true
 
       - name: Upload Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v5.0.0
         with:
-          path: public
+          path: public/docs
 
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
