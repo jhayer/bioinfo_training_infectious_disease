@@ -64,7 +64,10 @@ When working in the repository, add and/or modify your course materials in the d
 
 The structure of the website (navigation, sections, pages) is defined in the _quarto.yml file.
 
-Changes pushed to the repository will trigger the CI pipeline (.gitlab-ci.yml), which builds and deploys the website. The updated version should be available online a few minutes after the pipeline completes.
+Changes pushed to the repository will trigger the GitHub Actions workflow (`.github/workflows/pages.yml`), which builds the website and deploys it when GitHub Pages is configured for this repository. The updated version should be available online a few minutes after the workflow completes.
+
+> [!NOTE]
+> GitHub Pages must be enabled once in **Settings → Pages** with **Source** set to **GitHub Actions** before automated deployments can run.
 
 To see modifications locally before to push them, you can use the `quarto preview` command to start a local server and see the result of your modification.
 
