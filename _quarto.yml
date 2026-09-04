@@ -52,7 +52,7 @@ format:
     grid:
       body-width: 1400px
     respect-user-color-scheme: true
-    css: docs/styles.css
+    css: styles.css
     toc: true
     page-layout: full
     html-math-method: mathjax
