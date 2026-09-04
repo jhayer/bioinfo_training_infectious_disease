@@ -29,7 +29,7 @@ test-render:
 
   script:
     - quarto check
-    - quarto render
+    - quarto render docs
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
@@ -42,7 +42,7 @@ pages:
     - Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); if (!requireNamespace("knitr", quietly = TRUE)) install.packages("knitr"); if (!requireNamespace("rmarkdown", quietly = TRUE)) install.packages("rmarkdown")'
   script:
     - quarto check
-    - quarto render  # builds your site into _site/ or output_dir from _quarto.yml
+    - quarto render docs # builds your site into _site/ or output_dir from _quarto.yml
   artifacts:
     paths:
       - public

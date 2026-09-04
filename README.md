@@ -37,8 +37,9 @@ where you can find all the relevant information.
     README.md               # General readme 
     conda_env.yml           # Conda env to build and test the site locally
     docs/                   # material that will be publish with the static web site
-        _quarto.yml             # The configuration file for the site rendering.
-        _variables_.yml         # The variables for the site rendering
+        _extensions/...     # Quarto extensions used for the site rendering
+        _quarto.yml         # The configuration file for the site rendering.
+        _variables_.yml     # The variables for the site rendering
         index.md            # The documentation homepage (Website Home page).
         pages/              # Folder dedicated to the course materials use by mkdocs for the website
             images          # Images used in the course materials in general
