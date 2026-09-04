@@ -32,6 +32,7 @@
     font-family: monospace;
     font-size: 12px
 }
+
 /* Override primary color */
 :root  > * {
   --md-primary-fg-color:        #01A9F5;
