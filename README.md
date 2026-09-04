@@ -19,6 +19,7 @@ Tutorial pages for the training: Bioinformatics for Infectious Disease Ecology R
         * [Installation](#installation)
           * [Manual](#manual)
         * [Testing and building the website](#testing-and-building-the-website)
+   * [GitPages deployment](#gitpages-deployment) 
    * [Acknowledgement](#acknowledgement)
    * [License](#license)
 
@@ -188,6 +189,16 @@ conda activate quarto
 * `quarto render docs` - Render the project to create the static website in a folder named `public` (see `_quarto.yml` for configuration).
 * `quarto preview docs` - Start a local server to preview the website at `http://localhost:XXXX`. This command also watches for changes in the source files and automatically re-renders the site when changes are detected.
    </details>
+
+## GitPages deployment
+
+The website is automatically deployed to GitLab or GitHub Pages using CI/CD. When you push changes to the repository, the CI/CD pipeline defined in `.gitlab-ci.yml` is automatically used by GitLab to build the website and deploy it to GitLab Pages, while `.github/workflows/pages.yml` will be used by GitHub to build the website and deploy it to GitHub Pages.
+
+**GitHub**  
+Think at enabling GitHub Pages in the repository settings (Settings>Pages), and set the source to `GitHub Actions` in the Build and deployment section.
+
+**GitLab**  
+Think at deactivate the "Use unique domain" in the repository settings (Deploy>Pages>Domains & settings), and to adapt visibility to your needs (Settings>General>Pages).
 
 ##  Acknowledgement
 
