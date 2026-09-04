@@ -184,7 +184,7 @@ conda activate quarto
 
 #### Testing and building the website
 * `quarto add mcanouil/quarto-external@1.6.0` # add extension for import external content
-* `quarto check docs` - Check the project for errors and warnings.
+* `quarto check` - Check the project for errors and warnings.
 * `quarto render docs` - Render the project to create the static website in a folder named `public` (see `_quarto.yml` for configuration).
 * `quarto preview docs` - Start a local server to preview the website at `http://localhost:XXXX`. This command also watches for changes in the source files and automatically re-renders the site when changes are detected.
    </details>
