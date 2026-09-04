@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: public
+  output-dir: ../public
 
 website:
   title: "Bioinformatics for Infectious Disease Ecology Research"
@@ -13,19 +13,19 @@ website:
 
     left:
       - text: Home
-        href: docs/index.md
+        href: index.md
       - text: Tutorial
         menu:
           - text: Introduction
-            href: docs/pages/course/introduction.md
+            href: pages/course/introduction.md
           - text: Content1
-            href: docs/pages/course/content.md
+            href: pages/course/content.md
       - text:  Cheat sheets
         menu:
           - text: Bash
-            href: docs/pages/cheat_sheet/bash/bash.md
+            href: pages/cheat_sheet/bash/bash.md
           - text: gxf
-            href: docs/pages/cheat_sheet/gxf.md
+            href: pages/cheat_sheet/gxf.md
 
     right:
       - icon: github
@@ -41,7 +41,7 @@ website:
     tools:
       - icon: ""
         text: ""
-    logo: docs/pages/images/IRD.png
+    logo: pages/images/IRD.png
 
 format:
   html:

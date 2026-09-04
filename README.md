@@ -35,10 +35,10 @@ where you can find all the relevant information.
 
 ```
     README.md               # General readme 
-    _quarto.yml             # The configuration file for the site rendering.
-    _variables_.yml         # The variables for the site rendering
     conda_env.yml           # Conda env to build and test the site locally
     docs/                   # material that will be publish with the static web site
+        _quarto.yml             # The configuration file for the site rendering.
+        _variables_.yml         # The variables for the site rendering
         index.md            # The documentation homepage (Website Home page).
         pages/              # Folder dedicated to the course materials use by mkdocs for the website
             images          # Images used in the course materials in general
@@ -51,7 +51,8 @@ where you can find all the relevant information.
             xxx.pdf         # PDF of a lecture
     LICENSE                 # License of the course materials
     .gitignore              # gitignore file
-    .gitlab-ci.yml          # Gitlab CI configuration file to automatically build and deploy the website on github pages
+    .gitlab-ci.yml          # Gitlab CI configuration file to automatically build and deploy the website on gitlab pages
+    .github/workflows/pages.yml  # GitHub CI configuration file to automatically build and deploy the website on github pages
 ```
 
 ## For collaborators-teachers and developers
@@ -182,9 +183,9 @@ conda activate quarto
 
 #### Testing and building the website
 * `quarto add mcanouil/quarto-external@1.6.0` # add extension for import external content
-* `quarto check` - Check the project for errors and warnings.
-* `quarto render` - Render the project to create the static website in a folder named `public` (see `_quarto.yml` for configuration).
-* `quarto preview` - Start a local server to preview the website at `http://localhost:XXXX`. This command also watches for changes in the source files and automatically re-renders the site when changes are detected.
+* `quarto check docs` - Check the project for errors and warnings.
+* `quarto render docs` - Render the project to create the static website in a folder named `public` (see `_quarto.yml` for configuration).
+* `quarto preview docs` - Start a local server to preview the website at `http://localhost:XXXX`. This command also watches for changes in the source files and automatically re-renders the site when changes are detected.
    </details>
 
 ##  Acknowledgement
