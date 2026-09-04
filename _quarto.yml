@@ -13,19 +13,19 @@ website:
 
     left:
       - text: Home
-        href: index.md if gitlab
+        href: docs/index.md if gitlab
       - text: Tutorial
         menu:
           - text: Introduction
-            href: pages/course/introduction.md
+            href: docs/pages/course/introduction.md
           - text: Content1
-            href: pages/course/content.md
+            href: docs/pages/course/content.md
       - text:  Cheat sheets
         menu:
           - text: Bash
-            href: pages/cheat_sheet/bash/bash.md
+            href: docs/pages/cheat_sheet/bash/bash.md
           - text: gxf
-            href: pages/cheat_sheet/gxf.md
+            href: docs/pages/cheat_sheet/gxf.md
 
     right:
       - icon: github
@@ -41,7 +41,7 @@ website:
     tools:
       - icon: ""
         text: ""
-    logo: pages/images/IRD.png
+    logo: docs/pages/images/IRD.png
 
 format:
   html:
