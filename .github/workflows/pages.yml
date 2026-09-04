@@ -31,7 +31,8 @@ jobs:
         run: |
           cd public
           if [ -d "docs" ]; then
-            cp -r docs/* .
+            # Copier tout sauf index.html à la racine
+            find docs/ -mindepth 1 ! -name 'index.html' -exec cp -r {} . \;
             rm -rf docs
           fi
 
