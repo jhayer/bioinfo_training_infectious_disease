@@ -12,4 +12,4 @@
 http://usth.edu.vn/
 
 <img src="https://www.svgrepo.com/show/449000/contact-us-filled.svg" width="20" height="20"/>
-    [Juliete Hayer](mailto:juliette.hayer@ird.fr) / [Tam Thi Thanh Tran](mailto:tran-thi-thanh.tam@usth.edu.vn) 
+    [Juliette Hayer](mailto:juliette.hayer@ird.fr) / [Tam Thi Thanh Tran](mailto:tran-thi-thanh.tam@usth.edu.vn) 
