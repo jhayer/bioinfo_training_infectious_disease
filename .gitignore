@@ -12,3 +12,7 @@ public
 /.quarto/
 
 **/*.quarto_ipynb
+
+# Pixi
+.pixi/
+pixi.lock

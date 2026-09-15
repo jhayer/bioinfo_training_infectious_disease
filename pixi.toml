@@ -1,0 +1,12 @@
+[project]
+name = "bioinfo_training_infectious_disease"
+channels = ["conda-forge", "bioconda"]
+platforms = ["linux-64", "osx-arm64", "osx-64"]
+
+[dependencies]
+quarto = "*"
+
+[tasks]
+render = "quarto render docs"
+preview = "quarto preview docs"
+check = "quarto check"

@@ -35,7 +35,7 @@ where you can find all the relevant information.
 
 ```
     README.md               # General readme 
-    conda_env.yml           # Conda env to build and test the site locally
+    pixi.yml                # Pixi env to build and test the site locally
     docs/                   # material that will be publish with the static web site
         _extensions/...     # Quarto extensions used for the site rendering
         _quarto.yml         # The configuration file for the site rendering.
@@ -59,6 +59,8 @@ where you can find all the relevant information.
 ## For collaborators-teachers and developers
 
 This part is for collaborators-teachers and developers.
+The project is developed using Quarto and Pixi to manage and build the course materials. For full documentation about Quarto, visit [quarto.org](https://quarto.org).
+For full documentation about Pixi, visit [pixi.dev](https://pixi.dev).
 
 ### Modify content
 
@@ -162,32 +164,36 @@ By default we have:
 This is the homepage of the website, it contains a general introduction to the course, the objectives, the target audience, etc.
 This page is made from an aggregation of different .md files from the `doc/pages/course-information` folder, so you just have to adapt the content of these files to modify the content of the homepage. !! No need to touch the index.md file itself.
 
-### Quarto
+### Local Development
 
-   <details>
-      <summary>See details</summary>
+We use **Pixi** because it's easy to use and offers good reproducibility.
+Pixi manages both Python and Node.js dependencies in an isolated environment,
+so you don't need to install anything locally.
 
-#### Welcome to Quarto
+[Install pixi](https://pixi.prefix.dev/latest/#installation):
 
-For full documentation visit [quarto.org](https://quarto.org).  
-
-#### Installation
-
-As prerequisite you need python >=3.8 and pip.  
-First, create a isolated python environment. 
-
-##### via CONDA
 ```bash
-conda env create -f conda_env.yml
-conda activate quarto
+# Only the first time if you do not have Pixi installed.**
+curl -fsSL https://pixi.sh/install.sh | bash
+
+# Install dependances - Only the first time 
+pixi install
 ```
 
-#### Testing and building the website
-* `quarto add mcanouil/quarto-external@1.6.0` # add extension for import external content
-* `quarto check` - Check the project for errors and warnings.
-* `quarto render docs` - Render the project to create the static website in a folder named `public` (see `_quarto.yml` for configuration).
-* `quarto preview docs` - Start a local server to preview the website at `http://localhost:XXXX`. This command also watches for changes in the source files and automatically re-renders the site when changes are detected.
-   </details>
+Then you are ready to visualise the rendered website.
+
+
+```bash
+# Start a local server to preview the website at `http://localhost:XXXX`. This command also watches for changes in the source files and automatically re-renders the site when changes are detected.
+pixi run preview
+```
+
+Some other Pixi tasks are also available :
+
+Available pixi tasks:
+* `pixi run check` - Check the project for errors and warnings.
+* `pixi run render` - Render the project to create the static website in a folder named `public` (see `_quarto.yml` for configuration).
+
 
 ##  Acknowledgement
 
