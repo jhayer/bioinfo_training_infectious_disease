@@ -5,27 +5,29 @@ Please visit this website to catch all information about making nice MKDOCS file
 => https://squidfunk.github.io/mkdocs-material/
 
 
-!!! info
+::: {.callout-note}
+**Time:** 45 min
 
-    **Time:** 45 min
+**Objectives:** Be able to run Augustus an ab initio annotation tool
 
-    **Objectives:** Be able to run Augustus an ab initio annotation tool
+**Questions:**
 
-    **Questions:**
-
-    - Question1?
-    - Question1?  
+- Question1?
+- Question1?  
+:::
 
 ## Title2
 
 Blablabla
 
-!!! question
-    - Question1?
-    - Question1?    
+::: {.callout-question}
+- Question1?
+- Question1?    
+:::
 
-??? example "Click to show the solution"
-        The solution is to force docker to use an X86/amd64 platform miniforge image as base image:  
+::: {.callout-example title="Click to show the solution"}
+    The solution is to force docker to use an X86/amd64 platform miniforge image as base image:  
+:::
 
 ### Title3
 
@@ -50,8 +52,9 @@ Here an example of a table:
 | ValueA  | ValueB  | ValueC  |
 
 
-!!! Success "Quick recap"
-    Here a quick recap:
+::: {.callout-tip title="Quick recap"}
+Here a quick recap:
 
-    -  we have learn ....
-    - we have learn ....
+-  we have learn ....
+- we have learn ....
+:::

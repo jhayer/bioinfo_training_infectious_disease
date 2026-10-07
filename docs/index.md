@@ -43,3 +43,6 @@ course, so make sure you've gone through them all before the course begins.
 {{< include "pages/course-information/teacher.md" >}}
 
 <hr>
+
+<!--  FOOTER -->
+{{< include pages/footer.md >}}

@@ -7,6 +7,7 @@
 Tutorial pages for the training: Bioinformatics for Infectious Disease Ecology Research - based on Galaxy
 
 <img src="docs/pages/images/IRD.png" width="300" height="100" style="height: 100px" />
+<img src="docs/pages/images/USTH.png" width="200" height="100" style="height: 100px" />
 
 ## Table of Contents
 
@@ -101,6 +102,40 @@ Example of variable :
 training_path: "~/genome_annotation"
 data_path: "/shared/projects/tp_2539_ird_genome_annotation_181503/GA_ITROP/DATA/"
 ```
+
+##### Callouts
+
+Callouts are highlighted boxes used to draw attention to specific content. They are written with the Pandoc fenced div syntax `::: {.callout-<type>}` (the space and the dot are required, otherwise the div is not recognized and rendered as plain text).
+
+```markdown
+::: {.callout-note}
+Your content here
+:::
+```
+
+**Native Quarto callouts** (styled by Quarto itself):
+
+| Type | Syntax | Usage |
+|------|--------|-------|
+| note | `::: {.callout-note}` | General information (most common) |
+| tip | `::: {.callout-tip}` | Helpful advice or shortcut |
+| warning | `::: {.callout-warning}` | Something to watch out for |
+| caution | `::: {.callout-caution}` | Potential pitfalls |
+| important | `::: {.callout-important}` | Critical information |
+| example | `::: {.callout-example}` | Illustrative example |
+
+See here to know more about [Quarto callouts](https://quarto.org/docs/authoring/callouts.html).
+
+**Custom callouts** (styled in `docs/styles.css`):
+
+| Type | Syntax | Usage |
+|------|--------|-------|
+| question | `::: {.callout-question}` | Exercise / question for the students |
+| answer | `::: {.callout-answer}` | Answer to a `callout-question` |
+| comment | `::: {.callout-comment}` | Additional background / remark |
+
+> [!NOTE]
+> A blank line is required between a callout and the text that directly precedes it, otherwise Pandoc will not parse the fenced div.
 
 ##### Project configuration
 

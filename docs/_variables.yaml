@@ -10,3 +10,8 @@ use_directory_urls: true
 repo_name: 'bioinfo_training_infectious_disease' # Displayed in the top right corner of the page, can be set to false to hide it
 repo_url: https://github.com/jhayer/bioinfo_training_infectious_disease # URL of the repository, used to generate the "Edit on GitHub" links
 edit_uri: edit/main/docs/ # Allow to replace edit/master/docs use by default
+# Chemins utilisés dans les exercices (à adapter selon l'environnement)
+training_path: "~/training"
+data_path: "~/data"
+container_path: "~/containers"
+institute: "IRD"

@@ -1,21 +1,21 @@
-# {{< var extra.institute >}} Training Code of Conduct
+# {{< var institute >}} Training Code of Conduct
 
-Training is one of the core values of {{< var extra.institute >}}, and benefits from the contributions
+Training is one of the core values of {{< var institute >}}, and benefits from the contributions
 of the entire scientific community. We value the involvement of everyone in the
 community. We are committed to creating a friendly and respectful place for
 learning, teaching and contributing. All participants in our events and
 communications are expected to show respect and courtesy to others.
 
-To make clear what is expected, everyone participating in {{< var extra.institute >}} courses
+To make clear what is expected, everyone participating in {{< var institute >}} courses
 is required to conform to the Code of Conduct. This Code of Conduct applies to
-all spaces managed by {{< var extra.institute >}} including, but not limited to, courses, email lists,
+all spaces managed by {{< var institute >}} including, but not limited to, courses, email lists,
 and online forums such as Studium, GitHub, Slack, Twitter and LinkedIn. Course
 organizers and teachers are expected to assist with the enforcement of the Code
 of Conduct.
 
 We are dedicated to providing a welcoming and supportive environment for all
 people, regardless of background or identity. By participating in this event,
-participants accept to abide by the {{< var extra.institute>}} Code of Conduct and accept the
+participants accept to abide by the {{< var institute >}} Code of Conduct and accept the
 procedures by which any Code of Conduct incidents are resolved. Any form of
 behaviour to exclude, intimidate, or cause discomfort is a violation of the
 Code of Conduct. In order to foster a positive and professional learning

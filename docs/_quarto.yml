@@ -14,18 +14,41 @@ website:
     left:
       - text: Home
         href: index.md
-      - text: Tutorial
+      - text: Tutorial Annotation
         menu:
           - text: Introduction
-            href: pages/course/introduction.md
-          - text: Content1
-            href: pages/course/content.md
+            href: pages/annotation/annotation-1-introduction.md
+          - text: QC pre annotation
+            href: pages/annotation/qc_pre.md
+          - text: Structural annotation - Eukaryotes (Lecture)
+            href: pages/annotation/structural_annotation_euk.md
+          - text: Structural annotation - Prokaryotes (How to)
+            href: pages/annotation/how_to_prok.md
+          - text: Structural annotation - Prokaryotes (Bakta, optional)
+            href: pages/annotation/bakta.md
+          - text: Structural annotation - Virus (How to)
+            href: pages/annotation/how_to_virus.md
+          - text: QC post annotation
+            href: pages/annotation/qc_post.md
+          - text: Visualisation
+            href: pages/annotation/visualisation.md
+          - text: Functional annotation (Lecture)
+            href: pages/annotation/functional_annotation_lecture.md
+          - text: Functional annotation (Practical)
+            href: pages/annotation/functional_annotation.md
+      - text: Tutorial PanExplorer
+        menu:
+          - text: PanExplorer
+            href: pages/panexplorer/panexplorer.md
+
       - text:  Cheat sheets
         menu:
-          - text: Bash
-            href: pages/cheat_sheet/bash/bash.md
-          - text: gxf
+          - text: Genome annotation tools
+            href: pages/cheat_sheet/annotation_tools.md
+          - text: GFF/GTF formats
             href: pages/cheat_sheet/gxf.md
+          - text: Visualisation
+            href: pages/cheat_sheet/visualisation/visualisation.md
 
     right:
       - icon: github
@@ -33,8 +56,7 @@ website:
           - text: Source Code
             href:  https://github.com/jhayer/bioinfo_training_infectious_disease # e.g.https://forge.ird.fr/rado/website
           - text: Report a Bug
-            href:  https://github.com/jhayer/bioinfo_training_infectious_disease/-/issues/new
-      - icon: github
+            href:  https://github.com/jhayer/bioinfo_training_infectious_disease/issues/new
 
   sidebar:
     style: "floating"
@@ -42,6 +64,7 @@ website:
       - icon: ""
         text: ""
     logo: pages/images/IRD.png
+
 
 format:
   html:
