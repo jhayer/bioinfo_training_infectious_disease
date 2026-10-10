@@ -20,7 +20,6 @@ title: Bacterial Genome Assembly Tutorial
 - Evaluate the assembly using **QUAST**.
 :::
 
----
 
 # Introduction
 
@@ -47,7 +46,7 @@ Despite these challenges, bacterial genomes (~1–7 Mb) are typically easier to 
 
 # The type of assembly
 
-![de-novo-and-reference](../images/06-assembly/de-novo-and-reference.png)
+![de-novo-and-reference](images/06-assembly/de-novo-and-reference.png)
 
 ## Reference-Based Assembly (Mapping)
 
@@ -66,10 +65,8 @@ De novo assembly reconstructs the genome from scratch without using a reference.
 - Can detect **structural variations, insertions, deletions**, and novel genetic elements
 - **Limitations**: More computationally intensive, may produce fragmented assemblies (multiple contigs instead of complete chromosomes)
 
-
-
 :::: {.callout-important title="Which Assembly to choose ?" collapse="true"}
-Read the [referenced paper](https://journals.asm.org/doi/10.1128/mra.01212-19) and answer the following questions:
+Read the [referenced paper](https://www.sciencedirect.com/science/article/pii/S2213716525002061) and answer the following questions:
 
 1. What kind off assembly has been chosen in the paper ?
 2. Discuss with your neighbor, about this choice.
@@ -97,11 +94,11 @@ During de novo assembly, the algorithm steps are typically:
 
 The figure below shows the hierarchy:
 
-![de-novo-assembly-overview](../images/06-assembly/de-novo-assembly-overview.png)
+![de-novo-assembly-overview](images/06-assembly/de-novo-assembly-overview.png)
 
 There are several strategies to assemble genomes. Most modern short-read assemblers use **De Bruijn Graphs**, but it is useful to know all three families of algorithms.
 
-![assembly-algorithms](../images/06-assembly/assembly-algorithms.png)  
+![assembly-algorithms](images/06-assembly/assembly-algorithms.png)  
 
 ### **1. Greedy Extension**
 - Start from a read, extend it by finding the next read with the highest overlap.  
@@ -120,7 +117,6 @@ A graph is built from overlapping k-mers, and contigs are extracted as paths thr
 
 This method is extremely efficient for large numbers of short reads.
 
----
 # Different type of assembly
 
 # Short read assembly
@@ -151,7 +147,7 @@ SPAdes takes **FASTQ** files as input and outputs:
 What parameters do I need to choose for SPAdes ? 
 the most important is k-mers.
 
-Always re-run FastQC on trimmed reads and check the read length distribution and median/mean length before finalizing k choices.
+Always check the read length distribution and median/mean length of the trimmed reads (in the **After filtering** section of the fastp report) before finalizing k choices.
 Choosing an appropriate k-mer range for SPAdes assembly requires balancing sensitivity and contiguity.
 Smaller k values (e.g., 21–33–55) are more sensitive and help assemble low-coverage regions and short or repetitive sequences, whereas larger k values (e.g., 77–99–127) improve contiguity and repeat resolution but require longer, high-quality reads. Therefore, the k-mer range should always be chosen according to the read-length distribution and expected coverage after trimming
 
@@ -168,7 +164,6 @@ Below is an example workflow using Galaxy, similar to your metagenomics training
 5. Click **Save**.
 :::
 
----
 
 ## Import the trimmed reads
 
@@ -176,11 +171,10 @@ Use the **History Multiview** panel.
 
 ::: {.callout-tip title="Import input reads"}
 1. Open the **History Multiview** (left panel).
-2. Drag your **trimmed paired-end reads** from the previous history (e.g., “Trimmomatic”).
+2. Drag your **trimmed paired-end reads** (**Trimmed DRR187559**) from the previous history (e.g., “Quality Control and Trimming”).
 3. Drop them into the **Bacterial Genome Assembly** history.
 :::
 
----
 
 # Assembly with SPAdes
 
@@ -242,6 +236,4 @@ Used for visualization (Bandage) and understanding assembly structure
 The difference between "Assembly graph" vs "Assembly graph with scaffolds":
 Assembly graph: The basic de Bruijn graph structure
 Assembly graph with scaffolds: Graph that includes scaffolding information (how contigs connect)
-
-
 

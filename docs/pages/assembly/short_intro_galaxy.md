@@ -54,6 +54,12 @@ If you already have an account, skip to the next section!
 
 In Galaxy, *server* and *instance* are often used interchangeably. These terms basically mean that different regions have different Galaxy servers/instances, with slightly different tool installations and appearances. If you don't have a specific server/instance in mind, we recommend registering at one of the main public servers/instances, detailed below.
 
+## Galaxy Introduction Slide
+
+put the pdf file on Galaxy Introduction. 
+Explain what it the concept, that it is present that they are servers all around the world. 
+Explain that bioinformatic is a world made out of tools for specific uses, and Galaxy allows you to use all these tools. 
+
 ## What does Galaxy look like?
 
 :::: {.callout-tip title="Log in to Galaxy"}
@@ -61,7 +67,7 @@ In Galaxy, *server* and *instance* are often used interchangeably. These terms b
 2. Browse to your Galaxy instance ([usegalaxy.org.au](https://usegalaxy.org.au/))
 3. Log in or register
 
-![Screenshot of Galaxy Australia with the register or login button highlighted](../images/03-intro-galaxy/galaxy-login.png)
+![Screenshot of Galaxy Australia with the register or login button highlighted](images/03-intro-galaxy/galaxy-login.png)
 
 ::: {.callout-note title="Different Galaxy servers"}
 This is an image of Galaxy Australia, located at [usegalaxy.org.au](https://usegalaxy.org.au/)
@@ -77,7 +83,7 @@ The Galaxy homepage is divided into four sections (panels):
 * Viewing panel in the middle: _The main area for context for your analysis_
 * History of analysis and files on the right: _Shows your "current" history; i.e.: Where any new files for your analysis will be stored_
 
-![Screenshot of the Galaxy interface with aforementioned structure](../images/03-intro-galaxy/galaxy_interface.png)
+![Screenshot of the Galaxy interface with aforementioned structure](images/03-intro-galaxy/galaxy_interface.png)
 
 The first time you use Galaxy, there will be no files in your history panel.
 
@@ -91,7 +97,7 @@ Your "History" is in the panel at the right. It is a record of the actions you h
 1. Go to the **History** panel (on the right)
 2. Click ✏️ (**Edit**) next to the history name (which by default is "Unnamed history")
 
-    ![Screenshot of the galaxy interface with the history name being edited, it currently reads "Unnamed history", the default value. An input box is below it.](../images/03-intro-galaxy/rename-history.png)
+    ![Screenshot of the galaxy interface with the history name being edited, it currently reads "Unnamed history", the default value. An input box is below it.](images/03-intro-galaxy/rename-history.png)
 
 3. Type in a new name, for example, "Galaxy Tutorial"
 4. Click **Save**
@@ -110,7 +116,7 @@ With your reads, you will want to upload them locally (from your computer).
 ::: {.callout-tip title="Upload a file"}
 1. At the top of the **Activity Bar**, click the  **Upload** activity
 
-    ![upload data button shown in the galaxy interface](../images/03-intro-galaxy/upload-data.png)
+    ![upload data button shown in the galaxy interface](images/03-intro-galaxy/upload-data.png)
 
     This brings up a box:
 
@@ -122,11 +128,15 @@ With your reads, you will want to upload them locally (from your computer).
 ### Upload the files from SRA
 
 In our case, it is different !  
-In the **Data availability** part of [the paper](https://journals.asm.org/doi/10.1128/mra.01212-19), it is written:
+In the **Data availability** part of [the E.Coli Paper](https://www.sciencedirect.com/science/article/pii/S2213716525002061?via%3Dihub), it is written:
 
-"The raw Illumina and MinION read data can be found in the DDBJ Sequence Read Archive/NCBI SRA under accession number DRA008776."
+"Data availability: All sequencing data and assembled genomes are deposited at the European Nucleotide Archive under study PRJEB77560. A table with all accession numbers is in Supplementary Data (S13)."
 
-Indeed, if you dug into the SRA (Sequence Read Archive) the raw reads sample **KUN1163**  is available in the run [DRR187559](https://www.ncbi.nlm.nih.gov/sra?LinkName=biosample_sra&from_uid=12510460)
+Indeed, if you dug into the European Nucleotide Archive (ENA) website. You can find the project [PRJEB77560](https://www.ebi.ac.uk/ena/browser/view/PRJEB77560).
+
+In total, You have 12 run accessions from 6 Sample accessions: for each of the 6 samples you have 2 runs, one for the long reads, and another one for the short reads ! 
+
+We will start by having a look at the short reads first, for only one Run accession: *ERR13363306*.
 
 ### Galaxy Tool
 
@@ -137,13 +147,13 @@ There are tools that allows to upload directly sequences using the accession num
 2. Click the tool (**Faster Download and Extract Reads in FASTQ**
 format from NCBI SRA)
 
-    ![fastq SRA click on the tool](../images/03-intro-galaxy/fastqsra-click.png)
+    ![fastq SRA click on the tool](images/03-intro-galaxy/fastqsra-click.png)
 
     The tool will be displayed in the central Galaxy panel.
 
 3. Select the following parameters:
     - *select input type*: SRR accession
-    - **Accession** : **DRR187559**
+    - **Accession** : *ERR13363306*
     - In **Advanced Options**, define format specification for sequence, type:
 
         ```
@@ -157,13 +167,13 @@ format from NCBI SRA)
 The parameter `@$ac.$sn/$ri length=$rl` will produce headers like:
 
 ```
-@DRR187559.1/1 length=164
-@DRR187559.2/1 length=70
+@ERR13363306.1/1 length=150
+@ERR13363306.2/1 length=150
 ```
 
 Where:
 
-- `$ac` = accession (DRR187559)
+- `$ac` = accession (*ERR13363306*)
 - `$sn` = spot number (read number)
 - `$ri` = read index (1 for forward, 2 for reverse)
 - `$rl` = read length
@@ -194,15 +204,15 @@ The contents of the file will be displayed in the central Galaxy panel.
 - How many spots have been read ?
 - How many reads have been read ?
 - How can you explain the difference between the number of spots and reads ?
-- Look at the [metadata from the run](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&page_size=10&acc=DRR187559&display=metadata). Compare the number of spots to make sure we have retrieved all the data.
+- Look at the [metadata from the run](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&page_size=10&acc=ERR13363306&display=metadata). Compare the number of spots to make sure we have retrieved all the data.
 
 ::: {.callout-tip title="Answer" collapse="true"}
-- spots read      : 451,782
-- reads read      : 903,564
+- spots read      : 1,769,462
+- reads read      : 3,538,924
 
 We have paired reads, so this run has two reads per spot, hence : **N reads = 2* N spots**.
 
-- We have 451.8k spots in the metadata, same as in the log file, Good News !
+- We have 1.8M spots in the metadata, same as in the log file, Good News !
 :::
 ::::
 
@@ -215,7 +225,7 @@ We will only use **Pair-end data (fasterq-dump)**.
 ::: {.callout-tip title="View forward reads"}
 Next to the **Pair-end data (fasterq-dump)** in the history :
 
-1. click the ✏️ (pencil) icon to rename the file to **DRR187559**. Click **Save**.
+1. click the ✏️ (pencil) icon to rename the file to **ERR13363306**. Click **Save**.
 2. Click on the file, inside you have a pair with 2 datasets, click on it.
 3. Click the 👁️ (eye) icon next forward, to look at the file content.
 :::
@@ -224,13 +234,13 @@ The contents of the file will be displayed in the central Galaxy panel. If the d
 
 This file contains DNA sequencing reads from a bacteria, in FASTQ format:
 
-![A FastQ file has four lines per record: the record identifier (`@mutant-no_snps.gff-24960/`), the sequence (`AATG…`), the plus character (`+`), and then the quality scores for the sequence (`5??A…`).](../images/03-intro-galaxy/fastq-ncbi.png){width="620px" fig-alt="preview of a fastq file showing the 4 line structure described in fig caption. 3 reads are shown."}
+![A FastQ file has four lines per record: the record identifier (`@mutant-no_snps.gff-24960/`), the sequence (`AATG…`), the plus character (`+`), and then the quality scores for the sequence (`5??A…`).](images/03-intro-galaxy/fastq-ncbi.png){width="620px" fig-alt="preview of a fastq file showing the 4 line structure described in fig caption. 3 reads are shown."}
 
 :::: {.callout-important title="Extract the fastq file" collapse="true"}
 What is the name of the first read ? What is the length of the first read ?
 
 ::: {.callout-tip title="Answer" collapse="true"}
-The name of the first read is **@DRR187559.1/1**. The length is this read is **164**.
+The name of the first read is **@ERR13363306.1/1**. The length is this read is **150**.
 :::
 ::::
 
@@ -243,7 +253,7 @@ FastQE turns ASCII characters into emojis that are easy to interpret.
 1. Type **FastQE** in the tools panel search box (top)
 2. Click the tool (**FASTQE** visualize fastqfiles with emoji's)
 
-![fastqe click on the tool](../images/03-intro-galaxy/fastqe-click.png)
+![fastqe click on the tool](images/03-intro-galaxy/fastqe-click.png)
 
 The tool will be displayed in the central Galaxy panel.
 :::
@@ -258,9 +268,9 @@ First, we need to **Flatten the collection**.
 2. Click the tool (**Flatten Collection**)
 3. Read the description :
     "This tool takes nested collections such as a list of lists or a list of dataset pairs and produces a flat list from the inputs. It effectively "flattens" the hierarchy"
-4. Select **DRR187559** *Input Collection*.
+4. Select **ERR13363306** *Input Collection*.
 5. Click *Run Tool*
-6. Rename **data 13 and data 12 (flattened)** to **flattened DRR187559**.
+6. Rename **data 13 and data 12 (flattened)** to **flattened ERR13363306**.
 :::
 
 Now that the data is at the good format, we can continue the workshop:
@@ -269,7 +279,7 @@ Now that the data is at the good format, we can continue the workshop:
 1. Type **FastQE** in the tools panel search box (top)
 2. Click the tool (**FASTQE** visualize fastqfiles with emoji's)
 3. Select the following parameters:
-    - *FastQ data*: Select the format *Dataset Collection*, and selectt **flattened DRR187559**
+    - *FastQ data*: Select the format *Dataset Collection*, and selectt **flattened ERR13363306**
     - No change in the other parameters
 4. Click **Run Tool**
 :::
@@ -278,7 +288,7 @@ Now it works !
 Let's look at the quality of the reads in this file.
 This tool will run and two one new output datasets will appear at the top of your history panel.
 
-![fastqe sucess](../images/03-intro-galaxy/fastqe-success.png){width="620px"}
+![fastqe sucess](images/03-intro-galaxy/fastqe-success.png){width="620px"}
 
 ## View results
 
@@ -292,11 +302,11 @@ We will now look at the output dataset called *FastQE on data 1*.
 ::: {.callout-important title="View results" collapse="true"}
 * Once it's green, click the 👁️ (eye) icon next to the "Webpage" output dataset.
 
-![fastqe-view](../images/03-intro-galaxy/fastqe-view.png)
+![fastqe-view](images/03-intro-galaxy/fastqe-view.png)
 
 The information is displayed in the central panel
 
-![fastqe-report](../images/03-intro-galaxy/fastqe-report.png)
+![fastqe-report](images/03-intro-galaxy/fastqe-report.png)
 :::
 
 :::: {.callout-important title="Best and worst Quality" collapse="true"}
@@ -306,12 +316,15 @@ The information is displayed in the central panel
 
 Look on the [fastqe website](https://github.com/fastqe/fastqe/) or at the scale displayed below :
 
-![fastqe-scale](../images/03-intro-galaxy/fastqe-scale.png)
+![fastqe-scale](images/03-intro-galaxy/fastqe-scale.png)
 
 ::: {.callout-tip title="Answer" collapse="true"}
-- For the max: the worst is 30 (😆) and the best is 38 (😁)
-- For the min: the worst is 7(💀) and the best is 15 (🙀)
-- For the mean: the worst is 24 (😊) and the best is 35(😛)
+<!-- TODO: add the emojis and scores from your own FastQE run on ERR13363306 -->
+- For the max: the worst is … and the best is …
+- For the min: the worst is … and the best is …
+- For the mean: the worst is … and the best is …
+
+Note: our reads were sequenced on an **Illumina NovaSeq 6000**, which uses **binned quality scores**: only 4 values are possible (2 `#`, 11 `,`, 25 `:` and 37 `F`). This is why you see only a few different emojis.
 :::
 ::::
 
@@ -320,7 +333,7 @@ Look on the [fastqe website](https://github.com/fastqe/fastqe/) or at the scale 
 ::: {.callout-tip title="Share your history"}
 Imagine you had a problem in your analysis and want to ask for help.
 
-![history-share](../images/03-intro-galaxy/history-share.png)
+![history-share](images/03-intro-galaxy/history-share.png)
 
 In the main panel, click **Make History accessible**.
 It creates an url, that you can share !
@@ -340,18 +353,18 @@ This new history has no datasets yet.
 
 ## Copy the previous dataset in the new history
 
-We want to do the quality checking on the data from the sample DRR187559.
-Because we already uploaded the forward reads form DRR187559 (DRR187559_1), we are going to copy the data from our first history "Galaxy Tutorial, to the history "FASTQC".
+We want to do the quality checking on the data from the sample ERR13363306.
+Because we already uploaded the forward reads form ERR13363306 (ERR13363306_1), we are going to copy the data from our first history "Galaxy Tutorial, to the history "FASTQC".
 
 ::: {.callout-tip title="View histories in History Multiview"}
 1. Open **History Multiview** in the activity bar
 
-    ![history_multiview_tutorial.png](../images/03-intro-galaxy/history_multiview.png)
+    ![history_multiview_tutorial.png](images/03-intro-galaxy/history_multiview.png)
 
 2. Or click **Show Histories side-by-side**
 3. Copy a dataset into your new history by dragging it from "Galaxy Tutorial" to "FASTQC"
 
-    ![history_multiview_tutorial.png](../images/03-intro-galaxy/history_multiview-data.png)
+    ![history_multiview_tutorial.png](images/03-intro-galaxy/history_multiview-data.png)
 
 4. Return to the main Galaxy window
 :::

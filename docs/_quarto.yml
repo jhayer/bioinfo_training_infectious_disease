@@ -17,15 +17,19 @@ website:
       - text : Tutorial Assembly
         menu:
           - text: Introduction to Galaxy
-            href: pages/course/03-short_intro_galaxy.md
-          - text: QC pre assembly
-            href: pages/course/04-assessing-read-quality.md
-          - text: Trimming and filtering 
-            href: pages/course/05-trimming-filtering.md
-          - text: Assembly 
-            href: pages/course/06-assembly.md
-          - text: QC post assembly
-            href: pages/course/07-qc-post-assembly.md  
+            href: pages/assembly/short_intro_galaxy.md
+          - text: Read QC and trimming
+            href: pages/assembly/assessing-read-quality.md
+          - text: Assembly (Short-read)
+            href: pages/assembly/short-read-assembly.md
+          - text: Assembly (Long-read)
+            href: pages/assembly/long-read-assembly.md
+          - text: Assembly (Hybrid)
+            href: pages/assembly/hybrid-assembly.md    
+          - text: Assembly QC and contamination check
+            href: pages/assembly/qc-post-assembly.md  
+          - text: Assembly Visualisation
+            href: pages/assembly/assembly-visualisation.md  
       - text: Tutorial Annotation
         menu:
           - text: Introduction
@@ -48,6 +52,14 @@ website:
             href: pages/annotation/functional_annotation_lecture.md
           - text: Functional annotation (Practical)
             href: pages/annotation/functional_annotation.md
+      - text: Metagenomics
+        menu:
+          - text: Introduction to the study
+            href: pages/metagenomics/introduction.md
+          - text: 16S rRNA amplicon sequencing
+            href: pages/metagenomics/16S-sequencing.md
+          - text: Diversity Analysis
+            href: pages/metagenomics/diversity-analysis.md  
       - text: Tutorial PanExplorer
         menu:
           - text: PanExplorer
