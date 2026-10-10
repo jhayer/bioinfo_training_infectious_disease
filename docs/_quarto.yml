@@ -14,6 +14,18 @@ website:
     left:
       - text: Home
         href: index.md
+      - text : Tutorial Assembly
+        menu:
+          - text: Introduction to Galaxy
+            href: pages/course/03-short_intro_galaxy.md
+          - text: QC pre assembly
+            href: pages/course/04-assessing-read-quality.md
+          - text: Trimming and filtering 
+            href: pages/course/05-trimming-filtering.md
+          - text: Assembly 
+            href: pages/course/06-assembly.md
+          - text: QC post assembly
+            href: pages/course/07-qc-post-assembly.md  
       - text: Tutorial Annotation
         menu:
           - text: Introduction
@@ -41,6 +53,7 @@ website:
           - text: PanExplorer
             href: pages/panexplorer/panexplorer.md
 
+      
       - text:  Cheat sheets
         menu:
           - text: Genome annotation tools
@@ -58,11 +71,8 @@ website:
           - text: Report a Bug
             href:  https://github.com/jhayer/bioinfo_training_infectious_disease/issues/new
 
-  sidebar:
+    sidebar:
     style: "floating"
-    tools:
-      - icon: ""
-        text: ""
     logo: pages/images/IRD.png
 
 
