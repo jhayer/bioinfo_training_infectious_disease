@@ -20,7 +20,7 @@ title: "Building and exploring an ASV table from 16S data using QIIME 2 in Galax
 :::
 
 ::: {.callout-note title="Sources"}
-This tutorial is adapted from the Galaxy Training Network tutorial [Building an amplicon sequence variant (ASV) table from 16S data using DADA2](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/dada2/tutorial.html) (Bérénice Batut et al.), rewritten to use the **QIIME 2** tools available on [Galaxy Australia](https://usegalaxy.org.au/). It also draws on the [QIIME 2 "Moving Pictures" tutorial](https://docs.qiime2.org/).
+This tutorial is adapted from the Galaxy Training Network tutorial [Building an amplicon sequence variant (ASV) table from 16S data using DADA2](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/dada-16S/tutorial.html) (Bérénice Batut et al.), rewritten to use the **QIIME 2** tools available on [Galaxy Australia](https://usegalaxy.org.au/). It also uses information from [Metabarcoding of bacteria in dunnart faecal samples across Australia (wild + captive) using QIIME 2](https://training.galaxyproject.org/topics/microbiome/tutorials/dunnart_metabarcoding/tutorial.html). It also draws on the [QIIME 2 "Moving Pictures" tutorial](https://docs.qiime2.org/).
 :::
 
 # Introduction
@@ -31,6 +31,14 @@ for example the 16S rRNA gene (or a part of it) in bacteria, is amplified from D
 and then sequenced on a next-generation sequencing platform. This technique removes the need to culture
 microbes in order to detect their presence, and cost-effectively provides a deep census of a microbial community.
 
+# What is the 16S ribosomal RNA gene ? 
+
+![16s-diversity](images/16s-variable-region.png)
+
+![variable-region-schema](images/variable-region-schema.png)
+
+# How to process 16S amplicon sequencing data ? 
+
 To process 16S amplicon sequencing data, several tools exist: **QIIME 2** ([Bolyen et al. 2019](https://doi.org/10.1038/s41587-019-0209-9)), **Mothur**, **Lotus2** and **DADA2** ([Callahan et al. 2016](https://doi.org/10.1038/nmeth.3869)). All these tools can be used in Galaxy. In this tutorial we will use **QIIME 2**.
 
 **QIIME 2** is not a single algorithm but a platform that wraps many methods as *plugins*. Here we will use, among others:
@@ -38,21 +46,6 @@ To process 16S amplicon sequencing data, several tools exist: **QIIME 2** ([Boly
 - **q2-dada2**, to denoise the reads with the DADA2 algorithm
 - **q2-feature-classifier** ([Bokulich et al. 2018](https://doi.org/10.1186/s40168-018-0470-z)), to assign taxonomy
 - **q2-phylogeny** and **q2-diversity**, to build a tree and compute diversity metrics
-
-## QIIME 2 artifacts and visualizations
-
-QIIME 2 does not work directly on FASTQ or tabular files. Every piece of data is stored in an **artifact**, a zipped archive with the extension **`.qza`**. An artifact contains the data, its *semantic type* (what the data represents, e.g. `FeatureTable[Frequency]`) and its *provenance* (the full history of how it was produced).
-
-Results meant to be looked at are stored in **visualizations**, with the extension **`.qzv`**.
-
-| Extension | Name | Contains | How to look at it |
-|---|---|---|---|
-| `.qza` | Artifact | Data (reads, tables, trees…) | Used as input of other QIIME 2 tools |
-| `.qzv` | Visualization | Plots, tables, interactive views | 👁️ (eye) icon in Galaxy, or [view.qiime2.org](https://view.qiime2.org) |
-
-::: {.callout-note title="Viewing a .qzv file"}
-In Galaxy, click the 👁️ (eye) icon of a `.qzv` dataset to open it. If it does not display, download it (💾 icon) and drag it onto [view.qiime2.org](https://view.qiime2.org): the file is opened in your browser, nothing is uploaded.
-:::
 
 ## ASVs instead of OTUs
 
@@ -85,11 +78,6 @@ Their 16S workflow is very close to the one we will follow:
 
 1. **QIIME 2** with **DADA2** to denoise the reads into ASVs
 2. Taxonomy assigned with a **naive Bayes classifier trained on SILVA 138 (99%, 515F/806R region)**, the same classifier we will use
-3. **Alpha diversity** with the Shannon index
-4. **Beta diversity** with Bray–Curtis distances, PCoA and a **PERMANOVA** test
-5. Differential abundance (edgeR) and a random forest model to predict disease status (not covered here)
-
-They found that UC patients have a **lower alpha diversity** (Shannon index) than healthy controls, and that UC samples are **more different from each other** than healthy samples are (higher beta diversity). Several families, such as *Lachnospiraceae*, *Oscillospiraceae*, *Clostridiaceae* and *Akkermansiaceae*, were depleted in UC, while species of the *Enterobacteriaceae* were enriched.
 
 ### Our subset
 
@@ -114,7 +102,7 @@ With only 4 samples, we can learn every step of the workflow, but statistical te
 
 ::: {.callout-tip title="History creation"}
 1. Create a new history for this analysis
-2. Rename it, e.g. `16S QIIME 2`
+2. Rename it, e.g. `16S Gut Microbiome`
 :::
 
 ## Import the reads from SRA
@@ -139,7 +127,7 @@ As in the Galaxy introduction, we download the reads directly from the SRA with 
     - *"select input type"*: `List of SRA accession, one per line`
     - *"sra accession list"*: `SRA accessions`
 3. Click **Run Tool**
-4. Rename the `Pair-end data (fasterq-dump)` collection to `Raw Reads`
+4. Rename the `Pair-end data (fasterq-dump)` collection to `16S Raw Reads`
 :::
 
 The tool creates a **list of dataset pairs**: one element per sample, named with its SRA accession (e.g. `SRR15702564`), containing a forward and a reverse file.
@@ -152,57 +140,31 @@ QIIME 2 links reads, tables and metadata through **sample IDs**. Here the sample
 Click on the collection and look at the reads of a sample of each batch (`SRR15702564` and `SRR15702530`). Are all reads 150 bp long?
 
 ::: {.callout-tip title="Answer" collapse="true"}
-No. The two pairs of samples were not sequenced in the same run: the reverse reads of `SRR15702564` and `SRR15702563` are shorter (140 bp) than those of `SRR15702530` and `SRR15702529` (~150 bp). We need to keep this in mind when choosing the truncation lengths: with DADA2, reads **shorter** than the truncation length are discarded.
+No. The two pairs of samples were not sequenced in the same run: the forward reads are 150 bp for all samples, but the reverse reads of `SRR15702564` and `SRR15702563` are shorter (140 bp) than those of `SRR15702530` and `SRR15702529` (~151 bp). We need to keep this in mind when choosing the truncation lengths: with DADA2, reads **shorter** than the truncation length are discarded.
 :::
 ::::
-
-## Import the collection into QIIME 2
-
-::: {.callout-tip title="Import the reads as a QIIME 2 artifact"}
-1. Open the **qiime2 tools import** tool with the following parameters:
-    - *"Type of data to import"*: `SampleData[PairedEndSequencesWithQuality]`
-    - *"Type of format"*: `CasavaOneEightSingleLanePerSampleDirFmt`
-    - *"Import"*: select the `Raw Reads` collection
-2. Click **Run Tool**
-3. Rename the output `demux.qza`
-:::
-
-::: {.callout-note title="Import errors"}
-- If the tool does not accept the collection, check that the datasets are `fastqsanger` (or `fastqsanger.gz`) and that the collection is a **list:paired**.
-- The exact labels of the import form can differ slightly between versions of the tool. The important choices are always the **type** (`SampleData[PairedEndSequencesWithQuality]`) and a **paired-end per-sample** format.
-:::
 
 # Inspect read quality
 
 Before denoising, we look at the quality of the reads to decide where to truncate them.
 
 ::: {.callout-tip title="Summarize the reads"}
-1. Open **qiime2 demux summarize** with:
-    - *"data"*: `demux.qza`
+1. Open **dada2: plotQualityProfile** with:
+    - Processing mode”: Joint
+    -  “Paired short read data”: **16S Raw Reads**
+    - “Aggregate data”: No
 2. Click **Run Tool**
-3. Open the output `.qzv` with the 👁️ icon
 :::
 
-The visualization has two tabs:
-
-- **Overview**: the number of reads per sample
-- **Interactive Quality Plot**: for each position, a box plot of the quality scores of a random subsample of reads, for the forward (left) and reverse (right) reads. Hovering over a position gives the exact quality values.
-
-:::: {.callout-important title="Question: Number of reads per sample" collapse="true"}
-In the **Overview** tab:
-
-1. Do all samples have a similar number of reads?
-2. Which sample has the fewest reads?
-
-::: {.callout-tip title="Answer" collapse="true"}
-1. The number of reads varies between samples, which is common in amplicon sequencing. This is why we will later need to normalise (rarefy) the samples before comparing their diversity.
-2. Look at the bottom of the per-sample table, sorted by number of reads.
-<!-- TODO: add the sample name and read count from your own run -->
+::: {.callout-note title="Import errors"}
+- Galaxy doesn't visualize QIIME 2 `.qzv` file.
+You need to first download the file, and import it in [qiime2-view website](https://view.qiime2.org/)
 :::
-::::
+
+
 
 :::: {.callout-important title="Question: Where to truncate?" collapse="true"}
-In the **Interactive Quality Plot** tab:
+Inspect **plotQualityProfile forward read** output:
 
 1. Are the forward reads good quality?
 2. We generally advise trimming the last few nucleotides to avoid less well-controlled errors that can arise there. What would you recommend as truncation position for the forward reads?
@@ -210,18 +172,64 @@ In the **Interactive Quality Plot** tab:
 4. What would you recommend as truncation position for the reverse reads?
 
 ::: {.callout-tip title="Answer" collapse="true"}
-1. The forward reads are good quality.
-2. The profiles do not suggest that additional trimming is needed. We will truncate the forward reads at position **240** (trimming the last 10 nucleotides).
-3. The reverse reads are of significantly worse quality, especially at the end, which is common in Illumina sequencing. DADA2 incorporates quality information into its error model, but truncating where the quality crashes improves its sensitivity to rare sequence variants.
-4. We will truncate the reverse reads at position **160**, where the quality distribution crashes.
+1. The forward reads are good quality over most of their length.
+2. We will truncate the forward reads at position **145**, trimming the last few nucleotides.
+3. The reverse reads are of worse quality, especially at the end, which is common in Illumina sequencing. DADA2 incorporates quality information into its error model, but trimming the low-quality end improves its sensitivity to rare sequence variants.
+4. We will truncate the reverse reads at position **135**. This is also below the length of the shortest reverse reads (140 bp), so no sample loses all its reads.
+
+We cannot truncate much more than this: the reads must still overlap to be merged (see below).
 :::
 ::::
 
-::: {.callout-note title="Considerations for your own data"}
-Your reads must still overlap after truncation in order to be merged! This tutorial uses 2x250 V4 sequence data (amplicon of ~253 bp), so the forward and reverse reads almost completely overlap and the truncation can be guided by the quality scores only. With a less-overlapping primer set, like V1-V2 or V3-V4, the truncated reads must keep at least **12 nucleotides of overlap** (plus the biological length variation of the amplicon), otherwise most reads will fail to merge.
+::: {.callout-note title="Truncation and read overlap"}
+Your reads must still overlap after truncation in order to be merged! DADA2 requires at least **12 nucleotides of overlap**, plus some margin for the natural length variation of the amplicon.
+
+In this dataset, the primers are not in the reads, so the reads cover the region **between** the primers: about **253 bp** for V4. With 2 × 150 bp reads, the room for truncation is small:
+
+| Truncation (forward + reverse) | Overlap on a 253 bp region | |
+|---|---|---|
+| 150 + 140 = 290 | ~37 bp | OK |
+| **145 + 135 = 280** | **~27 bp** | **Used here** |
+| 140 + 130 = 270 | ~17 bp | Risky |
+| < 265 | < 12 bp | Merging fails |
+
+So with short reads, the truncation is guided by the overlap as much as by the quality scores. With longer amplicons, like V3-V4 (~430 bp), even 2 × 250 bp reads leave little room for truncation.
+:::
+
+::: {.callout-warning title="Check that the primers are really absent"}
+If the primers were still in the reads, the sequenced fragment would be ~292 bp, and 2 × 150 bp reads would overlap by only ~8 bp: almost no reads would merge. You can check it by searching the beginning of the forward reads for the 515F primer (`GTGYCAGCMGCCGCGGTAA`). If you find it, remove the primers with **qiime2 cutadapt trim-paired** before denoising.
+:::
+
+## QIIME 2 artifacts and visualizations
+
+QIIME 2 does not work directly on FASTQ or tabular files. Every piece of data is stored in an **artifact**, a zipped archive with the extension **`.qza`**. An artifact contains the data, its *semantic type* (what the data represents, e.g. `FeatureTable[Frequency]`) and its *provenance* (the full history of how it was produced).
+
+Results meant to be looked at are stored in **visualizations**, with the extension **`.qzv`**.
+
+| Extension | Name | Contains | How to look at it |
+|---|---|---|---|
+| `.qza` | Artifact | Data (reads, tables, trees…) | Used as input of other QIIME 2 tools |
+| `.qzv` | Visualization | Plots, tables, interactive views | 👁️ (eye) icon in Galaxy, or [view.qiime2.org](https://view.qiime2.org) |
+
+::: {.callout-note title="Viewing a .qzv file"}
+In Galaxy, click the 👁️ (eye) icon of a `.qzv` dataset to open it. If it does not display, download it (💾 icon) and drag it onto [view.qiime2.org](https://view.qiime2.org): the file is opened in your browser, nothing is uploaded.
+:::
+
+## Import the collection into QIIME 2
+
+::: {.callout-tip title="Import the reads as a QIIME 2 artifact"}
+1. Open the **qiime2 tools import-fastq** tool with the following parameters:
+    - *"Import"*: select the `16S Raw Reads` collection
+2. Click **Run Tool**
+3. Rename the output `demux.qza`
 :::
 
 # Denoising with DADA2
+
+Trimmed sequences are processed using the DADA2 plugin within QIIME2. DADA2 denoises data by modelling and correcting Illumina amplicon sequencing errors, and infers exact amplicon sequence variants (ASVs), resolving differences of as little as a single nucleotide. Its workflow includes filtering, dereplication, paired-end read merging, and reference-free chimera detection, resulting in a feature (ASV) table.
+
+For paired-end data, an additional and critical consideration is read overlap. After truncation, the forward and reverse reads must still overlap sufficiently to merge. While the absolute minimum overlap is ~12 bp, an overlap of ~50 bp is recommended to ensure robust merging and reduce the risk of losing reads during this step. As a result, truncation lengths are often chosen by balancing two factors: maintaining high-quality sequence and preserving enough overlap for successful merging.
+
 
 **qiime2 dada2 denoise-paired** runs the whole DADA2 pipeline on each sample:
 
@@ -234,8 +242,8 @@ Your reads must still overlap after truncation in order to be merged! This tutor
 ::: {.callout-tip title="Denoise the reads"}
 1. Open **qiime2 dada2 denoise-paired** with the following parameters:
     - *"demultiplexed_seqs"*: `demux.qza`
-    - *"trunc_len_f"*: `240`
-    - *"trunc_len_r"*: `160`
+    - *"trunc_len_f"*: `145`
+    - *"trunc_len_r"*: `140`
     - *"trim_left_f"*: `0`
     - *"trim_left_r"*: `0`
     - Leave the other parameters at their default values (*"max_ee_f"* / *"max_ee_r"*: `2`, *"chimera_method"*: `consensus`, *"pooling_method"*: `independent`)
@@ -255,8 +263,10 @@ Your reads must still overlap after truncation in order to be merged! This tutor
 | `chimera_method` | How chimeras are detected: `consensus` (per sample, then consensus), `pooled`, or `none` |
 | `pooling_method` | `independent` processes each sample separately; `pseudo` shares information between samples to detect rare variants |
 
-These values are starting points, not set in stone. If too few reads pass the filter, consider relaxing `max_ee_r` (e.g. to `5`) or truncating the reverse reads more, while keeping enough overlap to merge.
+These values are starting points, not set in stone. If too few reads pass the filter, consider relaxing `max_ee_r` (e.g. to `5`). With 2 × 150 bp reads, truncating more is rarely an option: the reads would no longer overlap.
 :::
+
+
 
 ## Track reads through the pipeline
 
@@ -264,8 +274,9 @@ As a sanity check, we look at the number of reads that made it through each step
 
 ::: {.callout-tip title="Inspect the denoising statistics"}
 1. Open **qiime2 metadata tabulate** with:
+    - Select "Metadata from Artifact"
     - *"input"*: `denoising-stats.qza`
-2. Click **Run Tool** and open the `.qzv` output
+2. Click **Run Tool**, download the `.qzv` output and drop it in [qiime2-view]("https://view.qiime2.org/). 
 :::
 
 The table contains, for each sample, the number of reads: `input`, `filtered`, `denoised`, `merged` and `non-chimeric`, with the percentage kept.
@@ -352,8 +363,8 @@ The table lists, for each ASV, its taxonomy (`d__` domain, `p__` phylum, `c__` c
 
 ::: {.callout-tip title="Answer" collapse="true"}
 1. Bacteria.
-2. **Firmicutes** (Bacillota) and **Bacteroidetes** (Bacteroidota) are well represented, which is expected for fecal samples.
-3. Few ASVs have a species assignment, both because it is often not possible to distinguish species from a ~250 bp fragment of the 16S gene, and because the indigenous mouse gut microbiota is poorly covered by reference databases.
+2. **Firmicutes** (Bacillota) and **Bacteroidetes** (Bacteroidota) are well represented, which is expected for human stool samples.
+3. Few ASVs have a species assignment, because closely related species often have identical or nearly identical sequences over a ~250 bp fragment of the 16S gene. This is why the authors of the study worked at **genus** level with their 16S data.
 :::
 ::::
 
@@ -361,48 +372,16 @@ The table lists, for each ASV, its taxonomy (`d__` domain, `p__` phylum, `c__` c
 If your reads do not seem to be appropriately assigned, for example lots of bacterial 16S sequences assigned as `Eukaryota` or `Unassigned`, check that the classifier matches your amplified region and that your reads are in the same orientation as the reference database.
 :::
 
-# Prepare the metadata table
+## Basic Visualisations and Statistics
 
-To compare groups of samples, QIIME 2 needs a **metadata table**: a tab-separated file whose first column contains the sample IDs.
 
-The samples are named by the gender (`F`), mouse subject number (`3`) and day post-weaning (`D0`): `F3D0`. We create a table with these factors and an extra column `when`, which is `Early` (day < 100) or `Late` (day > 100).
+###  Rarefaction curves
+Generate rarefaction curves to determine whether the samples have been sequenced deeply enough to capture all the community members. The max depth setting will depend on the number of sequences in your samples. In our case, we will use **75000**. 
 
-::: {.callout-tip title="Create the metadata table"}
-1. Click **Upload** → **Paste/Fetch data** and paste the following table:
+using "qiime2 diversity alpha-rarefaction"". 
 
-    ```
-    sample-id	gender	mouse	day	when
-    F3D0	Female	3	0	Early
-    F3D1	Female	3	1	Early
-    F3D2	Female	3	2	Early
-    F3D3	Female	3	3	Early
-    F3D5	Female	3	5	Early
-    F3D6	Female	3	6	Early
-    F3D7	Female	3	7	Early
-    F3D8	Female	3	8	Early
-    F3D9	Female	3	9	Early
-    F3D141	Female	3	141	Late
-    F3D142	Female	3	142	Late
-    F3D143	Female	3	143	Late
-    F3D144	Female	3	144	Late
-    F3D145	Female	3	145	Late
-    F3D146	Female	3	146	Late
-    F3D147	Female	3	147	Late
-    F3D148	Female	3	148	Late
-    F3D149	Female	3	149	Late
-    F3D150	Female	3	150	Late
-    ```
-
-2. In the upload settings, set the datatype to `tabular` and check **Convert spaces to tabs** (in case the tabs were replaced by spaces when copying)
-3. Rename it `Metadata table`
-4. Check it with **qiime2 metadata tabulate**, using `Metadata table` as input
-:::
-
-::: {.callout-note title="Metadata rules"}
-- The first column must be named `sample-id` (or `id`, `#SampleID`…) and contain exactly the sample IDs used in the artifacts.
-- Columns with only numbers (like `day`) are treated as **numeric**, the others as **categorical**.
-- See the [QIIME 2 metadata documentation](https://docs.qiime2.org/) for the complete format.
-:::
+questions : 
+-when is the plateau for the 4 samples ? How do you interpret this results ? 
 
 # Visualise the taxonomic composition
 
@@ -414,18 +393,22 @@ The samples are named by the gender (`F`), mouse subject number (`3`) and day po
 2. Open the `.qzv` output
 3. Set:
     - *"Taxonomic Level"*: `Level 5` (family)
-    - *"Sort Samples By"*: `when`
+    - *"Sort Samples By"*: `sequencing_run`
 :::
 
 :::: {.callout-important title="Question: Taxonomic composition" collapse="true"}
-Is there an obvious change in taxonomy between the early and late samples?
+1. Which families dominate the samples?
+2. Do you find the families highlighted by the authors (*Lachnospiraceae*, *Oscillospiraceae*, *Akkermansiaceae*, *Enterobacteriaceae*)?
+3. The two pairs of samples come from different sequencing runs. If they look different, can you tell whether the difference is biological?
 
 ::: {.callout-tip title="Answer" collapse="true"}
-Not really: the same main families are found in early and late samples, with variations in their relative abundance.
+1. and 2. Look at the families with the largest bars.
+<!-- TODO: add the main families from your own run -->
+3. No. When two groups of samples are sequenced in different runs, a technical **batch effect** can be mistaken for a biological difference. In a real study, cases and controls should be spread across runs, and the run should be recorded in the metadata.
 :::
 ::::
 
 ::: {.callout-note title="Heatmaps instead of barplots"}
-Stacked barplots become hard to read with many taxa. A heatmap is often clearer: collapse the table at family level with **qiime2 taxa collapse** (*"level"*: `5`), then run **qiime2 feature-table heatmap** on the collapsed table with the metadata column `when`.
+Stacked barplots become hard to read with many taxa. A heatmap is often clearer: collapse the table at family level with **qiime2 taxa collapse** (*"level"*: `5`), then run **qiime2 feature-table heatmap** on the collapsed table with the metadata column `sequencing_run`.
 :::
 
