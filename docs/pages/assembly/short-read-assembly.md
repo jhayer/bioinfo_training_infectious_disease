@@ -4,6 +4,7 @@ title: Bacterial Genome Assembly Tutorial
 
 # Bacterial Genome Assembly
 
+
 ::: {.callout-note title="Lesson overview"}
 **Questions**
 
@@ -20,14 +21,17 @@ title: Bacterial Genome Assembly Tutorial
 - Evaluate the assembly using **QUAST**.
 :::
 
-
-# Introduction
-
+# What is an assembly ? 
 
 
 Modern sequencing technologies generate **millions of short DNA fragments (reads)**, but not complete chromosomes.  
 For bacterial genomics, our goal is to reconstruct the full genome of a bacterial isolate from these fragments.  
 The process of stitching reads together into longer sequences is called **de novo assembly**.
+
+# Introduction
+
+When the quality of the reads is determined and the data is filtered (like we did with fastp) and/or trimmed (like is more often done with short read data) an assembly can be made.
+
 
 Assembling a genome is conceptually similar to solving a jigsaw puzzle:
 
@@ -96,32 +100,17 @@ The figure below shows the hierarchy:
 
 ![de-novo-assembly-overview](images/06-assembly/de-novo-assembly-overview.png)
 
-There are several strategies to assemble genomes. Most modern short-read assemblers use **De Bruijn Graphs**, but it is useful to know all three families of algorithms.
+There are several strategies to assemble genomes. Most modern short-read assemblers use **De Bruijn Graphs**.
 
-![assembly-algorithms](images/06-assembly/assembly-algorithms.png)  
+![de-brujin-graphs](images/06-assembly/de-brujin-graphs.png) 
 
-### **1. Greedy Extension**
-- Start from a read, extend it by finding the next read with the highest overlap.  
-- Repeats often confuse this method.  
-- Rarely used in modern genomics.
-
-### **2. OLC (Overlap–Layout–Consensus)**
-- Find overlaps between all pairs of reads.  
-- Build a graph of overlaps.  
-- Resolve paths to produce contigs.  
-- Used for long-read assemblers.
-
-### **3. De Bruijn Graphs (most common for Illumina reads)**  
 Reads are broken into **k-mers** (short subsequences of length *k*).  
 A graph is built from overlapping k-mers, and contigs are extracted as paths through the graph.
 
 This method is extremely efficient for large numbers of short reads.
-
-# Different type of assembly
+For further explanations, see this [assembly presentation](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/debruijn-graph-assembly/slides.html#1). 
 
 # Short read assembly
-
-# Theory
 
 # SPAdes: A Popular Bacterial Genome Assembler
 
@@ -144,6 +133,8 @@ SPAdes takes **FASTQ** files as input and outputs:
 
 # Running SPAdes on Galaxy
 
+We will use the trimmed short read *ERR13363306* from  [the E.Coli Paper](https://www.sciencedirect.com/science/article/pii/S2213716525002061?via%3Dihub). 
+
 What parameters do I need to choose for SPAdes ? 
 the most important is k-mers.
 
@@ -152,15 +143,13 @@ Choosing an appropriate k-mer range for SPAdes assembly requires balancing sensi
 Smaller k values (e.g., 21–33–55) are more sensitive and help assemble low-coverage regions and short or repetitive sequences, whereas larger k values (e.g., 77–99–127) improve contiguity and repeat resolution but require longer, high-quality reads. Therefore, the k-mer range should always be chosen according to the read-length distribution and expected coverage after trimming
 
 
-Below is an example workflow using Galaxy, similar to your metagenomics training.
-
 ## Create a new history
 
 ::: {.callout-tip title="Create a new history"}
 1. Go to the **History** panel (right side).
 2. Click **✏️ → Create new history**.
 3. Click **Edit** next to the history name.
-4. Rename it to **Bacterial Genome Assembly**.
+4. Rename it to **Short Read Genome Assembly**.
 5. Click **Save**.
 :::
 
@@ -171,8 +160,8 @@ Use the **History Multiview** panel.
 
 ::: {.callout-tip title="Import input reads"}
 1. Open the **History Multiview** (left panel).
-2. Drag your **trimmed paired-end reads** (**Trimmed DRR187559**) from the previous history (e.g., “Quality Control and Trimming”).
-3. Drop them into the **Bacterial Genome Assembly** history.
+2. Drag your **trimmed paired-end reads** (**Trimmed *ERR13363306*) from the previous history (e.g., “Quality Control and Trimming”).
+3. Drop them into the **Short Read Genome Assembly** history.
 :::
 
 
@@ -208,7 +197,7 @@ SPAdes performs BayesHammer/Hammer error correction on the raw reads before doin
   - Assembly graph with scaffolds
   - Log 
 
-- **Select k-mer detection option**: Select "21, 33, 55, 77, 99, 127", commonly used for ILLUMINA for max length 300pb.
+- **Select k-mer detection option**: Select Auto, or use "21, 33, 55, 77", commonly used for ILLUMINA for max length 150pb.
 
 - Click **Run Tool**.
 
@@ -226,7 +215,7 @@ No gaps (N's)
 Most conservative assembly
 
 
-**SPAdes on data X and data X: Contigs**
+**SPAdes on data X and data X: Scaffolds**
 Contigs linked together using paired-end information
 Contains gaps represented as N's where SPAdes inferred connections
 Longer sequences, but includes uncertainties

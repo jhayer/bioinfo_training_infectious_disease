@@ -107,27 +107,10 @@ If renaming does not work, it is possible you aren't logged in, so try logging i
 :::
 ::::
 
-## Upload the data
 
-### Upload the files locally
-
-With your reads, you will want to upload them locally (from your computer).
-
-::: {.callout-tip title="Upload a file"}
-1. At the top of the **Activity Bar**, click the  **Upload** activity
-
-    ![upload data button shown in the galaxy interface](images/03-intro-galaxy/upload-data.png)
-
-    This brings up a box:
-
-2. Click **Choose Local File** or Drop the files
-3. Click **Start**
-4. Click **Close**
-:::
 
 ### Upload the files from SRA
-
-In our case, it is different !  
+ 
 In the **Data availability** part of [the E.Coli Paper](https://www.sciencedirect.com/science/article/pii/S2213716525002061?via%3Dihub), it is written:
 
 "Data availability: All sequencing data and assembled genomes are deposited at the European Nucleotide Archive under study PRJEB77560. A table with all accession numbers is in Supplementary Data (S13)."
@@ -136,7 +119,7 @@ Indeed, if you dug into the European Nucleotide Archive (ENA) website. You can f
 
 In total, You have 12 run accessions from 6 Sample accessions: for each of the 6 samples you have 2 runs, one for the long reads, and another one for the short reads ! 
 
-We will start by having a look at the short reads first, for only one Run accession: *ERR13363306*.
+We will start by having a look at 1 sample (sample [SAMEA115834835](https://www.ebi.ac.uk/ena/browser/view/SAMEA115834835) ),the short reads first, for only one Run accession: *ERR13363306* (short read accession number ) and *ERR13363634* (long read accession number). 
 
 ### Galaxy Tool
 
@@ -153,7 +136,7 @@ format from NCBI SRA)
 
 3. Select the following parameters:
     - *select input type*: SRR accession
-    - **Accession** : *ERR13363306*
+    - **Accession** : *ERR13363306* and **ERR13363634* 
     - In **Advanced Options**, define format specification for sequence, type:
 
         ```

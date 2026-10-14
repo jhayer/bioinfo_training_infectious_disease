@@ -111,6 +111,8 @@ For this tutorial, we will use the PlusPF database which contains the Standard (
 
 The default confidence threshold of 0.0 will result in the most sensitive classification, while higher thresholds will increase precision at the cost of sensitivity, and we want to detect any contamination (even low-level).
 
+## Run Kraken2 in Galaxy 
+
 ## Kraken2 Output Overview
 
 Kraken2 generates **two output files per dataset** (e.g., one per sample):

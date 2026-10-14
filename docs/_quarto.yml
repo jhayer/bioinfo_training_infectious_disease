@@ -17,16 +17,18 @@ website:
       - text : Tutorial Assembly
         menu:
           - text: Introduction to Galaxy
-            href: pages/assembly/short_intro_galaxy.md
+            href: pages/assembly/intro_galaxy.md
           - text: Read QC and trimming
             href: pages/assembly/assessing-read-quality.md
+          - text: Raw read contamination check
+            href: pages/assembly/contamination.md
           - text: Assembly (Short-read)
             href: pages/assembly/short-read-assembly.md
           - text: Assembly (Long-read)
             href: pages/assembly/long-read-assembly.md
           - text: Assembly (Hybrid)
             href: pages/assembly/hybrid-assembly.md    
-          - text: Assembly QC and contamination check
+          - text: Assembly QC
             href: pages/assembly/qc-post-assembly.md  
           - text: Assembly Visualisation
             href: pages/assembly/assembly-visualisation.md  

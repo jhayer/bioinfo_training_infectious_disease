@@ -1,3 +1,7 @@
+# Quality control using Blobtoolkit
+
+
+
 # Quality Control: QUAST
 
 # Assembly Metrics using QUAST
@@ -129,7 +133,6 @@ Can result in chimeric contigs.
 Lead to errors in graph construction.
 
 
-
 ## Conclusion
 In this tutorial, we prepared short reads, assembled them, and inspect the produced assembly for its quality. The assembly, even if uncomplete, is reasonable good to be used in downstream analysis, like MLST or AMR.
 
@@ -153,29 +156,5 @@ No fake gaps (scaffolds include “N” runs that may not be biologically real),
 # Contamination Checking 
 
 DO A PARAGRAPH on why we should do contamination checking. 
-Use checkM2, and also tools from Jacques (TO DO)
 
-## BUSCO: Assessing Genome Completeness
-
-**BUSCO** (Benchmarking Universal Single-Copy Orthologs) evaluates how complete a genome assembly is by checking for the presence of genes that should exist as single copies in nearly all members of a given lineage (e.g., bacteria).
-
-### What BUSCO Reports
-- **Complete (C):** Genes found in full length  
-- **Complete and single-copy (S):** Ideal—no duplication  
-- **Complete and duplicated (D):** Gene appears more than once (may reflect plasmids, repeats, or misassembly)  
-- **Fragmented (F):** Only partial gene found  
-- **Missing (M):** Gene not detected  
-
-### Why BUSCO is Important
-- **Measures biological completeness:** Ensures your assembly contains the full functional gene content expected for the organism.  
-- **Detects fragmentation:** High fragmented or missing percentages indicate low-quality assembly or low coverage.  
-- **Helps compare assemblies:** BUSCO provides an objective metric across tools, datasets, or species.  
-
-### What Is Considered a Good BUSCO Score?
-For bacterial genomes:
-- **>95% Complete** is excellent  
-- **<5% Missing** is expected for high-quality assemblies  
-- Duplications should be low unless plasmids or paralogs exist  
-
-Despite BUSCO being robust for species that have been widely studied, it can be inaccurate when the newly assembled genome belongs to a taxonomic group that is not well represented in OrthoDB. Even in a well-represented taxonomic group, the bias on the selection of reference genomes selected to create OrthoDB can lead to an under-scoring of the newly assembled genome and is dependent on the evolution of the genomes. 
-
+Use checkM2, and also tools from Jacques (?)
