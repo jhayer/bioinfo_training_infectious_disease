@@ -20,7 +20,7 @@ title: "Building and exploring an ASV table from 16S data using QIIME 2 in Galax
 :::
 
 ::: {.callout-note title="Sources"}
-This tutorial is adapted from the Galaxy Training Network tutorial [Building an amplicon sequence variant (ASV) table from 16S data using DADA2](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/dada-16S/tutorial.html) (Bérénice Batut et al.), rewritten to use the **QIIME 2** tools available on [Galaxy Australia](https://usegalaxy.org.au/). It also uses information from [Metabarcoding of bacteria in dunnart faecal samples across Australia (wild + captive) using QIIME 2](https://training.galaxyproject.org/topics/microbiome/tutorials/dunnart_metabarcoding/tutorial.html). It also draws on the [QIIME 2 "Moving Pictures" tutorial](https://docs.qiime2.org/).
+This tutorial is adapted from the Galaxy Training Network tutorial [Building an amplicon sequence variant (ASV) table from 16S data using DADA2](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/dada-16S/tutorial.html) (Bérénice Batut et al.), rewritten to use the **QIIME 2** tools available on [Galaxy Australia](https://usegalaxy.org.au/). It also uses information from [Metabarcoding of bacteria in dunnart faecal samples across Australia (wild + captive) using QIIME 2](https://training.galaxyproject.org/topics/microbiome/tutorials/dunnart_metabarcoding/tutorial.html). It also draws on the [QIIME 2 "Moving Pictures" tutorial](https://docs.qiime2.org/). Some graphics comes from [a note in microbenotes](https://microbenotes.com/16s-rrna-gene-sequencing/). 
 :::
 
 # Introduction
