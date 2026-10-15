@@ -3,7 +3,7 @@ project:
   output-dir: ../public
 
 website:
-  title: "Bioinformatics for Infectious Disease Ecology Research"
+  title: "BInDER"
   description: "Description"
   page-navigation: true
 

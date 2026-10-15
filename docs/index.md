@@ -3,7 +3,6 @@
 ![](pages/images/achievement-agreement-arms.jpg){style="height:300px; margin-right:100px;float: right;"}
 
 
-
 ## Practical Information
 
 {{< include "pages/course-information/practical.md" >}}
@@ -27,14 +26,6 @@
 ## Schedule
 
 {{< include "pages/course-information/schedule.md" >}}
-
-<hr>
-
-## Pre-course setup
-
-The [pre-course setup](pages/course-information/pre-course-setup.md)
-page lists the installation and setup of all the tools used in the
-course, so make sure you've gone through them all before the course begins.
 
 <hr>
 
