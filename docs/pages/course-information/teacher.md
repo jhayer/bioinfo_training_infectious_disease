@@ -5,3 +5,4 @@
 [Jacques Dainat](https://github.com/Juke34) | IRD, Montpellier, France | Instructor
 [Mathis Arnal]() | Chang Mai University, Thailand | Instructor
 [Praveen Rahi]() | Institut Pasteur du Cambodge, Phnom Penh, Camdodia| Instructor
+[Mrs. Huynh Minh Huong]() | USTH, Hanoi, Vietnam | Instructor
