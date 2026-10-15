@@ -40,6 +40,10 @@ website:
         menu:
           - text: PanExplorer
             href: pages/panexplorer/panexplorer.md
+      - text: Shotgun Metagenomics
+        menu:
+          - text: Taxonomic profiling
+            href: pages/mg_shotgun/taxonomic_profiling.md
 
       - text:  Cheat sheets
         menu:
