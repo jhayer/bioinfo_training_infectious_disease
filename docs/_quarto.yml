@@ -5,6 +5,7 @@ project:
 website:
   title: "BInDER"
   description: "Description"
+  favicon: pages/images/favicon.png
   page-navigation: true
 
   navbar:
