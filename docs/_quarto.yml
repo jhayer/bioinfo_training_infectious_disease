@@ -3,8 +3,9 @@ project:
   output-dir: ../public
 
 website:
-  title: "Bioinformatics for Infectious Disease Ecology Research"
+  title: "BInDER"
   description: "Description"
+  favicon: pages/images/favicon.png
   page-navigation: true
 
   navbar:
@@ -18,6 +19,8 @@ website:
         menu:
           - text: Introduction
             href: pages/annotation/annotation-1-introduction.md
+          - text: Data preparation
+            href: pages/annotation/get_data.md
           - text: QC pre annotation
             href: pages/annotation/qc_pre.md
           - text: Structural annotation - Eukaryotes (Lecture)

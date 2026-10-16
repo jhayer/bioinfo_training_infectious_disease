@@ -1,5 +1,5 @@
 # Project information
-site_name: "Bioinformatics for Infectious Disease Ecology Research" # Displayed at the very top of the page and in the title of the browser tab. Used also for top of index page.
+site_name: "Bioinformatics for Infectious Disease Ecology Research (BInDER)" # Displayed at the very top of the page and in the title of the browser tab. Used also for top of index page.
 site_author: "Mathis Arnal, Jacques Dainat, Juliette Hayer, Praveen Rahi, Tam Thi Thanh Tran" # list authors 
 site_url: https://jhayer.github.io/bioinfo_training_infectious_disease
 site_description: "Tutorial pages for the training: Bioinformatics for Infectious Disease Ecology Research - based on Galaxy" # short site description

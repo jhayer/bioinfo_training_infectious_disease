@@ -60,19 +60,19 @@
 }
 
 .callout-question::before {
-  content: "?";
-  display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.5rem;
-  vertical-align: -0.25em;
-  line-height: 1.25rem;
-  text-align: center;
+  content: "Question";
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #17a2b8;
-  background-color: rgba(23, 162, 184, 0.15);
-  border-radius: 50%;
+  padding-left: 1.75rem;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="fill: rgb(23, 162, 184)" viewBox="0 0 16 16"><path d="M9.099 2.927A5 5 0 0 0 4 7.742V9a5 5 0 0 0 5 5h1a5 5 0 0 0 5-5V7.742a5 5 0 0 0-5.001-4.815zM8 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm0-3a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 1.25rem 1.25rem;
 }
 
 [data-bs-theme="dark"] .callout-question {
@@ -81,7 +81,7 @@
 
 [data-bs-theme="dark"] .callout-question::before {
   color: #6edff6;
-  background-color: rgba(23, 162, 184, 0.3);
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="fill: rgb(110, 223, 246)" viewBox="0 0 16 16"><path d="M9.099 2.927A5 5 0 0 0 4 7.742V9a5 5 0 0 0 5 5h1a5 5 0 0 0 5-5V7.742a5 5 0 0 0-5.001-4.815zM8 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm0-3a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>');
 }
 
 /* Callout personnalisé "answer" (pas un callout natif Quarto) */
@@ -97,19 +97,19 @@
 }
 
 .callout-answer::before {
-  content: "\2713";
-  display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.5rem;
-  vertical-align: -0.25em;
-  line-height: 1.25rem;
-  text-align: center;
+  content: "Answer";
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #198754;
-  background-color: rgba(25, 135, 84, 0.15);
-  border-radius: 50%;
+  padding-left: 1.75rem;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="fill: rgb(25, 135, 84)" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7 8.586 5.97 7.556a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.06 0l4-4a.75.75 0 0 0-.02-1.06z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 1.25rem 1.25rem;
 }
 
 [data-bs-theme="dark"] .callout-answer {
@@ -118,7 +118,7 @@
 
 [data-bs-theme="dark"] .callout-answer::before {
   color: #4bbe7d;
-  background-color: rgba(25, 135, 84, 0.3);
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="fill: rgb(75, 190, 125)" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7 8.586 5.97 7.556a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.06 0l4-4a.75.75 0 0 0-.02-1.06z"/></svg>');
 }
 
 /* Callout personnalisé "comment" (pas un callout natif Quarto) */
@@ -134,15 +134,19 @@
 }
 
 .callout-comment::before {
-  content: "";
-  display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.5rem;
-  vertical-align: -0.25em;
+  content: "Comment";
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #6f42c1;
+  padding-left: 1.75rem;
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="fill: rgb(111, 66, 193)" class="bi bi-chat-square-text" viewBox="0 0 16 16"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 12l1.586-1.586A2 2 0 0 1 4.414 10H14V2H2v10zm2-5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1H4.5A.5.5 0 0 1 4 7zm0 3a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H4.5A.5.5 0 0 1 4 10z"/></svg>');
   background-repeat: no-repeat;
-  background-size: contain;
+  background-position: left center;
+  background-size: 1.25rem 1.25rem;
 }
 
 /* Callout personnalisé "Hands on" (pas un callout natif Quarto) */
@@ -179,6 +183,7 @@
 }
 
 [data-bs-theme="dark"] .callout-comment::before {
+  color: #b18cfa;
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="fill: rgb(177, 140, 250)" class="bi bi-chat-square-text" viewBox="0 0 16 16"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 12l1.586-1.586A2 2 0 0 1 4.414 10H14V2H2v10zm2-5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1H4.5A.5.5 0 0 1 4 7zm0 3a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H4.5A.5.5 0 0 1 4 10z"/></svg>');
 }
 
