@@ -15,7 +15,7 @@ website:
     left:
       - text: Home
         href: index.md
-      - text : Tutorial Assembly
+      - text : Assembly
         menu:
           - text: Introduction to Galaxy
             href: pages/assembly/intro_galaxy.md
@@ -35,7 +35,7 @@ website:
             href: pages/assembly/assembly-visualisation.md
           - text: (Bonus) Sars Cov2 variant analysis
             href: pages/assembly/sars-cov2-assembly.md    
-      - text: Tutorial Annotation
+      - text: Annotation
         menu:
           - text: Introduction
             href: pages/annotation/annotation-1-introduction.md
