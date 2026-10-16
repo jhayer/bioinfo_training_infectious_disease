@@ -21,26 +21,6 @@ agat_sp_statistics.pl --help
 agat_sp_statistics.pl -i annotation.gff -o annotation.stat 
 ```
 
-::: {.callout-note title="docker"}
-```bash
-# get the tool
-docker pull quay.io/biocontainers/agat:1.5.1--pl5321hdfd78af_0
-# call the help
-docker run --rm quay.io/biocontainers/agat:1.5.1--pl5321hdfd78af_0 agat_sp_statistics.pl --help
-# call the check
-docker run --rm -v .:/data quay.io/biocontainers/agat:1.5.1--pl5321hdfd78af_0 bash -c "cd data && agat_sp_statistics.pl -i annotation.gff -o annotation.stat "
-```
-:::
-::: {.callout-note title="singularity"}
-```bash
-# get the tool
-singularity pull docker://quay.io/biocontainers/agat:1.5.1--pl5321hdfd78af_0
-# call the help
-singularity exec agat_1.5.1--pl5321hdfd78af_0.sif agat_sp_statistics.pl --help
-# call the check
-singularity exec agat_1.5.1--pl5321hdfd78af_0.sif agat_sp_statistics.pl -i annotation.gff -o annotation.stat 
-```
-:::
 
 ::: {.callout-question}
 How many gene do you have?  
