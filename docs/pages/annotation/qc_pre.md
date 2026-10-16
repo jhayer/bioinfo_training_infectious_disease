@@ -40,7 +40,6 @@ What is the GC content of your assembly?
 
 ## BUSCO
 
-
 [BUSCO](https://busco.ezlab.org) (Benchmarking Universal Single-Copy Orthologs) searches for sets of conserved genes that are expected to be present in nearly all genomes of a given lineage. The results indicate how many of these genes are complete, duplicated, fragmented, or missing (Simão et al. 2015).  
 
 * Search for the `BUSCO` tool in Galaxy ![](/pages/images/galaxy/tools.png)
@@ -109,6 +108,7 @@ Therefore, unlike traditional approaches that rely heavily on specific marker ge
 ## What is the Completeness of the assembly?
 100.0	
 :::
+
 ::: {.callout-caution collapse="true"}
 ## What is the contamination of the assembly?
 0.54

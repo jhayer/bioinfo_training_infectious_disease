@@ -32,9 +32,18 @@ Bakta is a complex workflow involving numerous steps and, despite the small size
 
 ![](/pages/annotation/images/bakta/compliant.png)
 
+* In the `Optional annotation` section, activate `Keep original contig header` otherwise bakta rename sequences id to its own format.
+
+![](/pages/annotation/images/bakta/keepcontig.png)
+
 * In the `Selection of the output files` section, select the desired output files as follows:
 
 ![](/pages/annotation/images/bakta/output_files.png)
+
+::: {.callout-note}
+In case of metagenomic assemblies, do not forget to activate the `metagenome mode` option within the `Optional annotation` section.
+:::
+
 
 => Look at the result by clicking on <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scan eye"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M5 12s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5"/></svg> on the `Bakta Summary (TXT)` line in your history on the right side.
 
