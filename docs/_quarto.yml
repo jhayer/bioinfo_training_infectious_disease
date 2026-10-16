@@ -3,8 +3,9 @@ project:
   output-dir: ../public
 
 website:
-  title: "Bioinformatics for Infectious Disease Ecology Research"
+  title: "BInDER"
   description: "Description"
+  favicon: pages/images/favicon.png
   page-navigation: true
 
   navbar:

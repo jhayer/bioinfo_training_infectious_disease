@@ -1,2 +1,1 @@
-- Familiarity with basic Linux commands. 
 - Own a laptop. 
