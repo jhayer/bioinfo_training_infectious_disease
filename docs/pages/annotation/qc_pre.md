@@ -5,94 +5,132 @@
 
 **Objectives:** Be able to check a reference assembly.
 
-**Tools:** Minimap2, DIAMOND, [BUSCO](https://busco.ezlab.org), BlobToolKit, [QUAST](https://quast.sourceforge.net/)
+**Tools:** [seqkit](https://github.com/shenwei356/seqkit), [BUSCO](https://busco.ezlab.org), [checkM2](https://github.com/chklovski/CheckM2)
 
-Based on [Galaxy Training!](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/ERGA-post-assembly-QC/tutorial.html#generate-interactive-plots-with-blobtoolkit)
+Related ressources : [Galaxy Training!](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/ERGA-post-assembly-QC/tutorial.html#generate-interactive-plots-with-blobtoolkit)
 :::
 
+## Foreword
 
-## Genome assembly overview with BlobToolKit
+We won’t focus on how to build the best assembly here, which is an challenging task. Instead, we’ll check that the assembly you have is suitable for annotation. Running quality control ensures your genome is clean and reliable before moving on.
 
-BlobToolKit is a tool designed to assist researchers in analyzing and visualizing genome assembly data. The tool uses information from multiple data sources such as read coverage, sequence length, and taxonomic annotations to generate a comprehensive overview of genome assembly data (Challis et al. 2020). One of the key characteristics of BlobToolKit is its ability to provide with a user-friendly interactive interface for analyzing complex genome assembly data.
+## Statistics
 
-In this tutorial, we will use BlobToolKit in order to integrate the following data:
+We will start by generating some basic statistics about our genome assembly using seqkit. This will give us an overview of the assembly's quality and characteristics. For example, we can check the total number of sequences, their lengths, GC content, and the presence of undefined bases.
+A fragmented genome assembly will typically have many short contigs, which can indicate issues with the assembly process or the quality of the input data. By examining these statistics, we can get an initial sense of the assembly's reliability.
 
-* Read coverage data: BlobToolKit can use read coverage information to identify potential errors or gaps in the genome assembly. By comparing the depth of coverage across the genome, it can highlight regions that may be overrepresented or underrepresented, which can indicate potential issues with the assembly.
-* Taxonomic annotations: BlobToolKit can use taxonomic information to identify potential contaminants or foreign DNA in the genome assembly. It does this by comparing the taxonomic profile of the genome assembly to a reference database of known organisms.
-* Sequence similarity data: Sequence similarity data can be used to identify potential misassemblies or contaminants in the genome assembly. BlobToolKit can use BLAST/DIAMOND searches to compare the genome assembly to reference databases and identify regions that may be problematic.
-* BUSCO reports: BlobToolKit can use BUSCO data to provide additional information about the quality of a genome assembly. It can generate plots of the number of complete and partial BUSCO genes in the genome assembly, as well as the number of missing and fragmented genes.
+* Search for the `SeqKit statistics` tool in Galaxy ![](/pages/images/galaxy/tools.png)
 
-In the next steps, we will generate the data required for generating the visualization plots with BlobToolKit.
+* Select your genome assembly.
 
-### Generate read coverage data with Minimap2
+* Activate the `Output all statistics` option.
 
-Read coverage is an essential metric for evaluating the quality of genome assemblies, and it provides valuable information for identifying regions of high and low quality, detecting misassemblies, and identifying potential contaminants. Thus, for example, unexpected regions of low coverage suggests potential errors, such as misassemblies, gaps, or low complexity regions (Koren et al. 2017).
+* Run the tool to generate the statistics report.
 
-In this tutorial we will use Minimap2 for generation the coverage data. Minimap2 is a multi-purpose aligner which is particularly efficient at aligning long-reads produced by sequencing machines from PacBio or Oxford Nanopore (Li 2018).
+![](/pages/annotation/images/seqkit.png)
 
-::: {.callout-comment } 
-How is coverage information encoded in the BAM file?
-Coverage information is encoded in the BAM file format through the number of reads that align to each position in the reference genome. Specifically, the BAM file stores each read’s start and end position in the genome, as well as the length and orientation of the read, among other information. To calculate coverage, the number of reads that overlap each position in the reference genome is counted.
+=> Look at the result by clicking on <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scan eye"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M5 12s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5"/></svg> on the `SeqKit statistics` line in your history on the right side.
+
+::: {.callout-caution}
+What is the length of the assembly?  
+Do you have any gap in your assembly?  
+What is your N50 value?  
+What is the GC content of your assembly?  
 :::
 
-
-### Generate sequence similarity data with DIAMOND
-
-DIAMOND is a sequence alignment tool that utilizes a more efficient algorithm compared to BLAST, allowing for much faster searches of large sequence databases. Specifically, DIAMOND uses a sensitive seed-extension approach that compares a set of small segments (seeds) from the query sequence to a database, and then extends the alignments based on the highest-scoring hits. This approach allows DIAMOND to perform up to 20,000 times faster than BLAST, with comparable or improved sensitivity and accuracy (Buchfink et al. 2014).
-
-::: {.callout-comment}
-Orthologs are genes in different species which have usually the same function and have evolved from a common ancestral gene. They are important for new genome assemblies in order to predict gene functions and help with gene annotation (Gennarelli and Cattaneo 2010).
-:::
-
-### Generate BUSCO report
+## BUSCO
 
 BUSCO (Benchmarking Universal Single-Copy Orthologs) is a tool used for quantitative assessment of genome assembly, gene set, and transcriptome completeness. It is based on evolutionarily informed expectations of gene content derived from near-universal single-copy orthologs (Simão et al. 2015)
 
-### Generate interactive plots with BlobToolKit
+* Search for the `BUSCO` tool in Galaxy ![](/pages/images/galaxy/tools.png)
 
-BlobToolKit is a tool designed to assist researchers in analyzing and visualizing genome assembly data. The tool uses information from multiple data sources such as read coverage, gene expression, and taxonomic annotations to generate a comprehensive overview of genome assembly data (Challis et al. 2020). One of the key characteristics of BlobToolKit is its ability to provide with a user-friendly interactive interface for analyzing complex genome assembly data.
-
-To work with BlobToolKit we need to create a new dataset structure called BlobDir. Therefore the minimum requirement is a fasta file which contains the sequence of our assembly. A list of sequence identifiers and some statistics like length, GC proportion and undefined bases will then be generated.
-
-To get a more meaningful analysis and therefore more useful information about our assembly, it is better to provide as much data as we can get. In our case we will also provide a metadata file if possible, NCBI taxonomy ID and the NCBI taxdump directory (Challis et al. 2020).
-
-
-Now, we will evaluate three of plots that we can find in the Blobtoolkit interactve interface. First, we will start with the snailplot, which provides a holistic view of the assembly.
-
-![](images/Blobdir.snail.choRen.png){style="width:50%"}
-
-## QUAST
-
-QUAST is a pipeline that combines assembly statistics and completeness checks (via BUSCO).  
-It provides the following statistics:
-
-::: {.callout-note}
-* *Contigs*: The total number of contigs in the assembly.
-* *Largest contig*: The length of the largest contig in the assembly.
-* *Total length*: The total number of bases in the assembly.
-* *Nx*: The largest contig length, L, such that contigs of length >= L account for at least x% of the bases of the assembly.
-* *NGx*: The contig length such that using equal or longer length contigs produces x% of the length of the reference genome, rather than x% of the assembly length.
-* *GC content*: the percentage of nitrogenous bases which are either guanine or cytosine.
-:::
-
-If a reference genome is provided, the report also indicates:
-
-::: {.callout-note}
-* *Genome fraction* (%): total number of aligned bases in the reference genome, divided by the genome size
-* *Duplication ratio*: total number of aligned bases in the assembly, divided by the total number of aligned bases in the reference genome
-* *NGA50*: NG50 where the lengths of aligned blocks are counted instead of contig lengths. i.e., if a contig has a misassembly with respect to the reference, the contig is broken into smaller pieces. This metric is computed only if a reference genome is provided. LGA50: LG50 where aligned blocks are counted instead of contigs. i.e., if a contig has a misassembly with respect to the reference, the contig is broken into smaller pieces
-:::
-
+The full lineage for E. coli is: 
 ```bash
-    quast assembly_clean.fa
-    quast assembly_clean.fa -r reference.fa
+Lineage (full): cellular organisms; Bacteria; Pseudomonadati; Pseudomonadota; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Escherichia; Escherichia coli
 ```
 
+### BUSCO using Bacteria lineage
 
-## References
+In this first run we will use the **Bacteria** lineage to assess the completeness of our genome assembly. 
 
-* Buchfink, B., C. Xie, and D. H. Huson, 2014 Fast and sensitive protein alignment using DIAMOND. Nature Methods 12: 59–60. 10.1038/nmeth.3176
-* Challis, R., E. Richards, J. Rajan, G. Cochrane, and M. Blaxter, 2020 BlobToolKit – Interactive Quality Assessment of Genome Assemblies. G3 Genes\vertGenomes\vertGenetics 10: 1361–1374. 10.1534/g3.119.400908
-* Koren, S., B. P. Walenz, K. Berlin, J. R. Miller, N. H. Bergman et al., 2017 Canu: scalable and accurate long-read assembly via adaptive \lessi\greaterk\less/i\greater-mer weighting and repeat separation. Genome Research 27: 722–736. 10.1101/gr.215087.116
-* Li, H., 2018 Minimap2: pairwise alignment for nucleotide sequences (I. Birol, Ed.). Bioinformatics 34: 3094–3100. 10.1093/bioinformatics/bty191
-* Simão, F. A., R. M. Waterhouse, P. Ioannidis, E. V. Kriventseva, and E. M. Zdobnov, 2015 BUSCO: assessing genome assembly and annotation completeness with single-copy orthologs. Bioinformatics 31: 3210–3212. 10.1093/bioinformatics/btv351
+* Pay attention that you run BUSCO in genome mode.  
+* Select the appropriate lineage for your genome assembly.  
+* Run the tool to generate the BUSCO report.
+
+![](/pages/annotation/images/busco_g1.png)
+
+=> Look at the result by clicking on <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scan eye"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M5 12s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5"/></svg> on the `Busco Short summary` line in your history on the right side.
+
+::: {.callout-caution collapse="true"}
+## Question: Can you tell me how many BUSCO genes contains the data set used? And how many genome have been used to determine them?
+Number of genomes: 3130, number of BUSCOs: 116)
+:::
+
+::: {.callout-caution collapse="true"}
+## What is the Completeness of the assembly?
+C:98.3%[S:98.3%,D:0.0%],F:0.0%,M:1.7%,n:116,E:8.8%
+:::
+
+### BUSCO using Bacteria Enterobacteriaceae lineage
+
+![](/pages/annotation/images/busco_g2.png)
+
+::: {.callout-caution collapse="true"}
+## Question: Can you tell me how many BUSCO genes contains the data set used? And how many genome have been used to determine them?
+number of genomes: 107, number of BUSCOs: 874
+:::
+
+::: {.callout-caution collapse="true"}
+## What is the Completeness of the assembly?
+C:100.0%[S:99.8%,D:0.2%],F:0.0%,M:0.0%,n:874,E:1.0%
+:::
+
+::: {.callout-caution}
+## Do you have an idea why the result is less good at Bacteria level while we are checking against less BUSCOs genes?
+This is inherent  to the way BUSCO genes are selected. They have to be in at least 90% Of the genomes within the lineage to be considered as BUSCOs. So more species we have in a lineage less speci 
+:::
+
+## CheckM2
+
+CheckM2 is a machine-learning tool designed to assess the quality of metagenome-assembled genomes (MAGs) by estimating their completeness and contamination.
+First, it uses Prodigal to predict coding sequences and proteins, and it extracts general genomic features such as genome size, coding density, GC content, and contig N50. It also uses DIAMOND to compare predicted proteins against a reference database associated with KEGG Orthology functional annotations.
+These genomic and functional features are then used as inputs to machine-learning models trained to predict genome completeness and contamination.
+For example, the model can learn from genomes with known quality levels and use the relationships between their genomic features and their completeness or contamination to make predictions for new genomes.
+Therefore, unlike traditional approaches that rely heavily on specific marker genes, CheckM2 uses a broader range of genomic and functional information to assess genome quality.
+
+* Search for the `CheckM2` tool in Galaxy ![](/pages/images/galaxy/tools.png)
+
+* Run CheckM2 with default values on your assembly.
+
+=> Look at the result by clicking on <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scan eye"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M5 12s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5"/></svg> on the `checkm2 Quality report` line in your history on the right side.
+
+::: {.callout-caution collapse="true"}
+## What is the Completeness of the assembly?
+100.0	
+:::
+::: {.callout-caution collapse="true"}
+## What is the contamination of the assembly?
+0.54
+:::
+
+Interestingly, it provides a first glimpse into the gene content of the assembly (via prodigal). But keep in mind that this is only a preliminary prediction and further annotation steps are necessary to obtain a comprehensive understanding of the gene content.
+
+::: {.callout-caution collapse="true"}
+## How many genes were predicted?
+5139
+:::
+
+<hr>
+
+::: {.callout-note}
+## The Snail Plot 
+
+[Snail plots are badges of genome assembly quality](https://academic.oup.com/g3journal/article/16/6/jkag074/8606825).
+
+You can find an example of such interactive snail plot [here](https://juke34.github.io/assembly-stats/).  
+You can find a protocol to generate such plot via galaxy [here](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/ERGA-post-assembly-QC/tutorial.html#genome-assembly-overview-with-blobtoolkit). In principle, generating this plot requires just a single command line. However, the Galaxy implementation makes the process less straightforward, as it requires you to perform an additional, computationally intensive contamination analysis before generating the plot.
+
+example of a snail plot is shown below:  
+
+![](/pages/annotation/images/snail_plot.png){width="600"}
+:::

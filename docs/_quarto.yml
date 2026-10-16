@@ -39,6 +39,8 @@ website:
         menu:
           - text: Introduction
             href: pages/annotation/annotation-1-introduction.md
+          - text: Data preparation
+            href: pages/annotation/get_data.md
           - text: QC pre annotation
             href: pages/annotation/qc_pre.md
           - text: Structural annotation - Eukaryotes (Lecture)
@@ -69,6 +71,12 @@ website:
         menu:
           - text: PanExplorer
             href: pages/panexplorer/panexplorer.md
+      - text: Shotgun Metagenomics
+        menu:
+          - text: Taxonomic profiling
+            href: pages/mg_shotgun/taxonomic_profiling.md
+          - text: MAG assembly and binning
+            href: pages/mg_shotgun/binning.md
 
       
       - text:  Cheat sheets
