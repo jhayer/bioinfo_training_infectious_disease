@@ -1,11 +1,11 @@
 # Quality Check of a Genome Annotation
 
 ::: {.callout-note}
-**Time:** 60 min
+**Time:** 30 min
 
 **Objectives:** Be able to assess the quality of an annotation, and compare against an existing reference annotation.
 
-**Tools:** [AGAT](https://github.com/NBISweden/AGAT), [Jbrowse2](https://jbrowse.org/jb2/) or IGV(https://igv.org), [BUSCO](https://busco.ezlab.org)
+**Tools:** [AGAT](https://github.com/NBISweden/AGAT), [BUSCO](https://busco.ezlab.org), [checkM2](https://github.com/chklovski/CheckM2)
 :::
 
 ## Foreword

@@ -1,0 +1,52 @@
+GCF_964200005.1_327_BP0021B_scaffolds_genomic.fna.gz
+
+# BUSCO
+
+## Protein mode 
+
+Mode protein Bacteria_odb12 
+    
+    C:99.1%[S:99.1%,D:0.0%],F:0.0%,M:0.9%,n:116	   
+	115	Complete BUSCOs (C)			   
+	115	Complete and single-copy BUSCOs (S)	   
+	0	Complete and duplicated BUSCOs (D)	   
+	0	Fragmented BUSCOs (F)			   
+	1	Missing BUSCOs (M)			   
+	116	Total BUSCO groups searched	
+
+Mode protein enterobacteriaceae_odb12
+
+	C:99.8%[S:99.7%,D:0.1%],F:0.1%,M:0.1%,n:874	   
+	872	Complete BUSCOs (C)			   
+	871	Complete and single-copy BUSCOs (S)	   
+	1	Complete and duplicated BUSCOs (D)	   
+	1	Fragmented BUSCOs (F)			   
+	1	Missing BUSCOs (M)			   
+	874	Total BUSCO groups searched
+
+
+  
+# BAKTA
+
+Annotation:
+tRNAs: 86
+tmRNAs: 1
+rRNAs: 22
+ncRNAs: 202
+ncRNA regions: 54
+CRISPR arrays: 1
+CDSs: 5187
+pseudogenes: 7
+hypotheticals: 95
+signal peptides: 0
+sORFs: 73
+gaps: 0
+oriCs: 2
+oriVs: 3
+oriTs: 2
+
+=> dans cours d'annotaiton creuser les différents éléments e.g. oriX.
+
+q? Do you see any Antimicrobial gene?
+
+=> functional annotation from AGAT cannot be used!

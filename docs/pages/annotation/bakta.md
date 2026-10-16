@@ -14,101 +14,89 @@
 
 ## Foreword
 
-For annotating bacterial contigs, several tools exists to do that: Prokka (Seemann 2014), Bakta (Schwengers et al. 2021), etc. Here, we use Bakta as recommended by Torsten Seemann avatar Torsten Seemann as the successor of Prokka.
+Prokka (Seemann 2014) has been widely used for bacterial genome annotation, but Bakta (Schwengers et al. 2021) is now recommended as its successor.
 
-Bakta is a tool for the rapid & standardized annotation of bacterial genomes and plasmids from both isolates and metagenome-assembled genomes (MAGs). It implements a comprehensive annotation workflow for coding and non-coding genes (i.e. tRNA, rRNA).
+Bakta is a tool for the comprehensive & standardized annotation of bacterial genomes and plasmids from both isolates and metagenome-assembled genomes (MAGs). It implements a comprehensive annotation workflow for coding and non-coding genes (i.e. tRNA, rRNA).
+Bakta is a complex workflow involving numerous steps and, despite the small size of bacterial genomes, may seem slow. Nevertheless, it generally takes less than 10 minutes to process an E. coli genome using eight CPU.
 
-It is also able to detect and annotate small proteins (sORF). Predicted CDS are annotated using an alignment-free protein sequence identification approach with cross-references to public databases via stable identifiers.
 
-
-![bakta](../images/bakta_wf.png)
+![bakta](/pages/annotation/images/bakta_wf.png){width=900}
 
 ## Running bakta
 
-Launch bakta in genome mode with keeping the contig header
+* Search for the `Bakta` tool in Galaxy ![](/pages/images/galaxy/tools.png)
 
-```bash
-    # get help
-    bakta --help
-    # get databases list
-    bakta_db list
-    # downloading a database
-    bakta_db download --output path/to/bd/ --type light
-    # annotating a bacteria genome
-    bakta --db /path/to/db/db-light/ assembly.fa --threads 8 --output annot_bakta
-```
+* Select your genome assembly.
 
-::: {.callout-note title="docker"}
-```bash
-# get the tool
-docker pull quay.io/biocontainers/bakta:1.9.2--pyhdfd78af_1
-# call the help
-docker run --rm quay.io/biocontainers/bakta:1.9.2--pyhdfd78af_1 bakta
-# get databases list
-docker run --rm -v .:/data quay.io/biocontainers/bakta:1.9.2--pyhdfd78af_1 bash -c "cd data && bakta_db list"
-# downloading a database
-docker run --rm -v .:/data quay.io/biocontainers/bakta:1.9.2--pyhdfd78af_1 bash -c "cd data && bakta_db download --output path/to/bd/ --type light"
-# annotating a bacteria genome
-docker run --rm -v .:/data quay.io/biocontainers/bakta:1.9.2--pyhdfd78af_1 bash -c "cd data && bakta_db download --output path/to/bd/ --type light"
-```
+* In the `Optional annotation` section, activate `Force Genbank/ENA/DDJB compliance` 
+
+![](/pages/annotation/images/bakta/compliant.png)
+
+* In the `Selection of the output files` section, select the desired output files as follows:
+
+![](/pages/annotation/images/bakta/output_files.png)
+
+=> Look at the result by clicking on <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scan eye"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M5 12s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5"/></svg> on the `Bakta Summary (TXT)` line in your history on the right side.
+
+::: {.callout-caution collapse="true"}
+## What is the coding density?
+89.1 In bacteria this values is usually high due to the compact nature of bacterial genomes.
 :::
 
-::: {.callout-note title="singularity"}
-```bash
-# get the container
-singularity build bakta_v1.9.2.sif docker://quay.io/biocontainers/bakta:1.9.2--pyhdfd78af_1
-# call the help
-singularity run bakta_v1.9.2.sif bakta
-# get databases list
-singularity run bakta_v1.9.2.sif bakta_db list
-# downloading a database
-singularity run bakta_v1.9.2.sif bakta_db download --output path/to/bd/ --type light
-# annotating a bacteria genome
-singularity run bakta_v1.9.2.sif bakta --db /path/to/db/db-light/ assembly.fa --threads 8 --output annot_bakta
-```
+::: {.callout-caution collapse="true"}
+## How many genes were predicted?
+That’s a trick question... Genes are genomic sequence that produces a functional product, which can be an RNA or a protein.
+So depending if you consider sORFs, hypotheticals and pseudognes as producing functional products, the number of predicted genes may vary.
+Let's keep it simple and count only genes well defined...
+tRNAs: 92  
+tmRNAs: 1  
+rRNAs: 22  
+ncRNAs: 188  
+ncRNA regions: 62  
+CDSs: 5119  
+
+Total = 5484
 :::
 
-::: {.callout-note title="module load"}
-```bash
-# load module 
-module load bakta/1.9.2
-# get databases list
-bakta_db list
-# downloading a database
-bakta_db download --output path/to/bd/ --type light
-# annotating a bacteria genome
-bakta --db /path/to/db/db-light/ assembly.fa --threads 8 --output annot_bakta
-```
+We can observe that many components have been annotated successfully, providing a comprehensive overview of the genomic features.
+
+
+=> Now look at the result by clicking on <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scan eye"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M5 12s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5"/></svg> on the `Bakta Summary` line in your history on the right side.
+
+This represent a simplify view of the annotation results that is encoded in GFF3 file format that we will explore next.
+
+::: {.callout-caution collapse="true"}
+## Can you identify external resources that have been used for functional annotation?
+GO, UniParc, UniRf, RefSeq, SO, RFAM, COG, VFDB, etc.
 :::
 
-On the analysis summary output ... 
 
-::: {.callout-question}
-How many contigs have been provided as input?
-How long is the draft genome?
-How many CDSs have been found?
-How many small proteins?
-Which other components have been found?
+=> Not look at the result by clicking on <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scan eye"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M5 12s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5"/></svg> on the `Annotation and sequences (gff3)` line in your history on the right side.
+
+::: {.callout-caution collapse="true"}
+## Can you identify in wich attributes of the 9th column of the GFF3 file the functional annotation information is stored?
+Name, product, Dbxref, Note.
 :::
 
-Observe the annotation gff3 file
+Bakta provides annotation in flat file format correspondong to INSDC standard for two major public archives: EBI (European Bioinformatics Institute) and NCBI (National Center for Biotechnology Information).
 
-::: {.callout-question}
-How many features are annotated?
+::: {.callout-caution collapse="true"}
+## What are these files?
+The EMBL format file for EBI and Genbank format file for NCBI.
+For your submission to EBI, you can directly use the EMBL format file. 
+For your submission to NCBI, a conversion into ASN.1 (.sqn) format is required using the tbl2asn tool.
 :::
 
 
 ::: {.callout-note}
-gff3 created by bakta contains features and also sequence fasta information
-:::
 
+Bakta gives a lot of information already, especially regarding CDSs or RNAs, but some structural annotation might be missing, e.g. plasmids, or interesting things to identify independently.
 
-Control the annotation quality using the [QC post](qc_post.md) annotation tuto.
-
-Bakta gives a lot of information already, especially regarding CDSs or RNAs, but some structural annotation might be missing, e.g. plasmids, or interesting to identify independently.
-
-* Plasmids: To identify plasmids in contigs, use PlasmidFinder (Carattoli and Hasman 2020), a tool for the identification and typing of plasmid sequences in Whole-Genome Sequencing. It uses the plasmidfinder database with hundreds of sequences to predict the plasmid in the data.
+* Plasmids: 
+If you already know which sequences are plasmids, you can supply a replicon metadata table using --replicons.
+To identify plasmids in contigs, use PlasmidFinder (Carattoli and Hasman 2020), a tool for the identification and typing of plasmid sequences in Whole-Genome Sequencing. It uses the plasmidfinder database with hundreds of sequences to predict the plasmid in the data.
 
 * Integrons : Integrons are genetic mechanisms that allow bacteria to adapt and evolve rapidly through the stockpiling and expression of new genes. To detect integrons, you can use IntegronFinder (Néron et al. 2022)
 
 * Insertion Sequence elements IS : is a short DNA sequence that acts as a simple transposable element. IS are the smallest but most abundant autonomous transposable elements in bacterial genomes. They only code for proteins implicated in the transposition activity. They play then a key role in bacterial genome organization and evolution. To detect IS elements, use ISEScan (Xie and Tang 2017). ISEScan is a highly sensitive software pipeline based on profile hidden Markov models constructed from manually curated IS elements. 
+:::

@@ -1,7 +1,7 @@
 # Get data and information
 
 ::: {.callout-note}
-**Time:** 15 min
+**Time:** 20 min
 
 **Objectives:** Be able to upload data needed.
 
