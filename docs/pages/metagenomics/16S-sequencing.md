@@ -1,26 +1,26 @@
 ---
-title: "Building and exploring an ASV table from 16S data using QIIME 2 in Galaxy"
+title: "Building an ASV table from 16S data using DADA2 in Galaxy"
 ---
 
 ::: {.callout-note title="Lesson overview"}
 **Questions**
 
-- What are the primary steps involved in generating an ASV table from 16S rRNA gene sequencing data with QIIME 2?
+- What are the primary steps involved in generating an ASV table from 16S rRNA gene sequencing data?
 - How does denoising (DADA2) improve the accuracy of microbial community analysis compared to traditional OTU-based methods?
 - Why are quality inspection and read truncation important, and how do they impact downstream analyses?
-- How can we assign taxonomy to ASVs and explore the diversity of the samples?
+- How can we assign taxonomy to ASVs and prepare them for diversity analysis?
 
 **Objectives**
 
-- Import paired-end FASTQ files into QIIME 2 artifacts in Galaxy
-- Choose truncation parameters from the read quality profiles
-- Denoise the reads with **qiime2 dada2 denoise-paired** to produce an ASV table
-- Assign taxonomy with a pre-trained naive Bayes classifier
-- Compute and compare alpha and beta diversity between groups of samples
+- Inspect the quality of paired-end 16S reads and choose truncation parameters
+- Run the DADA2 pipeline step by step in Galaxy: filter and trim, learn error rates, denoise, merge pairs, remove chimeras
+- Track the number of reads kept at each step
+- Assign taxonomy with the DADA2 naive Bayesian classifier and the SILVA database
+- Build a phyloseq object for the diversity analysis
 :::
 
 ::: {.callout-note title="Sources"}
-This tutorial is adapted from the Galaxy Training Network tutorial [Building an amplicon sequence variant (ASV) table from 16S data using DADA2](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/dada-16S/tutorial.html) (Bérénice Batut et al.), rewritten to use the **QIIME 2** tools available on [Galaxy Australia](https://usegalaxy.org.au/). It also uses information from [Metabarcoding of bacteria in dunnart faecal samples across Australia (wild + captive) using QIIME 2](https://training.galaxyproject.org/topics/microbiome/tutorials/dunnart_metabarcoding/tutorial.html). It also draws on the [QIIME 2 "Moving Pictures" tutorial](https://docs.qiime2.org/). Some graphics comes from [a note in microbenotes](https://microbenotes.com/16s-rrna-gene-sequencing/). 
+This tutorial is adapted from the Galaxy Training Network tutorial [Building an amplicon sequence variant (ASV) table from 16S data using DADA2](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/dada-16S/tutorial.html) (Bérénice Batut et al.), applied to a human gut dataset and run on [Galaxy Australia](https://usegalaxy.org.au/). Some graphics come from [a note in microbenotes](https://microbenotes.com/16s-rrna-gene-sequencing/).
 :::
 
 # Introduction
@@ -31,6 +31,8 @@ for example the 16S rRNA gene (or a part of it) in bacteria, is amplified from D
 and then sequenced on a next-generation sequencing platform. This technique removes the need to culture
 microbes in order to detect their presence, and cost-effectively provides a deep census of a microbial community.
 
+![16S rRNA gene sequencing workflow](images/16S-workflow.png)
+
 # What is the 16S ribosomal RNA gene ? 
 
 ![16s-diversity](images/16s-variable-region.png)
@@ -39,22 +41,16 @@ microbes in order to detect their presence, and cost-effectively provides a deep
 
 # How to process 16S amplicon sequencing data ? 
 
-To process 16S amplicon sequencing data, several tools exist: **QIIME 2** ([Bolyen et al. 2019](https://doi.org/10.1038/s41587-019-0209-9)), **Mothur**, **Lotus2** and **DADA2** ([Callahan et al. 2016](https://doi.org/10.1038/nmeth.3869)). All these tools can be used in Galaxy. In this tutorial we will use **QIIME 2**.
+To process 16S amplicon sequencing data, several tools exist: **QIIME 2** ([Bolyen et al. 2019](https://doi.org/10.1038/s41587-019-0209-9)), **Mothur**, **Lotus2** and **DADA2** ([Callahan et al. 2016](https://doi.org/10.1038/nmeth.3869)). All these tools can be used in Galaxy. In this tutorial we will use **DADA2**.
 
-**QIIME 2** is not a single algorithm but a platform that wraps many methods as *plugins*. Here we will use, among others:
-
-- **q2-dada2**, to denoise the reads with the DADA2 algorithm
-- **q2-feature-classifier** ([Bokulich et al. 2018](https://doi.org/10.1186/s40168-018-0470-z)), to assign taxonomy
-- **q2-phylogeny** and **q2-diversity**, to build a tree and compute diversity metrics
+In Galaxy, each function of the DADA2 R package is available as a separate tool (**dada2: filterAndTrim**, **dada2: learnErrors**, **dada2: dada**…). Running them one by one lets us look at the result of every step of the pipeline.
 
 ## ASVs instead of OTUs
 
-The output of the denoising step is a feature table of amplicon sequence variants (an ASV table): a matrix with columns corresponding to samples and rows to ASVs, in which the value of each entry is the number of times that ASV was observed in that sample. This table is analogous to the traditional OTU table, except that one gets the actual sequences of the "true" sequence variants instead of rather anonymous and abstract entities called OTU1, OTU2, etc.
+The output of the DADA2 pipeline is a feature table of amplicon sequence variants (an ASV table): a matrix with rows corresponding to samples and columns to ASVs, in which the value of each entry is the number of times that ASV was observed in that sample. This table is analogous to the traditional OTU table, except that one gets the actual sequences of the "true" sequence variants instead of rather anonymous and abstract entities called OTU1, OTU2, etc.
 
 The process of amplicon sequencing introduces errors into the sequencing data, and these errors
 severely complicate the interpretation of the results. **DADA2** implements an algorithm that models the errors introduced during amplicon sequencing, and uses that error model to infer the true sample composition. As shown in the DADA2 paper and in [further benchmarking](http://benjjneb.github.io/dada2/SotA.html), this method is more sensitive and specific than traditional OTU methods: it detects real biological variation missed by OTU methods while outputting fewer spurious sequences.
-
-In QIIME 2, the whole DADA2 pipeline (filter and trim, learn error rates, denoise, merge pairs, remove chimeras) is run by **one** tool: **qiime2 dada2 denoise-paired**.
 
 ## The dataset
 
@@ -74,10 +70,9 @@ The authors collected stool samples from **19 children and young adults with UC*
 
 ### What did the authors do?
 
-Their 16S workflow is very close to the one we will follow:
-
-1. **QIIME 2** with **DADA2** to denoise the reads into ASVs
-2. Taxonomy assigned with a **naive Bayes classifier trained on SILVA 138 (99%, 515F/806R region)**, the same classifier we will use
+1. **DADA2**  to denoise the reads into ASVs, as we will do here with the Galaxy DADA2 tools.
+2. Taxonomy assigned with a **naive Bayes classifier** on the **SILVA 138** database. We will use the DADA2 implementation of the same type of classifier, also with SILVA
+3. **Alpha diversity** with the Shannon index, and **beta diversity** with Bray–Curtis distances and PCoA (see the diversity analysis page)
 
 ### Our subset
 
@@ -107,7 +102,7 @@ With only 4 samples, we can learn every step of the workflow, but statistical te
 
 ## Import the reads from SRA
 
-QIIME 2 expects a set of **demultiplexed** FASTQ files: one forward and one reverse file per sample. It also expects that there are no non-biological bases (primers, adapters) in the reads: in this dataset, the primers are not present in the reads.
+DADA2 expects a set of **demultiplexed** FASTQ files: one forward and one reverse file per sample. It also expects that there are no non-biological bases (primers, adapters) in the reads: in this dataset, the primers are not present in the reads.
 
 As in the Galaxy introduction, we download the reads directly from the SRA with their accession numbers.
 
@@ -133,7 +128,7 @@ As in the Galaxy introduction, we download the reads directly from the SRA with 
 The tool creates a **list of dataset pairs**: one element per sample, named with its SRA accession (e.g. `SRR15702564`), containing a forward and a reverse file.
 
 ::: {.callout-note title="Sample names matter"}
-QIIME 2 links reads, tables and metadata through **sample IDs**. Here the sample IDs are the **SRA accessions** (the names of the elements of the collection). We will use exactly the same IDs in the metadata table later.
+The DADA2 tools name the samples after the **element identifiers** of the collection, here the **SRA accessions**. We will use exactly the same names in the metadata table later.
 :::
 
 :::: {.callout-important title="Question: Read lengths" collapse="true"}
@@ -144,45 +139,74 @@ No. The two pairs of samples were not sequenced in the same run: the forward rea
 :::
 ::::
 
-# Inspect read quality
+## Sort the collection
 
-Before denoising, we look at the quality of the reads to decide where to truncate them.
+Some DADA2 tools process the samples one after the other in a single job and expect the collection to be sorted.
 
-::: {.callout-tip title="Summarize the reads"}
+::: {.callout-tip title="Sort the collection"}
+1. Open **Sort collection** with:
+    - *"Input Collection"*: `16S Raw Reads`
+    - *"Sort type"*: `alphabetical`
+2. Rename the output `Sorted Raw Reads`
+:::
+
+# Processing data using DADA2
+
+Once demultiplexed FASTQ files without non-biological nucleotides are in hand, the **DADA2** pipeline proceeds as follows:
+
+1. Prepare reads
+    1. Inspect read quality profiles
+    2. Filter and trim
+    3. Learn the error rates
+    4. Infer sample composition
+    5. Merge forward/reverse reads
+2. Construct sequence table
+    1. Make sequence table
+    2. Remove chimeras
+3. Assign taxonomy
+
+# Prepare reads
+
+## Inspect read quality profiles
+
+Before filtering, we look at the quality of the reads to decide where to truncate them.
+
+::: {.callout-tip title="Inspect read quality profiles"}
 1. Open **dada2: plotQualityProfile** with:
-    - Processing mode”: Joint
-    -  “Paired short read data”: **16S Raw Reads**
-    - “Aggregate data”: No
+    - *"Processing mode"*: `Joint`
+        - *"Paired reads"*: `paired - in a data set pair`
+            - *"Paired short read data"*: `Sorted Raw Reads`
+        - *"Aggregate data"*: `No`
+    - *"sample number"*: `10000000`
 2. Click **Run Tool**
 :::
 
-::: {.callout-note title="Import errors"}
-- Galaxy doesn't visualize QIIME 2 `.qzv` file.
-You need to first download the file, and import it in [qiime2-view website](https://view.qiime2.org/)
-:::
+**dada2: plotQualityProfile** generates 2 PDF files with the quality profiles of each sample: one for the forward reads and one for the reverse reads.
 
-
+In gray-scale is a heatmap of the frequency of each quality score at each base position. The mean quality score at each position is shown by the green line, and the quartiles of the quality score distribution by the orange lines. The red line shows the scaled proportion of reads that extend to at least that position.
 
 :::: {.callout-important title="Question: Where to truncate?" collapse="true"}
-Inspect **plotQualityProfile forward read** output:
+Inspect the forward and reverse outputs of **plotQualityProfile**:
 
 1. Are the forward reads good quality?
 2. We generally advise trimming the last few nucleotides to avoid less well-controlled errors that can arise there. What would you recommend as truncation position for the forward reads?
 3. Are the reverse reads good quality?
 4. What would you recommend as truncation position for the reverse reads?
+5. Look at the red line of the reverse reads of `SRR15702564`. What does it show?
 
 ::: {.callout-tip title="Answer" collapse="true"}
 1. The forward reads are good quality over most of their length.
 2. We will truncate the forward reads at position **145**, trimming the last few nucleotides.
 3. The reverse reads are of worse quality, especially at the end, which is common in Illumina sequencing. DADA2 incorporates quality information into its error model, but trimming the low-quality end improves its sensitivity to rare sequence variants.
 4. We will truncate the reverse reads at position **135**. This is also below the length of the shortest reverse reads (140 bp), so no sample loses all its reads.
+5. The red line drops at position 140: no read of this sample is longer than 140 bp.
 
 We cannot truncate much more than this: the reads must still overlap to be merged (see below).
 :::
 ::::
 
 ::: {.callout-note title="Truncation and read overlap"}
-Your reads must still overlap after truncation in order to be merged! DADA2 requires at least **12 nucleotides of overlap**, plus some margin for the natural length variation of the amplicon.
+Your reads must still overlap after truncation in order to be merged! DADA2 requires at least **12 nucleotides of overlap** by default, plus some margin for the natural length variation of the amplicon. The longer the overlap, the more robust the merging.
 
 In this dataset, the primers are not in the reads, so the reads cover the region **between** the primers: about **253 bp** for V4. With 2 × 150 bp reads, the room for truncation is small:
 
@@ -197,98 +221,244 @@ So with short reads, the truncation is guided by the overlap as much as by the q
 :::
 
 ::: {.callout-warning title="Check that the primers are really absent"}
-If the primers were still in the reads, the sequenced fragment would be ~292 bp, and 2 × 150 bp reads would overlap by only ~8 bp: almost no reads would merge. You can check it by searching the beginning of the forward reads for the 515F primer (`GTGYCAGCMGCCGCGGTAA`). If you find it, remove the primers with **qiime2 cutadapt trim-paired** before denoising.
+If the primers were still in the reads, the sequenced fragment would be ~292 bp, and 2 × 150 bp reads would overlap by only ~8 bp: almost no reads would merge. You can check it by searching the beginning of the forward reads for the 515F primer (`GTGYCAGCMGCCGCGGTAA`). If you find it, remove the primers with **Cutadapt**, or with the *"Trim start of reads"* parameter of **dada2: filterAndTrim** (19 bp for the forward primer, 20 bp for the reverse primer).
 :::
 
-## QIIME 2 artifacts and visualizations
+## Filter and trim
 
-QIIME 2 does not work directly on FASTQ or tabular files. Every piece of data is stored in an **artifact**, a zipped archive with the extension **`.qza`**. An artifact contains the data, its *semantic type* (what the data represents, e.g. `FeatureTable[Frequency]`) and its *provenance* (the full history of how it was produced).
-
-Results meant to be looked at are stored in **visualizations**, with the extension **`.qzv`**.
-
-| Extension | Name | Contains | How to look at it |
-|---|---|---|---|
-| `.qza` | Artifact | Data (reads, tables, trees…) | Used as input of other QIIME 2 tools |
-| `.qzv` | Visualization | Plots, tables, interactive views | 👁️ (eye) icon in Galaxy, or [view.qiime2.org](https://view.qiime2.org) |
-
-::: {.callout-note title="Viewing a .qzv file"}
-In Galaxy, click the 👁️ (eye) icon of a `.qzv` dataset to open it. If it does not display, download it (💾 icon) and drag it onto [view.qiime2.org](https://view.qiime2.org): the file is opened in your browser, nothing is uploaded.
-:::
-
-## Import the collection into QIIME 2
-
-::: {.callout-tip title="Import the reads as a QIIME 2 artifact"}
-1. Open the **qiime2 tools import-fastq** tool with the following parameters:
-    - *"Import"*: select the `16S Raw Reads` collection
+::: {.callout-tip title="Filter and trim"}
+1. Open **dada2: filterAndTrim** with:
+    - *"Paired reads"*: `paired - in a data set pair`
+        - *"Paired short read data"*: `Sorted Raw Reads`
+    - In *"Trimming parameters"*:
+        - *"Truncate read length"*: `145`
+    - In *"Filtering parameters"*:
+        - *"Remove reads by number expected errors"*: `2`
+    - *"Separate filters and trimmers for reverse reads"*: `Yes`
+        - In *"Trimming parameters"*:
+            - *"Truncate read length"*: `135`
+        - In *"Filtering parameters"*:
+            - *"Remove reads by number expected errors"*: `2`
 2. Click **Run Tool**
-3. Rename the output `demux.qza`
 :::
 
-# Denoising with DADA2
+The *"Remove reads by number expected errors"* parameter (`maxEE`) sets the maximum number of **expected errors** allowed in a read. The expected errors of a read are the sum of the error probabilities of its bases (10^(−Q/10) for a quality score Q), [a better filter than simply averaging quality scores](https://academic.oup.com/bioinformatics/article/31/21/3476/194979).
 
-Trimmed sequences are processed using the DADA2 plugin within QIIME2. DADA2 denoises data by modelling and correcting Illumina amplicon sequencing errors, and infers exact amplicon sequence variants (ASVs), resolving differences of as little as a single nucleotide. Its workflow includes filtering, dereplication, paired-end read merging, and reference-free chimera detection, resulting in a feature (ASV) table.
+**dada2: filterAndTrim** generates 2 outputs:
 
-For paired-end data, an additional and critical consideration is read overlap. After truncation, the forward and reverse reads must still overlap sufficiently to merge. While the absolute minimum overlap is ~12 bp, an overlap of ~50 bp is recommended to ensure robust merging and reduce the risk of losing reads during this step. As a result, truncation lengths are often chosen by balancing two factors: maintaining high-quality sequence and preserving enough overlap for successful merging.
+- a paired collection named `Paired reads` with the trimmed and filtered reads
+- a collection with statistics for each sample (`reads.in` and `reads.out`)
 
+:::: {.callout-important title="Question: Filtering" collapse="true"}
+1. How many reads were in `SRR15702564` before filtering and trimming?
+2. How many reads are left after filtering and trimming?
 
-**qiime2 dada2 denoise-paired** runs the whole DADA2 pipeline on each sample:
+::: {.callout-tip title="Answer" collapse="true"}
+In the `SRR15702564` element of the statistics collection, look at `reads.in` and `reads.out`. The sample has 48,965 read pairs before filtering.
+<!-- TODO: add reads.out from your own run -->
+:::
+::::
 
-1. **Filter and trim**: truncate the reads at the chosen positions and remove reads with too many *expected errors*
-2. **Learn the error rates**: DADA2 learns a parametric error model from the data itself (every sequencing run has different error rates)
-3. **Denoise**: the core algorithm uses this model to infer the true sequences present in each sample
-4. **Merge pairs**: forward and reverse denoised reads are aligned and merged into full-length sequences. By default they must overlap by at least 12 bases and be identical in the overlap
-5. **Remove chimeras**: chimeras are artefactual sequences made from two "parent" sequences during PCR. Thanks to the accuracy of ASVs, they can be identified as exact combinations of a left and a right segment of two more abundant sequences
-
-::: {.callout-tip title="Denoise the reads"}
-1. Open **qiime2 dada2 denoise-paired** with the following parameters:
-    - *"demultiplexed_seqs"*: `demux.qza`
-    - *"trunc_len_f"*: `145`
-    - *"trunc_len_r"*: `140`
-    - *"trim_left_f"*: `0`
-    - *"trim_left_r"*: `0`
-    - Leave the other parameters at their default values (*"max_ee_f"* / *"max_ee_r"*: `2`, *"chimera_method"*: `consensus`, *"pooling_method"*: `independent`)
-2. Click **Run Tool**
-3. Rename the outputs:
-    - `table.qza`: the ASV table (`FeatureTable[Frequency]`)
-    - `rep-seqs.qza`: the sequence of each ASV (`FeatureData[Sequence]`)
-    - `denoising-stats.qza`: the number of reads kept at each step
+::: {.callout-note title="Adjusting the filter"}
+The filtering parameters are starting points, not set in stone. If too few reads pass the filter, consider relaxing the value for the reverse reads (e.g. *"Remove reads by number expected errors"* to `5`). With 2 × 150 bp reads, truncating more is rarely an option: the reads would no longer overlap.
 :::
 
-::: {.callout-note title="The DADA2 parameters"}
-| Parameter | Meaning |
-|---|---|
-| `trunc_len_f` / `trunc_len_r` | Position at which forward / reverse reads are truncated. Reads shorter than this are discarded |
-| `trim_left_f` / `trim_left_r` | Number of bases removed at the start of the reads (e.g. to remove primers) |
-| `max_ee_f` / `max_ee_r` | Maximum number of **expected errors** allowed in a read, [a better filter than averaging quality scores](https://academic.oup.com/bioinformatics/article/31/21/3476/194979) |
-| `chimera_method` | How chimeras are detected: `consensus` (per sample, then consensus), `pooled`, or `none` |
-| `pooling_method` | `independent` processes each sample separately; `pseudo` shares information between samples to detect rare variants |
+To see the impact of filtering and trimming, we can inspect the quality profiles again and compare them to the ones before.
 
-These values are starting points, not set in stone. If too few reads pass the filter, consider relaxing `max_ee_r` (e.g. to `5`). With 2 × 150 bp reads, truncating more is rarely an option: the reads would no longer overlap.
+::: {.callout-tip title="Inspect read quality profiles after filterAndTrim"}
+1. Open **dada2: plotQualityProfile** with:
+    - *"Processing mode"*: `Joint`
+        - *"Paired reads"*: `paired - in a data set pair`
+            - *"Paired short read data"*: `Paired reads` output of **dada2: filterAndTrim**
+        - *"Aggregate data"*: `No`
+    - *"sample number"*: `10000000`
 :::
 
+:::: {.callout-important title="Question: Quality after filtering" collapse="true"}
+How did trimming and filtering change the quality profiles of the reverse reads?
 
+::: {.callout-tip title="Answer" collapse="true"}
+All reads now stop at position 135, so the low-quality end of the reverse reads has been removed, and the reads with too many expected errors are gone.
+:::
+::::
+
+## Learn the error rates
+
+The DADA2 algorithm makes use of a parametric error model (`err`), and every amplicon dataset has a different set of error rates. The **dada2: learnErrors** method learns this error model from the data, by alternating estimation of the error rates and inference of sample composition until they converge on a jointly consistent solution. The algorithm starts with an initial guess: the maximum possible error rates in the data (the error rates if only the most abundant sequence is correct and all the rest are errors).
+
+**dada2: learnErrors** expects a simple collection, not a paired collection. We first split the paired collection into 2 collections: one with the forward reads and one with the reverse reads.
+
+::: {.callout-tip title="Unzip the paired collection"}
+1. Open **Unzip collection** with:
+    - *"Paired input to unzip"*: `Paired reads` output of **dada2: filterAndTrim**
+2. Add the tag `#forward` to the `(forward)` collection
+3. Add the tag `#reverse` to the `(reverse)` collection
+:::
+
+::: {.callout-tip title="Learn the error rates"}
+1. Open **dada2: learnErrors** with:
+    - *"Short read data"*: the `#forward` output of **Unzip collection**
+2. Open **dada2: learnErrors** again with:
+    - *"Short read data"*: the `#reverse` output of **Unzip collection**
+:::
+
+Each run produces the error model and a plot of the error rates for each possible transition (A→C, A→G…) as a function of the quality score. The points are the observed error rates for each quality score, the black line the estimated error rates after convergence, and the red line the error rates expected from the nominal definition of the quality score.
+
+:::: {.callout-important title="Question: Error rates" collapse="true"}
+1. Are the estimated error rates (black line) a good fit to the observed rates (points) for the forward reads?
+2. What about the reverse reads?
+
+::: {.callout-tip title="Answer" collapse="true"}
+1. If the black line follows the points, and the error rates drop as the quality increases, the error model is reasonable and we can proceed with confidence.
+2. Check the same for the reverse reads.
+<!-- TODO: describe the plots from your own run -->
+:::
+::::
+
+::: {.callout-note title="Samples from several sequencing runs"}
+Each sequencing run has its own error profile. With samples from several runs, the recommended practice is to run **learnErrors**, **dada** and **mergePairs** separately for **each run**, with the same truncation parameters, and to combine the runs at the **makeSequenceTable** step. ASVs are exact sequences, so the same ASV found in two runs is merged automatically. To keep this tutorial short, we process our 4 samples (2 runs) together.
+:::
+
+## Infer sample composition
+
+In this step, the core sample inference algorithm ([Callahan et al. 2016](https://doi.org/10.1038/nmeth.3869)) is applied to the filtered and trimmed reads.
+
+For each sample, DADA2 first collapses identical reads into **unique sequences** with their abundance. It then starts with all unique sequences in a single partition, centred on the most abundant one. For every other unique sequence, it computes, with the error model, the probability of observing it that many times if it were only sequencing errors of the centre sequence. If this probability is too low, the sequence is too abundant to be an error: it becomes the centre of a new partition, i.e. a new **ASV**. The process is repeated until no new partition is created.
+
+::: {.callout-tip title="Sample inference"}
+1. Open **dada2: dada** with:
+    - *"Process samples in batches"*: `no`
+        - *"Reads"*: the `#forward` output of **Unzip collection**
+        - *"Pool samples"*: `process samples individually`
+    - *"Error rates"*: the `#forward` output of **dada2: learnErrors**
+2. Open **dada2: dada** again with:
+    - *"Process samples in batches"*: `no`
+        - *"Reads"*: the `#reverse` output of **Unzip collection**
+        - *"Pool samples"*: `process samples individually`
+    - *"Error rates"*: the `#reverse` output of **dada2: learnErrors**
+:::
+
+::: {.callout-note title="Batches and pooling"}
+- *"Process samples in batches"*: `no` starts a single Galaxy job in which the samples are processed one after the other (which is why we sorted the collection); `yes` starts one job per sample, which can be faster. Both give identical results when the samples are not pooled.
+- *"Pool samples"*: by default, each sample is processed independently. Pooling information across samples can increase the sensitivity to sequence variants present at low frequency in several samples:
+    - `pool samples`: all samples are pooled together for sample inference
+    - `pseudo pooling between individually processed samples`: samples are processed independently after sharing information between them, approximating pooled inference in linear time
+:::
+
+:::: {.callout-important title="Question: Sequence variants" collapse="true"}
+Click on an output collection of **dada2: dada**, then on the ℹ️ (*Dataset details*) icon of a sample, and expand *Tool Standard Output*.
+
+1. How many unique sequences are in the forward reads of `SRR15702564`?
+2. How many sequence variants have been inferred from these unique sequences?
+
+::: {.callout-tip title="Answer" collapse="true"}
+The standard output contains a line like `X reads in Y unique sequences` and `Z sequence variants were inferred from Y input unique sequences`. Many unique sequences are only sequencing errors of a few true sequences.
+<!-- TODO: add the numbers from your own run -->
+:::
+::::
+
+## Merge paired reads
+
+We now merge the forward and reverse reads to obtain the full denoised sequences. Merging is performed by aligning the denoised forward reads with the reverse-complement of the corresponding denoised reverse reads, and then constructing the merged "contig" sequences. By default, merged sequences are only kept if the forward and reverse reads overlap by at least **12 bases** and are **identical** in the overlap region.
+
+::: {.callout-tip title="Merge paired reads"}
+1. Open **dada2: mergePairs** with:
+    - *"Dada results for forward reads"*: the `#forward` output of **dada2: dada**
+    - *"Forward reads"*: the `#forward` output of **Unzip collection**
+    - *"Dada results for reverse reads"*: the `#reverse` output of **dada2: dada**
+    - *"Reverse reads"*: the `#reverse` output of **Unzip collection**
+    - *"Concatenated rather than merge"*: `No`
+    - *"Output detailed table"*: `Yes`
+:::
+
+:::: {.callout-important title="Question: Merging" collapse="true"}
+Inspect the `details` collection.
+
+1. What are the columns of the detail table?
+2. Look at the `nmatch` column. Is it consistent with the overlap expected from our truncation lengths?
+
+::: {.callout-tip title="Answer" collapse="true"}
+1. The table contains, for each merged sequence: the sequence, its abundance, the indices of the forward and reverse sequence variants that were merged, the number of matches, mismatches and indels in the overlap, and whether the merge was accepted. Paired reads that did not overlap exactly were removed, further reducing spurious output.
+2. Yes: with 145 + 135 bp reads on a ~253 bp region, the overlap is around **27 bases**.
+:::
+::::
+
+::: {.callout-note title="Not enough reads merged"}
+Most of the reads should merge. If that is not the case, check the truncation lengths: did you trim away the overlap between your reads?
+:::
+
+# Construct the sequence table
+
+## Make sequence table
+
+We now construct the ASV table, a higher-resolution version of the OTU table produced by traditional methods.
+
+::: {.callout-tip title="Make sequence table"}
+1. Open **dada2: makeSequenceTable** with:
+    - *"samples"*: output of **dada2: mergePairs**
+    - *"Length filter method"*: `No filter`
+:::
+
+**dada2: makeSequenceTable** generates 2 outputs:
+
+1. A **sequence table**: a matrix with one row per sequence variant (named by its sequence) and one column per sample
+2. An image with the **distribution of the sequence lengths**
+
+:::: {.callout-important title="Question: Exploring the ASV table" collapse="true"}
+1. How many ASVs have been identified?
+2. What is the range of the merged sequence lengths? Does it make sense for a V4 amplicon?
+
+::: {.callout-tip title="Answer" collapse="true"}
+1. Count the lines of the sequence table: each line, except the header, is an ASV.
+2. Most sequences should be around **251–255 bp**, the expected size of the V4 region between the primers.
+<!-- TODO: add the number of ASVs from your own run -->
+:::
+::::
+
+::: {.callout-note title="Sequences too long or too short"}
+Sequences much longer or shorter than expected may be the result of non-specific priming. They can be removed with the *"Length filter method"* parameter of **dada2: makeSequenceTable**, the "cutting a band" in-silico equivalent.
+:::
+
+## Remove chimeras
+
+The core DADA2 method corrects substitution and indel errors, but chimeras remain. Chimeras are artefactual sequences made from two "parent" sequences during PCR. Thanks to the accuracy of ASVs, they can be identified as sequences that can be exactly reconstructed by combining a left segment and a right segment of two more abundant "parent" sequences.
+
+::: {.callout-tip title="Remove chimeras"}
+1. Open **dada2: removeBimeraDenovo** with:
+    - *"sequence table"*: output of **dada2: makeSequenceTable**
+:::
+
+:::: {.callout-important title="Question: Chimeras" collapse="true"}
+What percentage of the reads are non-chimeric?
+
+::: {.callout-tip title="Answer" collapse="true"}
+The percentage is shown when expanding the dataset in the history (`remaining nonchimeric: …%`). It is common for a large fraction of the **sequence variants** to be removed, but they should represent only a small fraction of the **reads**.
+<!-- TODO: add the percentage from your own run -->
+:::
+::::
 
 ## Track reads through the pipeline
 
-As a sanity check, we look at the number of reads that made it through each step.
+As a final check, we look at the number of reads that made it through each step of the pipeline.
 
-::: {.callout-tip title="Inspect the denoising statistics"}
-1. Open **qiime2 metadata tabulate** with:
-    - Select "Metadata from Artifact"
-    - *"input"*: `denoising-stats.qza`
-2. Click **Run Tool**, download the `.qzv` output and drop it in [qiime2-view]("https://view.qiime2.org/). 
+::: {.callout-tip title="Track reads through the pipeline"}
+1. Open **dada2: sequence counts** and add one *"Insert data sets"* block for each step:
+    - *"Dataset(s)"*: output of **dada2: filterAndTrim**, *"name"*: `FiltTrim`
+    - *"Dataset(s)"*: `#forward` output of **dada2: dada**, *"name"*: `Dada Forward`
+    - *"Dataset(s)"*: `#reverse` output of **dada2: dada**, *"name"*: `Dada Reverse`
+    - *"Dataset(s)"*: output of **dada2: mergePairs**, *"name"*: `MergePairs`
+    - *"Dataset(s)"*: output of **dada2: makeSequenceTable**, *"name"*: `SeqTab`
+    - *"Dataset(s)"*: output of **dada2: removeBimeraDenovo**, *"name"*: `Bimera`
 :::
-
-The table contains, for each sample, the number of reads: `input`, `filtered`, `denoised`, `merged` and `non-chimeric`, with the percentage kept.
 
 :::: {.callout-important title="Question: Where are reads lost?" collapse="true"}
 1. Have we kept the majority of the raw reads for each sample?
 2. Is there any exceptionally large drop associated with a single step for any sample?
 
 ::: {.callout-tip title="Answer" collapse="true"}
-1. Yes, most of the raw reads are kept as non-chimeric reads.
-2. No. The largest loss is at the filtering step, which is expected. Merging and chimera removal only remove a small fraction of reads.
-<!-- TODO: add the percentages from your own run -->
+1. Compare the first and last columns for each sample.
+2. The largest loss should be at the filtering step. Merging and chimera removal should only remove a small fraction of reads.
+<!-- TODO: add the numbers from your own run -->
 :::
 ::::
 
@@ -296,119 +466,79 @@ The table contains, for each sample, the number of reads: `input`, `filtered`, `
 Outside of filtering, there should be no step in which a majority of reads are lost.
 
 - If most reads **failed to merge**, the truncation lengths are probably too short: the reads no longer overlap.
-- If most reads were **removed as chimeric**, primers were probably not removed: ambiguous nucleotides in primers interfere with chimera identification. Use `trim_left_f` / `trim_left_r`, or **qiime2 cutadapt trim-paired** before denoising.
-:::
-
-## Summarise the ASV table and sequences
-
-::: {.callout-tip title="Summarise the feature table and the ASVs"}
-1. Open **qiime2 feature-table summarize** with:
-    - *"table"*: `table.qza`
-2. Open **qiime2 feature-table tabulate-seqs** with:
-    - *"data"*: `rep-seqs.qza`
-3. Open both `.qzv` outputs
-:::
-
-:::: {.callout-important title="Question: Exploring the ASV table" collapse="true"}
-1. How many ASVs (features) have been identified?
-2. What is the total number of reads (frequency) in the table?
-3. What is the range of ASV lengths? Does it make sense for a V4 amplicon?
-
-::: {.callout-tip title="Answer" collapse="true"}
-1. and 2. In the **Overview** tab of the `feature-table summarize` visualization, look at *Number of features* and *Total frequency*.
-3. In the `tabulate-seqs` visualization, the *Sequence Length Statistics* show lengths around **251–255 bp**, the expected size of the V4 region.
-<!-- TODO: add the number of features and total frequency from your own run -->
-:::
-::::
-
-The **Interactive Sample Detail** tab of the `feature-table summarize` visualization shows the number of reads per sample after denoising. **Keep it open**: we will use it to choose the rarefaction depth for the diversity analysis.
-
-::: {.callout-note title="Sequences too long or too short"}
-Sequences much longer or shorter than expected may be the result of non-specific priming. They can be removed with **qiime2 feature-table filter-seqs** / **filter-features**, the "cutting a band" in-silico equivalent.
+- If most reads were **removed as chimeric**, primers were probably not removed: ambiguous nucleotides in primers interfere with chimera identification. Remove them with **Cutadapt** or the *"Trim start of reads"* parameter of **dada2: filterAndTrim**.
 :::
 
 # Assign taxonomy
 
-It is common at this point, especially in 16S/18S/ITS amplicon sequencing, to assign a taxonomy to the sequence variants. QIIME 2 uses a **naive Bayes classifier** (the same family of method as the RDP classifier) trained on a reference database of sequences with known taxonomy.
+It is common at this point, especially in 16S/18S/ITS amplicon sequencing, to assign a taxonomy to the sequence variants. DADA2 provides a native implementation of the **naive Bayesian classifier** method ([Wang et al. 2007](https://doi.org/10.1128/AEM.00062-07)), the same family of method as the classifier used by the authors. **dada2: assignTaxonomy** takes the sequences to classify and a training set of reference sequences with known taxonomy, and outputs taxonomic assignments with at least `minBoot` bootstrap confidence (50 by default).
 
-The classifier works best when it is trained on the exact region amplified by your primers. Pre-trained classifiers are provided by QIIME 2 for **SILVA** and **Greengenes2**, both for full-length 16S and for the **V4 515F/806R** region used in this dataset.
-
-::: {.callout-tip title="Get a pre-trained classifier"}
-1. Go to the [QIIME 2 data resources](https://docs.qiime2.org/) page **for the QIIME 2 version installed on Galaxy Australia** (shown in the help section of the QIIME 2 tools)
-2. Copy the link of the **Silva 138 99% OTUs from 515F/806R region of sequences** naive Bayes classifier (`.qza`)
-3. Upload it in Galaxy with **Upload** → **Paste/Fetch data**, datatype `qza`
-4. Rename it `classifier.qza`
-:::
-
-::: {.callout-note title="Classifier version"}
-A classifier only works with the version of QIIME 2 (more precisely of scikit-learn) it was trained with. If **classify-sklearn** fails with a version error, download the classifier matching the QIIME 2 version of the Galaxy tool. If your server provides a built-in reference classifier, you can use it instead of uploading one.
-:::
+DADA2 maintains [formatted training sets for the SILVA, RDP and GreenGenes databases](https://benjjneb.github.io/dada2/training.html). Galaxy provides some of them as built-in references.
 
 ::: {.callout-tip title="Assign taxonomy"}
-1. Open **qiime2 feature-classifier classify-sklearn** with:
-    - *"reads"*: `rep-seqs.qza`
-    - *"classifier"*: `classifier.qza`
-2. Click **Run Tool** and rename the output `taxonomy.qza`
-3. Open **qiime2 metadata tabulate** with:
-    - *"input"*: `taxonomy.qza`
-4. Open the `.qzv` output
+1. Open **dada2: assignTaxonomy and addSpecies** with:
+    - *"sequences to be assigned"*: output of **dada2: removeBimeraDenovo**
+    - *"Select a reference dataset your history or use a built-in?"*: `Use a built-in reference`
+        - *"Select reference data set"*: the most recent **Silva** version available (the authors used SILVA 138)
+    - *"Add genus-species binomials to the taxonomic table"*: `Yes`
+        - *"Select a reference dataset your history or use a built-in?"*: `Use a built-in reference`
+            - *"Select reference data set"*: the same **Silva** version
+        - *"reporting options"*: `only unambiguous identifications`
+2. Click **Run Tool**
 :::
 
-The table lists, for each ASV, its taxonomy (`d__` domain, `p__` phylum, `c__` class, `o__` order, `f__` family, `g__` genus, `s__` species) and the **confidence** of the assignment.
+::: {.callout-note title="Species assignment by exact matching"}
+DADA2 makes [species level assignments by **exact matching**](https://benjjneb.github.io/dada2/assign.html#species-assignment) between the ASVs and sequenced reference strains. Exact matching (100% identity) is considered the only appropriate way to assign species to 16S gene fragments.
+:::
+
+**dada2: assignTaxonomy and addSpecies** generates a table with one row per ASV and one column per taxonomic level (Kingdom, Phylum, Class, Order, Family, Genus, Species).
 
 :::: {.callout-important title="Question: Taxonomic assignments" collapse="true"}
-1. Which domain(s) have been identified?
-2. Which phyla are the most represented?
+1. Which kingdom(s) have been identified?
+2. Which phyla have been identified? How many ASVs per phylum?
 3. Are many ASVs assigned down to species level? Why?
 
 ::: {.callout-tip title="Answer" collapse="true"}
 1. Bacteria.
-2. **Firmicutes** (Bacillota) and **Bacteroidetes** (Bacteroidota) are well represented, which is expected for human stool samples.
+2. Use **Group data by a column** on the taxonomy table, grouping by `Column 3` (Phylum), with the operation *"Count"* on `Column 3`. **Firmicutes** (Bacillota) and **Bacteroidota** should be well represented, which is expected for human stool samples.
 3. Few ASVs have a species assignment, because closely related species often have identical or nearly identical sequences over a ~250 bp fragment of the 16S gene. This is why the authors of the study worked at **genus** level with their 16S data.
+<!-- TODO: add the table of phyla from your own run -->
 :::
 ::::
 
 ::: {.callout-note title="Wrong kingdom"}
-If your reads do not seem to be appropriately assigned, for example lots of bacterial 16S sequences assigned as `Eukaryota` or `Unassigned`, check that the classifier matches your amplified region and that your reads are in the same orientation as the reference database.
+If your reads do not seem to be appropriately assigned, for example lots of bacterial 16S sequences assigned as `Eukaryota`, your reads may be in the opposite orientation to the reference database. Set *"Try reverse complement"* to `Yes` in **dada2: assignTaxonomy and addSpecies** and see if this fixes the assignments.
 :::
 
-## Basic Visualisations and Statistics
+# Prepare the metadata and the phyloseq object
 
+**phyloseq** ([McMurdie & Holmes 2013](https://doi.org/10.1371/journal.pone.0061217)) is an R framework to store, analyse and plot microbiome data. A phyloseq object combines the ASV table, the taxonomy table and a **metadata table** describing the samples. We will use it for the diversity analysis.
 
-###  Rarefaction curves
-Generate rarefaction curves to determine whether the samples have been sequenced deeply enough to capture all the community members. The max depth setting will depend on the number of sequences in your samples. In our case, we will use **75000**. 
+The first column of the metadata table must contain the sample names used by DADA2, here the **SRA accessions**. We add the original sample name and the sequencing run of each sample (`run1`: 2 × 150/140 bp, `run2`: 2 × 150/151 bp).
 
-using "qiime2 diversity alpha-rarefaction"". 
+<!-- TODO: add a `disease_status` column (UC / Healthy) once the group of each sample is known, and use it instead of `sequencing_run` in the diversity analysis -->
 
-questions : 
--when is the plateau for the 4 samples ? How do you interpret this results ? 
+::: {.callout-tip title="Create the metadata table"}
+1. Click **Upload** → **Paste/Fetch data** and paste the following table:
 
-# Visualise the taxonomic composition
+    ```
+    Sample	sample_name	sequencing_run
+    SRR15702564	012618.SM92	run1
+    SRR15702563	012618.SM97	run1
+    SRR15702530	PT.36	run2
+    SRR15702529	PT.40	run2
+    ```
 
-::: {.callout-tip title="Taxonomy barplot"}
-1. Open **qiime2 taxa barplot** with:
-    - *"table"*: `table.qza`
-    - *"taxonomy"*: `taxonomy.qza`
-    - *"metadata"*: `Metadata table`
-2. Open the `.qzv` output
-3. Set:
-    - *"Taxonomic Level"*: `Level 5` (family)
-    - *"Sort Samples By"*: `sequencing_run`
+2. In the upload settings, set the datatype to `tabular` and check **Convert spaces to tabs** (in case the tabs were replaced by spaces when copying)
+3. Rename it `Metadata table`
 :::
 
-:::: {.callout-important title="Question: Taxonomic composition" collapse="true"}
-1. Which families dominate the samples?
-2. Do you find the families highlighted by the authors (*Lachnospiraceae*, *Oscillospiraceae*, *Akkermansiaceae*, *Enterobacteriaceae*)?
-3. The two pairs of samples come from different sequencing runs. If they look different, can you tell whether the difference is biological?
-
-::: {.callout-tip title="Answer" collapse="true"}
-1. and 2. Look at the families with the largest bars.
-<!-- TODO: add the main families from your own run -->
-3. No. When two groups of samples are sequenced in different runs, a technical **batch effect** can be mistaken for a biological difference. In a real study, cases and controls should be spread across runs, and the run should be recorded in the metadata.
-:::
-::::
-
-::: {.callout-note title="Heatmaps instead of barplots"}
-Stacked barplots become hard to read with many taxa. A heatmap is often clearer: collapse the table at family level with **qiime2 taxa collapse** (*"level"*: `5`), then run **qiime2 feature-table heatmap** on the collapsed table with the metadata column `sequencing_run`.
+::: {.callout-tip title="Create the phyloseq object"}
+1. Open **Create phyloseq object from dada2** with:
+    - *"Sequence table"*: output of **dada2: removeBimeraDenovo**
+    - *"Taxonomy table"*: output of **dada2: assignTaxonomy and addSpecies**
+    - *"Sample table"*: `Metadata table`
+2. Click **Run Tool** and rename the output `phyloseq object`
 :::
 
+The `phyloseq object` is the starting point of the diversity analysis.

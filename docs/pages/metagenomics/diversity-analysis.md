@@ -1,69 +1,21 @@
 # Diversity analysis
 
-## Build a phylogenetic tree
+In this part, we explore the ASVs obtained with DADA2 using **phyloseq** ([McMurdie & Holmes 2013](https://doi.org/10.1371/journal.pone.0061217)). We use **Shiny-phyloseq** ([McMurdie & Holmes 2015](https://doi.org/10.1093/bioinformatics/btu616)), an interactive web interface to phyloseq that runs as a Galaxy interactive tool.
 
-Some diversity metrics (Faith's phylogenetic diversity, UniFrac) take into account how related the ASVs are. They need a **phylogenetic tree** of the ASVs.
-
-::: {.callout-tip title="Build a phylogenetic tree"}
-1. Open **qiime2 phylogeny align-to-tree-mafft-fasttree** with:
-    - *"sequences"*: `rep-seqs.qza`
+::: {.callout-tip title="Launch Shiny-phyloseq"}
+1. Open **Phyloseq** (interactive tool) with:
+    - *"Phyloseq R object"*: `phyloseq object` (output of **Create phyloseq object from dada2**)
 2. Click **Run Tool**
-3. Rename the `rooted_tree` output `rooted-tree.qza`
+3. Open the interactive tool from **User** → **Active Interactive Tools** (or the link in the dataset) once it is running
 :::
 
-This tool aligns the ASVs with **MAFFT**, masks highly variable positions, builds a tree with **FastTree** and roots it at its midpoint.
+A new page opens with Shiny-phyloseq, ready to explore the phyloseq object. The **Data** tab summarises the object: number of samples, ASVs, taxonomic ranks and metadata variables.
 
-## Choose a rarefaction depth
-
-Samples have different numbers of reads, and the number of ASVs observed in a sample increases with the number of reads. To compare samples fairly, the diversity tools first **rarefy** the table: they randomly subsample each sample to the same number of reads, the **sampling depth**. Samples with fewer reads than this depth are excluded.
-
-Choosing the depth is a trade-off: a high depth keeps more information per sample, a low depth keeps more samples.
-
-::: {.callout-tip title="Alpha rarefaction curves"}
-1. Open **qiime2 diversity alpha-rarefaction** with:
-    - *"table"*: `table.qza`
-    - *"phylogeny"*: `rooted-tree.qza`
-    - *"max_depth"*: the number of reads of the sample with the **most** reads (from the **feature-table summarize** visualization)
-    - *"metadata"*: `Metadata table`
-2. Open the `.qzv` output
+::: {.callout-note title="Comparing groups"}
+In the plots below, we color the samples by `sequencing_run`, the only grouping variable in our metadata table. Once the disease status of each sample is added to the metadata table, use it instead to compare UC cases and healthy controls, as the authors did.
 :::
 
-:::: {.callout-important title="Question: Sampling depth" collapse="true"}
-1. Do the rarefaction curves reach a plateau? What does it mean?
-2. Using the **Interactive Sample Detail** tab of the **feature-table summarize** visualization, which sampling depth would you choose to keep all samples?
-
-::: {.callout-tip title="Answer" collapse="true"}
-1. Yes, the curves flatten: sequencing more would not reveal many new ASVs, the sampling is deep enough to describe the diversity.
-2. The number of reads of the sample with the **fewest** reads. All samples are retained, and the curves show that the diversity is already captured at that depth.
-<!-- TODO: add the chosen depth from your own run -->
-:::
-::::
-
-## Compute the core diversity metrics
-
-::: {.callout-tip title="Core diversity metrics"}
-1. Open **qiime2 diversity core-metrics-phylogenetic** with:
-    - *"phylogeny"*: `rooted-tree.qza`
-    - *"table"*: `table.qza`
-    - *"sampling_depth"*: the depth chosen above
-    - *"metadata"*: `Metadata table`
-2. Click **Run Tool**
-:::
-
-This tool rarefies the table and computes several metrics at once:
-
-| Type | Metric | Measures |
-|---|---|---|
-| Alpha | Observed features | Number of ASVs (richness) |
-| Alpha | Shannon | Richness and evenness |
-| Alpha | Pielou's evenness | Evenness |
-| Alpha | Faith's PD | Phylogenetic diversity |
-| Beta | Jaccard | Presence/absence |
-| Beta | Bray-Curtis | Abundance |
-| Beta | Unweighted UniFrac | Presence/absence + phylogeny |
-| Beta | Weighted UniFrac | Abundance + phylogeny |
-
-For each beta diversity metric, it also produces a distance matrix, a PCoA and an **Emperor** plot (`.qzv`).
+<!-- TODO: replace `sequencing_run` by `disease_status` once the group of each sample is known -->
 
 ## Alpha diversity
 
@@ -71,82 +23,113 @@ A **diversity index** is a quantitative measure of the variety of species in a c
 
 ![Explanation of the α diversity](./images/alphadiversity_metrics.png)
 
-Here we compare the α diversity between early and late samples with 2 measures:
+Here we plot the α diversity of each sample with 2 measures:
 
-- The **Shannon** index, which calculates the uncertainty in predicting the species identity of an individual selected from a community.
-- **Faith's phylogenetic diversity**, the sum of the branch lengths of the tree covered by the ASVs of a sample.
+- The **Shannon** index, which calculates the uncertainty in predicting the species identity of an individual selected from a community. This is the index used by the authors.
+- The **Simpson** index, which calculates the probability that two individuals selected from a community belong to different species.
 
-::: {.callout-tip title="Compare alpha diversity between groups"}
-1. Open **qiime2 diversity alpha-group-significance** with:
-    - *"alpha_diversity"*: `shannon_vector` output of **core-metrics-phylogenetic**
-    - *"metadata"*: `Metadata table`
-2. Run it again with *"alpha_diversity"*: `faith_pd_vector`
-3. Open the `.qzv` outputs and select the column `when`
+::: {.callout-tip title="Plot α diversity"}
+1. Click on the **Alpha Diversity** tab
+2. Select the following parameters:
+    - *"X"*: `sample_name`
+    - *"Color"*: `sequencing_run`
+    - *"alpha Measures"*: `Shannon`, `Simpson`
 :::
 
-::: {.callout-note title="Other alpha metrics"}
-Other indices, like the **Simpson** index, can be computed with **qiime2 diversity alpha** (*"metric"*: `simpson`) on the rarefied table, then compared with **alpha-group-significance**.
+::: {.callout-note title="Alpha diversity and sequencing depth"}
+The number of ASVs observed in a sample increases with the number of reads. Our samples have very different depths (from ~42,000 to ~195,000 read pairs before filtering), as in the original study. The authors checked that their alpha diversity results did not change after **rarefying** the samples (randomly subsampling them to the same number of reads). Richness estimates are the most sensitive to depth; the Shannon and Simpson indices are less affected.
 :::
 
 :::: {.callout-important title="Question: Alpha diversity" collapse="true"}
-Is there any obvious systematic difference in alpha diversity between early and late samples? Is it significant?
+1. Which sample has the highest Shannon index?
+2. The authors found a lower Shannon index in UC cases than in healthy controls. Can we test this with our 4 samples?
 
 ::: {.callout-tip title="Answer" collapse="true"}
-No obvious difference. The visualization shows box plots for each group and a **Kruskal-Wallis** test: look at the p-value to conclude whether the difference is significant.
-<!-- TODO: add the p-values from your own run -->
+1. Read it from the plot.
+<!-- TODO: add the Shannon values from your own run -->
+2. No. With 2 samples per group, a statistical test has almost no power, and here the groups would also be confounded with the sequencing run. The authors used 42 samples and a Wilcoxon rank-sum test.
 :::
 ::::
 
 ## Beta diversity
 
-The **β diversity** measures how different the samples are from each other. Each beta metric produces a distance matrix, which is projected in 2 or 3 dimensions with a **PCoA** (Principal Coordinates Analysis) to visualise it. Samples close to each other in the plot have similar communities.
+The **β diversity** measures how different the samples are from each other. A distance (or dissimilarity) is computed between each pair of samples, and the distance matrix is projected in 2 dimensions with an **ordination** method to visualise it. Samples close to each other in the plot have similar communities.
 
-::: {.callout-tip title="Explore the PCoA with Emperor"}
-1. Open the `bray_curtis_emperor` output of **core-metrics-phylogenetic**
-2. In the **Color** tab, select `when`
-3. Do the same with `unweighted_unifrac_emperor`
+As the authors did, we use the **Bray–Curtis** dissimilarity, which takes the abundance of the ASVs into account, and a **PCoA** (Principal Coordinates Analysis), which projects the samples so that the distances in the plot are as close as possible to the Bray–Curtis distances.
+
+Phyloseq offers several other ordination methods, for example **NMDS** (Non-metric Multidimensional Scaling), which keeps the rank order of the distances rather than their exact values, or constrained methods (**CCA**, **RDA**) that relate the community composition to measured variables.
+
+::: {.callout-tip title="Plot a PCoA"}
+1. Click on the **Ordination** tab
+2. Select the following parameters:
+    - *"Display"*: `Samples`
+    - *"Method"*: `PCoA`
+    - *"Distance"*: `bray`
+    - *"Transform"*: `Prop` (relative abundances, so that differences in sequencing depth do not drive the distances)
+    - *"Color"*: `sequencing_run`
 :::
 
 :::: {.callout-important title="Question: Ordination" collapse="true"}
-Is there a clear separation between the early and late samples?
+1. What percentage of the variation is explained by the first axis?
+2. Are the samples from the two sequencing runs separated? Can you conclude that their gut microbiomes are different?
 
 ::: {.callout-tip title="Answer" collapse="true"}
-Yes, early and late samples form two separate groups along the first axis.
+1. Read it from the axis label.
+<!-- TODO: add the percentage from your own run -->
+2. Even if they are separated, we cannot conclude: with 4 samples, the separation cannot be tested, and a difference between runs may be a technical **batch effect** rather than a biological one. The authors used a **PERMANOVA** test on 42 samples to show that UC cases and healthy controls are separated (R² = 0.098, p = 0.001 with the 16S data).
 :::
 ::::
 
-We can test whether this separation is significant with a **PERMANOVA**:
+## Taxonomic composition
 
-::: {.callout-tip title="Test differences between groups"}
-1. Open **qiime2 diversity beta-group-significance** with:
-    - *"distance_matrix"*: `bray_curtis_distance_matrix` output of **core-metrics-phylogenetic**
-    - *"metadata"*: `Metadata table`, column `when`
-    - *"pairwise"*: `Yes`
-2. Open the `.qzv` output
+Abundance barplots display the relative abundance of the taxa in each sample, to compare the composition of the communities.
+
+::: {.callout-tip title="Plot an abundance stacked barplot"}
+1. Click on the **Bar** tab
+2. Select the following parameters:
+    - *"X-axis"*: `sample_name`
+    - *"Color"*: `Family`
+    - *"Facet Col"*: `sequencing_run`
+3. Click on **(Re)Build Graphic**
 :::
 
-:::: {.callout-important title="Question: PERMANOVA" collapse="true"}
-Is the community composition significantly different between early and late samples?
+The barplot is often hard to read: with many families, the color palette is too small to distinguish them. We filter the data to keep only the most abundant taxa.
+
+::: {.callout-tip title="Filter and plot the abundance stacked barplot"}
+1. Click on the **Filter** tab
+2. Select the following parameters:
+    - *"Taxa Min."*: `500`
+3. Click on **Execute Filter**
+4. Go back to the **Bar** tab and click on **(Re)Build Graphic**
+:::
+
+:::: {.callout-important title="Question: Taxonomic composition" collapse="true"}
+1. Which families dominate the samples?
+2. Do you find the families highlighted by the authors (*Lachnospiraceae*, *Oscillospiraceae*, *Akkermansiaceae*, *Enterobacteriaceae*)?
 
 ::: {.callout-tip title="Answer" collapse="true"}
-Look at the **p-value** of the PERMANOVA test: if it is below 0.05, the composition of the early and late samples is significantly different. The box plots show that distances *between* groups are larger than distances *within* groups.
-<!-- TODO: add the pseudo-F and p-value from your own run -->
+1. and 2. Look at the families with the largest bars.
+<!-- TODO: add the main families from your own run -->
 :::
 ::::
+
+::: {.callout-note title="Heatmaps instead of barplots"}
+Stacked barplots become hard to read with many taxa. The [ampvis2 team](http://albertsenlab.org/ampvis2-heatmap/) suggests using heatmaps instead. You can plot one in the **Heatmap** tab of Shiny-phyloseq, or with the **ampvis2** tools available in Galaxy.
+:::
 
 # Conclusion
 
-We processed raw paired-end 16S amplicon reads with QIIME 2 in Galaxy:
+We processed raw paired-end 16S amplicon reads with the DADA2 tools in Galaxy:
 
-1. Imported the reads as a QIIME 2 artifact and inspected their quality
-2. Denoised them with DADA2 into an ASV table
-3. Assigned a taxonomy to the ASVs with a naive Bayes classifier
-4. Built a phylogenetic tree and compared the alpha and beta diversity of early and late samples
+1. Inspected the read quality and chose truncation lengths that keep enough overlap to merge the reads
+2. Filtered the reads, learned the error rates, inferred the sequence variants, merged the pairs and removed the chimeras to obtain an ASV table
+3. Assigned a taxonomy to the ASVs with the DADA2 naive Bayesian classifier and SILVA
+4. Explored the alpha diversity, beta diversity and taxonomic composition of the samples with phyloseq
 
 ::: {.callout-tip title="Key Points"}
-- QIIME 2 stores data in artifacts (`.qza`) and results in visualizations (`.qzv`), both keeping the full provenance of the analysis.
-- **qiime2 dada2 denoise-paired** runs the whole DADA2 pipeline (filtering, error learning, denoising, merging, chimera removal) and produces a high-resolution ASV table.
-- Truncation lengths are chosen from the quality profiles, while keeping enough overlap to merge the reads.
-- Taxonomy is assigned with a classifier trained on the amplified region and matching the QIIME 2 version.
-- Diversity analyses require rarefying the samples to a common depth; alpha diversity describes each sample, beta diversity compares samples.
+- DADA2 models the sequencing errors to infer exact sequence variants (ASVs), which are more accurate and reproducible than OTUs.
+- Truncation lengths are chosen from the quality profiles, while keeping enough overlap to merge the reads: with 2 × 150 bp reads on V4, the room for truncation is small.
+- Tracking the reads through the pipeline shows whether a step (merging, chimera removal) lost too many reads.
+- Species assignment from short 16S fragments is limited; genus or family levels are more reliable.
+- Alpha diversity describes each sample, beta diversity compares samples. Group comparisons need enough samples, and groups should not be confounded with sequencing runs.
 :::
