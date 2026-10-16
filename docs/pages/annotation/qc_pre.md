@@ -40,7 +40,8 @@ What is the GC content of your assembly?
 
 ## BUSCO
 
-BUSCO (Benchmarking Universal Single-Copy Orthologs) is a tool used for quantitative assessment of genome assembly, gene set, and transcriptome completeness. It is based on evolutionarily informed expectations of gene content derived from near-universal single-copy orthologs (Simão et al. 2015)
+
+[BUSCO](https://busco.ezlab.org) (Benchmarking Universal Single-Copy Orthologs) searches for sets of conserved genes that are expected to be present in nearly all genomes of a given lineage. The results indicate how many of these genes are complete, duplicated, fragmented, or missing (Simão et al. 2015).  
 
 * Search for the `BUSCO` tool in Galaxy ![](/pages/images/galaxy/tools.png)
 
