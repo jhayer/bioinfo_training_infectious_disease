@@ -227,6 +227,22 @@ Set *Produce Kraken-Style Bracken report* and *Add log file output* to *Yes*
 
 The Bracken abundance results will allow us to compute alpha and beta diversity of our samples.
 
+
+Once we know which taxons are present in a metagenomic sample, we can do diversity analyses.
+
+Related to ecology, the term diversity describes the number of different species present in one particular area and their relative abundance. More specifically, several different metrics of diversity can be calculated. The most common ones are α, β and γ diversity:
+
+* α diversity describes the diversity within a community
+
+It considers the number of different species in an environment (also referred to as species richness). Additionally, it can take the abundance of each species into account to measure how evenly individuals are distributed across the sample (also referred to as species evenness).
+
+* β diversity compare the diversity between different communities by measuring their distance
+
+* γ diversity is a measure of the overall diversity for the different ecosystems within a region.
+
+In a nutshell, taxonomic labels have been assigned to the metagenomics data using Kraken2 to find out which species are present in the samples. Finally, species abundance was estimated using Bracken. For this tutorial, we will use the output file of Bracken.
+
+
 ::: {.callout-handson}
 
 **Krakentools: Calculates alpha diversity** from the Bracken abundance estimation file
@@ -248,23 +264,10 @@ Select the *Bracken species abundance files* for as input file type.
 
 
 
+::: {.callout-note}
+You can read more about the calculation of α and β diversity on this [Galaxy Training material](https://galaxyproject.github.io/training-material/topics/microbiome/tutorials/diversity/tutorial.html), from which this current tutorial is inspired.
+:::
 
 
 
 
-
-
-
-----
-More text about alpha and beta => link to GTN https://galaxyproject.github.io/training-material/topics/microbiome/tutorials/diversity/tutorial.html
-
-Additional Sylph ?
-Pavian ?
-
-
-
-* Plasmids: To identify plasmids in contigs, use PlasmidFinder (Carattoli and Hasman 2020), a tool for the identification and typing of plasmid sequences in Whole-Genome Sequencing. It uses the plasmidfinder database with hundreds of sequences to predict the plasmid in the data.
-
-* Integrons : Integrons are genetic mechanisms that allow bacteria to adapt and evolve rapidly through the stockpiling and expression of new genes. To detect integrons, you can use IntegronFinder (Néron et al. 2022)
-
-* Insertion Sequence elements IS : is a short DNA sequence that acts as a simple transposable element. IS are the smallest but most abundant autonomous transposable elements in bacterial genomes. They only code for proteins implicated in the transposition activity. They play then a key role in bacterial genome organization and evolution. To detect IS elements, use ISEScan (Xie and Tang 2017). ISEScan is a highly sensitive software pipeline based on profile hidden Markov models constructed from manually curated IS elements. 
