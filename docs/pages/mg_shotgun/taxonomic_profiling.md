@@ -34,7 +34,7 @@ This tutorial focuses on reads obtained from shotgun metagenomic sequencing.
 
 ## The datasets
 
-We will use 4 samples from the following study: [https://www.nature.com/articles/s41598-022-07995-7]().
+We will use 4 samples from the following study: [16S rRNA and metagenomic shotgun sequencing data revealed consistent patterns of gut microbiome signature in pediatric ulcerative colitis](https://www.nature.com/articles/s41598-022-07995-7).
 In this study, the authors have explored the gut microbiome of pediatrics patients with ulcerative colitis; using both metabarcoding of 16S gene amplicons and shotgun metagenomics.
 In this tutorial, we will focus on the taxonomic profiling of 4 samples sequenced using shotgun metagenomics.
 
