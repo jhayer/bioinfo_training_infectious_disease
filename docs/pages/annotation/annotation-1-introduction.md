@@ -1,8 +1,18 @@
 # Lecture
 
-<iframe id="iframepdf" src="../../lectures/annotation/Introduction_annotation2025.pdf" frameborder="0" width="1280" height="960" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+<iframe id="iframepdf" src="../../lectures/annotation/Introduction_annotation2026.pdf" frameborder="0" width="1280" height="960" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
 <hr>
 
 Genome annotation is a critical step in making sense of raw DNA sequence data. While sequencing reveals the letters of the genetic code, annotation interprets that code—identifying regions of interest (e.g. genes, regulatory elements, repeat) within the genome. Without annotation, genomes remain unreadable and biologically meaningless. Annotation enables researchers to understand how organisms function, how genes are regulated, and how genetic variations lead to phenotypic traits or disease. Broadly, genome annotation involves two main tasks: structural annotation, which defines the location and structure of genes (e.g., exons, introns, start/stop codons), and functional annotation, which assigns biological meaning by linking gene products to functions, pathways, and domains. As sequencing becomes more accessible, high-quality genome annotation is essential for advancing research in medicine, agriculture, biodiversity, and evolutionary biology.
+
+## Genome annotation tools
+
+Go to the [Awesome Genome Annotation](https://juke34.github.io/awesome-genome-annotation/) page for a comprehensive list of genome annotation tools.
+
+::: {.callout-caution collapse="true"}
+## How many tools are available for prokaryotic genome annotation?
+
+Numerous tools have been developed for prokaryotic genome annotation. However, determining their exact number is challenging, as some tools are just pipeline integrating other existing tools.
+:::
 
