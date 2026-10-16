@@ -15,6 +15,26 @@ website:
     left:
       - text: Home
         href: index.md
+      - text : Tutorial Assembly
+        menu:
+          - text: Introduction to Galaxy
+            href: pages/assembly/intro_galaxy.md
+          - text: Read QC and trimming
+            href: pages/assembly/assessing-read-quality.md
+          - text: Raw read contamination check
+            href: pages/assembly/contamination.md
+          - text: Assembly (Short-read)
+            href: pages/assembly/short-read-assembly.md
+          - text: Assembly (Long-read)
+            href: pages/assembly/long-read-assembly.md
+          - text: Assembly (Hybrid)
+            href: pages/assembly/hybrid-assembly.md    
+          - text: Assembly QC
+            href: pages/assembly/qc-post-assembly.md  
+          - text: Assembly Visualisation
+            href: pages/assembly/assembly-visualisation.md
+          - text: (Bonus) Sars Cov2 variant analysis
+            href: pages/assembly/sars-cov2-assembly.md    
       - text: Tutorial Annotation
         menu:
           - text: Introduction
@@ -39,11 +59,26 @@ website:
             href: pages/annotation/functional_annotation_lecture.md
           - text: Functional annotation (Practical)
             href: pages/annotation/functional_annotation.md
+      - text: Metagenomics
+        menu:
+          - text: Introduction to the study
+            href: pages/metagenomics/introduction.md
+          - text: 16S rRNA amplicon sequencing
+            href: pages/metagenomics/16S-sequencing.md
+          - text: Diversity Analysis
+            href: pages/metagenomics/diversity-analysis.md  
       - text: Tutorial PanExplorer
         menu:
           - text: PanExplorer
             href: pages/panexplorer/panexplorer.md
+      - text: Shotgun Metagenomics
+        menu:
+          - text: Taxonomic profiling
+            href: pages/mg_shotgun/taxonomic_profiling.md
+          - text: MAG assembly and binning
+            href: pages/mg_shotgun/binning.md
 
+      
       - text:  Cheat sheets
         menu:
           - text: Genome annotation tools
@@ -61,11 +96,8 @@ website:
           - text: Report a Bug
             href:  https://github.com/jhayer/bioinfo_training_infectious_disease/issues/new
 
-  sidebar:
+    sidebar:
     style: "floating"
-    tools:
-      - icon: ""
-        text: ""
     logo: pages/images/IRD.png
 
 
