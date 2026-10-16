@@ -44,6 +44,8 @@ website:
         menu:
           - text: Taxonomic profiling
             href: pages/mg_shotgun/taxonomic_profiling.md
+          - text: MAG assembly and binning
+            href: pages/mg_shotgun/binning.md
 
       - text:  Cheat sheets
         menu:
