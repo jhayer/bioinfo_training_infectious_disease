@@ -59,7 +59,7 @@ website:
             href: pages/annotation/functional_annotation_lecture.md
           - text: Functional annotation (Practical)
             href: pages/annotation/functional_annotation.md
-      - text: Metagenomics
+      - text: Metabarcoding
         menu:
           - text: Introduction to the study
             href: pages/metagenomics/introduction.md
