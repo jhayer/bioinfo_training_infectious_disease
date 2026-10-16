@@ -43,15 +43,15 @@ website:
             href: pages/annotation/get_data.md
           - text: QC pre annotation
             href: pages/annotation/qc_pre.md
-          - text: Structural annotation - Concept
+          - text: Structural annotation (Concept)
             href: pages/annotation/structural_annotation.md
-          - text: Structural annotation - Practical
+          - text: Structural annotation (Practical)
             href: pages/annotation/bakta.md
           - text: QC post annotation
             href: pages/annotation/qc_post.md
           - text: Visualisation
             href: pages/annotation/visualisation.md
-          - text: Functional annotation (Lecture)
+          - text: Functional annotation (Concept)
             href: pages/annotation/functional_annotation_lecture.md
           - text: Functional annotation (Practical)
             href: pages/annotation/functional_annotation.md
