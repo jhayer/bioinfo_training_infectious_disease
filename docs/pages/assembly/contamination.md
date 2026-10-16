@@ -2,6 +2,7 @@
 
 # Contamination or host screen
 
+In this tutorial, we check that our reads come from *E. coli* only. We work in the history **Quality Control and Trimming**, which contains the trimmed reads **Trimmed Short Read** and **Trimmed Long Read**.
 
 ## SRA Taxonomy Analysis
 ON the SRA sample webpage, the taxonomy analysis is automatically computed for every sample. 
@@ -102,7 +103,7 @@ For this tutorial, we will use the PlusPF database which contains the Standard (
 
 ::: {.callout-important title="Exercice: Run Kraken2 on Galaxy" collapse="true"}
 1. Search the tool **Kraken2**.
-2. Select paired reads, and the collection **Trimmed ERR13363306**.
+2. Select paired reads, and the collection **Trimmed Short Read**.
 3. In *Minimum Base Quality*, select **20**.
 4. In *Select a Kraken2 Database*, select **Prebuilt Refseq indexes: Standard-Full (archaea, bacteria, viral, plasmid, human,UniVec_Core) (Version: 2022-06-07 - Downloaded: 2022-07-06T094102Z)**.
 5. In *Create Report*, click **Yes** for *Print a report with aggregrate counts/clade to file*.
@@ -160,3 +161,44 @@ Let’s now run Krona !
 2. *Input file*: output of Krakentools
 3. Click *Run Tool*
 :::
+
+# Contamination screen of the long reads
+
+The long reads come from the same DNA extraction of the same sample, but it is still worth checking them: a contamination can also be introduced during the Nanopore library preparation, or come from another sample sequenced on the same flow cell (barcode cross-talk).
+
+Kraken2 works on reads of any length, as it only looks at the k-mers of each read. We can therefore use the same tool and the same database on the long reads **Trimmed Long Read**.
+
+## What changes for long reads?
+
+- **Single-end reads**: Nanopore reads are not paired.
+- **Base quality**: for the short reads, we masked the bases with a quality below 20. Our Nanopore reads have a median quality around **Q14**: with the same threshold, most of their bases would be masked, and many reads would stay unclassified. We keep the default value (`0`).
+- **Sequencing errors**: with ~4% of errors, many 35-mers of a long read contain an error and are not found in the database. But a read of several kb contains thousands of k-mers: enough of them are correct to classify the read.
+
+::: {.callout-important title="Exercice: Run Kraken2 on the long reads" collapse="true"}
+1. Search the tool **Kraken2**.
+2. Select single-end reads, and the collection **Trimmed Long Read**.
+3. Keep the default *Minimum Base Quality* (**0**).
+4. In *Select a Kraken2 Database*, select the same database as for the short reads: **Prebuilt Refseq indexes: Standard-Full (archaea, bacteria, viral, plasmid, human,UniVec_Core) (Version: 2022-06-07 - Downloaded: 2022-07-06T094102Z)**.
+5. In *Create Report*, click **Yes** for *Print a report with aggregrate counts/clade to file*.
+6. Click *Run Tool*
+:::
+
+::: {.callout-important title="Exercice: Visualise the long read classification with Krona" collapse="true"}
+1. Run **Krakentools: Convert kraken report file to krona text file** on the new Kraken2 report.
+2. Run **Krona pie chart from taxonomic profile** on its output.
+:::
+
+:::: {.callout-important title="Exercice: Compare the short and long reads" collapse="true"}
+Open the 2 Krona charts (short reads and long reads) side by side.
+
+1. Which species is the most abundant in each dataset? What percentage of the reads is assigned to it?
+2. Is the proportion of unclassified reads the same in both datasets? Why?
+3. Do you see the same minor organisms in both datasets? Is there evidence of contamination?
+
+::: {.callout-tip title="Answer" collapse="true"}
+<!-- TODO: add the percentages from your own Kraken2 runs -->
+1. *Escherichia coli* should be the most abundant species in both datasets, as expected for a pure culture of strain 368.
+2. The proportions differ. The Nanopore reads contain more sequencing errors, so fewer of their k-mers match the database exactly, and some reads are classified at a higher level (e.g. genus *Escherichia*) or not at all. On the other hand, each long read contains many more k-mers than a short read, which gives more evidence for its classification.
+3. Organisms found in both datasets at more than a few percent would point to a contamination of the sample itself. Organisms found only in one dataset at low levels are more likely due to the library preparation, to the sequencing run (e.g. barcode cross-talk with other samples), or to classification errors. As for the short reads, filtering is only needed if the contamination is above ~5–10% of the reads.
+:::
+::::

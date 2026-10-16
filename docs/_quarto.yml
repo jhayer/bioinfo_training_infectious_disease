@@ -31,7 +31,9 @@ website:
           - text: Assembly QC
             href: pages/assembly/qc-post-assembly.md  
           - text: Assembly Visualisation
-            href: pages/assembly/assembly-visualisation.md  
+            href: pages/assembly/assembly-visualisation.md
+          - text: (Bonus) Sars Cov2 variant analysis
+            href: pages/assembly/sars-cov2-assembly.md    
       - text: Tutorial Annotation
         menu:
           - text: Introduction

@@ -76,12 +76,14 @@ Read the [referenced paper](https://www.sciencedirect.com/science/article/pii/S2
 2. Discuss with your neighbor, about this choice.
 
 ::: {.callout-tip title="Answer" collapse="true"}
-While reference-based assembly is faster, de novo assembly was essential for this study because the authors wanted to:
+The authors chose a **de novo hybrid assembly**, combining Illumina short reads and Nanopore long reads. While reference-based assembly is faster, de novo assembly was essential for this study because the authors wanted to:
 
-- Capture the complete and unique genomic content of each strain
-- Identify novel resistance mechanisms and virulence factors specific to Japanese MRSA
-- Create high-quality reference genomes for these clinical isolates
+- Capture the complete and unique genomic content of each strain, including its **plasmids**, which vary a lot between *E. coli* strains and are absent from reference genomes
+- Locate the antibiotic resistance genes (ESBL and carbapenemase genes) on the chromosome or on plasmids, to understand how they spread between strains
+- Compare whole plasmid sequences between strains, which requires complete, circular plasmids
 - Understand genomic diversity without bias from an existing reference
+
+The hybrid approach was needed to recover complete plasmids: short reads alone give fragmented assemblies in which plasmid and chromosome contigs cannot be told apart.
 :::
 ::::
 
@@ -133,7 +135,7 @@ SPAdes takes **FASTQ** files as input and outputs:
 
 # Running SPAdes on Galaxy
 
-We will use the trimmed short read *ERR13363306* from  [the E.Coli Paper](https://www.sciencedirect.com/science/article/pii/S2213716525002061?via%3Dihub). 
+We will use the trimmed short reads of run *ERR13363306* (collection **Trimmed Short Read**), from  [the E.Coli Paper](https://www.sciencedirect.com/science/article/pii/S2213716525002061?via%3Dihub). 
 
 What parameters do I need to choose for SPAdes ? 
 the most important is k-mers.
@@ -160,7 +162,7 @@ Use the **History Multiview** panel.
 
 ::: {.callout-tip title="Import input reads"}
 1. Open the **History Multiview** (left panel).
-2. Drag your **trimmed paired-end reads** (**Trimmed *ERR13363306*) from the previous history (e.g., “Quality Control and Trimming”).
+2. Drag your trimmed paired-end reads (**Trimmed Short Read**) from the previous history (e.g., “Quality Control and Trimming”).
 3. Drop them into the **Short Read Genome Assembly** history.
 :::
 
@@ -187,9 +189,9 @@ Choose:
 SPAdes performs BayesHammer/Hammer error correction on the raw reads before doing the assembly.
 (fixes substitutions & small indels, removes low-quality kmers), which improve assembly quality but takes longer.
 
-- in **Pipeline Options**:
-      tick **Isolate**
-      Enable careful mode reduce mismatches.
+- in **Pipeline Options**: tick **Isolate** (`--isolate`).
+  This mode is recommended for the DNA of a single bacterial culture sequenced at high coverage, which is our case (~100x): it improves the assembly and reduces the running time.
+  Do **not** enable the careful mode (`--careful`): it is not compatible with the isolate mode, and SPAdes would refuse to run.
 
 - **Select additional outputs**:  
   - Contigs  

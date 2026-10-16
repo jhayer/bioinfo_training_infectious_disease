@@ -131,15 +131,9 @@ In addition, by default fastp discards reads with too many low-quality bases (mo
 
 # Running fastp on Galaxy
 
-We are going to run fastp on our collection **ERR13363306**.
+We are going to run fastp on our short reads, the collection **Short Read** (run ERR13363306).
 
-## Create a new history
-
-First, let's create a new history, and name it "Quality Control and Trimming".
-
-![new-history](images/05-trimming/new-history-trimmomatic.png)
-
-Then using the **History Multiview**, move the collection **ERR13363306** from the previous history to the new one.
+We work in the history **Quality Control and Trimming**, created at the end of the [Introduction to Galaxy](intro_galaxy.md). It should contain the 2 collections **Short Read** and **Long Read**. If not, copy them from the "Galaxy Tutorial" history with the **History Multiview**.
 
 ::: {.callout-important title="Exercise: Run fastp" collapse="true"}
 Type **fastp** in the tools panel search box, and click on **fastp: fast all-in-one preprocessing for FASTQ files**.
@@ -147,7 +141,7 @@ Type **fastp** in the tools panel search box, and click on **fastp: fast all-in-
 **Input**
 
 - *"Single-end or paired reads"*: `Paired Collection`
-- *"Select paired collection(s)"*: `ERR13363306`
+- *"Select paired collection(s)"*: `Short Read`
 
 **STEP 1: Adapters**
 
@@ -212,10 +206,10 @@ Discuss your results with a neighbor.
 ::: {.callout-tip title="Solution" collapse="true"}
 Coverage = total bases / genome size.
 The *total bases* given by fastp already include both the forward and reverse reads.
-Based on [the paper](https://doi.org/10.1016/j.jgar.2025.09.003), the genome of strain 368 is made of a chromosome of ~5.0 Mb and 6 plasmids (~0.31 Mb in total), so approximately **5.3 Mb**.
+Based on [the paper](https://doi.org/10.1016/j.jgar.2025.09.003) and the genome deposited by the authors ([GCA_964200035](https://www.ebi.ac.uk/ena/browser/view/GCA_964200035)), the genome of strain 368 is made of a chromosome of ~4.89 Mb and 6 plasmids (~0.31 Mb in total), so approximately **5.2 Mb**.
 
-1. Before filtering: ~531 Mb / 5.3 Mb ≈ **100x**.
-2. After filtering: divide the *total bases* after filtering by 5.3 Mb.
+1. Before filtering: ~531 Mb / 5.2 Mb ≈ **102x**.
+2. After filtering: divide the *total bases* after filtering by 5.2 Mb.
 <!-- TODO: add the total bases after filtering and the coverage from your own run -->
 
 A coverage above ~30–40x is good for a bacterial genome assembly.
@@ -278,7 +272,7 @@ When you have many samples, opening one report per sample is tedious. [MultiQC](
 
 We have just successfully assessed the quality of our reads and cleaned them with fastp, in a single step!
 From now on, we will only keep the cleaned paired collection **fastp on collection X: Paired-end output**.
-Rename it **Trimmed ERR13363306**.
+Rename it **Trimmed Short Read**.
 
 ::: {.callout-tip title="Key Points"}
 - It is important to know the quality of our data to make decisions in the subsequent steps.
@@ -290,43 +284,117 @@ Rename it **Trimmed ERR13363306**.
 
 # Read Quality and trimming of long reads 
 
-Now we are going to have a look at the data from the same sammple, with the read accession number **ERR13363634**
+Now we are going to have a look at the long reads of the same sample: the collection **Long Read** (run **ERR13363634**), downloaded in the [Introduction to Galaxy](intro_galaxy.md) and copied in this history. It contains a single dataset: Nanopore reads are not paired.
 
-## Use "Faster Download and Extract Reads in FASTQ format from NCBI SRA"
-
-::: {.callout-important title="Exercice: Upload the FASTQ from SRA to Galaxy" collapse="true"}
-1. Type **fastq sra** in the tools panel search box (top)
-2. Click the tool (**Faster Download and Extract Reads in FASTQ**
-format from NCBI SRA)
-
-    ![fastq SRA click on the tool](images/03-intro-galaxy/fastqsra-click.png)
-
-    The tool will be displayed in the central Galaxy panel.
-
-3. Select the following parameters:
-    - *select input type*: SRR accession
-    - **Accession** : **ERR13363634**
-    - In **Advanced Options**, define format specification for sequence, type:
-
-        ```
-        @$ac.$sn/$ri length=$rl
-        ```
-
-    - No change in the other parameters
-4. Click **Run Tool**
+::: {.callout-note title="Our long reads"}
+According to the [ENA](https://www.ebi.ac.uk/ena/browser/view/ERR13363634), ERR13363634 was sequenced on an Oxford Nanopore **MinION** and contains **133,532 reads** for a total of **912.6 Mb**, i.e. a mean read length of ~6.8 kb.
 :::
 
+## Why are long reads cleaned differently?
 
-## Long read Quality control, using Filtlong 
+Nanopore reads are very different from Illumina reads:
 
+| | Illumina (ERR13363306) | Nanopore (ERR13363634) |
+|---|---|---|
+| Read length | Fixed (150 bp) | Variable, from a few hundred bp to > 50 kb |
+| Error rate | ~0.1% (Q30) | A few % (~Q10–Q20, depending on the chemistry and basecalling) |
+| Main errors | Substitutions, at the end of the reads | Insertions and deletions, especially in homopolymers (e.g. `AAAAAA`) |
 
-explain what is filtlong.
-use the tool "fistlong" in Tools. 
-Open the "Output thresholds", what parameters do you see ? names the parameters, and explain them. Which values should I use for these parameters ? 
+Because of this, the cleaning of long reads focuses on removing **whole reads** that are too short or of too low quality, rather than cutting the end of every read. For an assembly, what matters is to keep the **long** and **accurate** reads.
 
+## fastplong: fastp for long reads
+
+[fastplong](https://github.com/OpenGene/fastplong) is the long-read version of fastp, from the same developers. It works in the same way: in a single run, it computes quality statistics on the raw reads, cleans the reads, computes the same statistics on the cleaned reads, and writes an HTML and a JSON report **before and after filtering**.
+
+What it can do on long reads:
+
+1. **Remove adapters** at the start and at the end of the reads, detected automatically
+2. **Split chimeric reads**: reads containing an adapter in their middle are made of two DNA fragments ligated together; fastplong splits them into separate reads
+3. **Filter reads by quality**: remove reads with a low mean quality
+4. **Filter reads by length**: remove reads that are too short
+
+### Which values should we use?
+
+Several things must be taken into account:
+
+- **Coverage**: our raw reads cover the genome (~5.2 Mb) about **175x**. Flye needs ~30–50x, so we can afford to lose some reads.
+- **Length**: very short reads do not help the assembly, as they do not span repeats. But they must not be removed too aggressively: the genome of strain 368 contains **small plasmids of 2.1, 3.6 and 7.9 kb**. Their reads are short, as a read cannot be longer than the circular plasmid it comes from. A high minimum length would remove them, and the plasmids would be lost from the assembly. We will remove reads shorter than **1000 bp**.
+- **Quality**: removing the worst reads improves the accuracy of the assembly. We will remove reads with a mean quality below **Q10** (10% of errors): with a median quality around Q14, a higher threshold would remove too many reads.
+
+::: {.callout-note title="Summary of the fastplong options we will use"}
+| fastplong option | Value | Meaning |
+|---|---|---|
+| Adapter trimming | automatic detection (default) | Remove adapters at the start and end of the reads |
+| Chimeric reads | split (default) | Split reads with an internal adapter into separate reads |
+| `mean_qual` | 10 | Drop reads with a mean quality below Q10 |
+| `length_required` | 1000 | Drop reads shorter than 1000 bp |
+:::
+
+## Running fastplong on Galaxy
+
+::: {.callout-important title="Exercise: Run fastplong" collapse="true"}
+Type **fastplong** in the tools panel search box, and click on the **fastplong** tool.
+
+**Input**
+
+- *"Input Long Reads"*: the **Long Read** collection
+
+**STEP 1 and 2: Adapters and chimeric reads**
+
+In **Adapter Trimming Options**, keep adapter trimming enabled and the default *"Chimeric read handling"* (`Split chimeric reads into segments`). fastplong will detect the adapters automatically.
+
+**STEP 3: Quality filtering**
+
+In **Filter Options** → **Quality filtering options**:
+
+- *"Mean read quality"*: `10`
+
+**STEP 4: Minimum length**
+
+In **Filter Options** → **Length filtering options**:
+
+- *"Length required"*: `1000`
+
+**Reports**
+
+In the output options, make sure the **HTML report** is produced, and activate the **JSON report** (which can be read by MultiQC).
+
+**Run the tool**
+
+Once you have selected all the parameters, click on **Run Tool**.
+:::
+
+The tool creates:
+
+- **fastplong on data X: Reads**: the cleaned long reads
+- **fastplong on data X: HTML report**: the quality report, before and after filtering
+- **fastplong on data X: JSON report**
+
+Rename the cleaned reads **Trimmed Long Read**.
+
+## Results
+
+Click on the 👁️ (eye) icon of the **HTML report** to open it. Its structure is the same as the fastp report.
+
+:::: {.callout-important title="Exercise: What did fastplong do?" collapse="true"}
+1. In the **Summary** section, what are the mean read length and the mean quality before filtering?
+2. In the **Filtering result** section, what percentage of reads passed the filters? What is the main reason why reads were removed?
+3. How did the mean read length and the mean quality change after filtering?
+4. What is the coverage of the trimmed long reads?
+5. Could reads from the 2.1 kb plasmid still be present?
+
+::: {.callout-tip title="Answer" collapse="true"}
+<!-- TODO: add the numbers from your own run -->
+1. The mean read length is ~6.8 kb (912.6 Mb / 133,532 reads). The mean quality is much lower than for the Illumina reads, which is normal for Nanopore data.
+2. Look at the **Filtering result** section: reads are removed because of a low quality or because they are too short.
+3. The mean length and the mean quality increased: the short and low-quality reads were removed.
+4. Coverage = total bases / genome size: divide the *total bases* after filtering by 5.2 Mb. It should stay well above 50x.
+5. Yes, if they are longer than 1 kb and have a mean quality ≥ Q10. We will check in the assembly whether the small plasmids were recovered.
+:::
+::::
 
 # Quality Control Comparison
 
-Open the html from **fastp** , and from **filtlong**.
-Look at the average size. Look at the average quality. Discuss the pros and cons of each HTS technology. 
+Open the HTML report from **fastp** (short reads), and the HTML report from **fastplong** (long reads).
+Look at the average size. Look at the average quality. Discuss the pros and cons of each HTS technology.
 

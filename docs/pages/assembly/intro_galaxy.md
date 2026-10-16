@@ -119,11 +119,35 @@ Indeed, if you dug into the European Nucleotide Archive (ENA) website. You can f
 
 In total, You have 12 run accessions from 6 Sample accessions: for each of the 6 samples you have 2 runs, one for the long reads, and another one for the short reads ! 
 
-We will start by having a look at 1 sample (sample [SAMEA115834835](https://www.ebi.ac.uk/ena/browser/view/SAMEA115834835) ),the short reads first, for only one Run accession: *ERR13363306* (short read accession number ) and *ERR13363634* (long read accession number). 
+Throughout the tutorial, we will work on **1 sample**: [SAMEA115834835](https://www.ebi.ac.uk/ena/browser/view/SAMEA115834835) (strain **368**), and its 2 runs:
+
+| Run accession | Technology | Reads |
+|---|---|---|
+| *ERR13363306* | Illumina NovaSeq 6000 | Short reads, paired-end (2 × 150 bp) |
+| *ERR13363634* | Oxford Nanopore MinION | Long reads, single-end |
+
+We will download both runs now, and start by looking at the short reads.
 
 ### Galaxy Tool
 
 There are tools that allows to upload directly sequences using the accession number !
+To download several runs at once, we first give Galaxy the list of accessions in a text file.
+
+::: {.callout-important title="Exercice: Create the list of accessions" collapse="true"}
+1. Click on **Upload** (in the activity bar on the left)
+2. Click on **Paste/Fetch data**
+3. Copy and paste the 2 accession numbers, one per line:
+
+    ```
+    ERR13363306
+    ERR13363634
+    ```
+
+4. Name the dataset **SRA accessions**
+5. Click **Start**, then **Close**
+:::
+
+The dataset is automatically recognised as a `txt` file and should appear in your history.
 
 ::: {.callout-important title="Exercice: Upload the FASTQ from SRA to Galaxy" collapse="true"}
 1. Type **fastq sra** in the tools panel search box (top)
@@ -135,8 +159,8 @@ format from NCBI SRA)
     The tool will be displayed in the central Galaxy panel.
 
 3. Select the following parameters:
-    - *select input type*: SRR accession
-    - **Accession** : *ERR13363306* and **ERR13363634* 
+    - *select input type*: List of SRA accession, one per line
+    - *sra accession list*: **SRA accessions**
     - In **Advanced Options**, define format specification for sequence, type:
 
         ```
@@ -158,7 +182,7 @@ Where:
 
 - `$ac` = accession (*ERR13363306*)
 - `$sn` = spot number (read number)
-- `$ri` = read index (1 for forward, 2 for reverse)
+- `$ri` = read index (1 for forward, 2 for reverse; always 1 for the single-end long reads)
 - `$rl` = read length
 
 This tool will run and 4 new output datasets will appear at the top of your history panel :
@@ -184,33 +208,43 @@ First, we wil look at the **fasterq-dump log** file.
 1. Click the 👁️ (eye) icon next to the file **fasterq-dump log**, to look at the file content.
 The contents of the file will be displayed in the central Galaxy panel.
 
-- How many spots have been read ?
-- How many reads have been read ?
+The log contains one block of statistics for each of the 2 accessions.
+
+- How many spots have been read for each run ?
+- How many reads have been read for each run ?
 - How can you explain the difference between the number of spots and reads ?
-- Look at the [metadata from the run](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&page_size=10&acc=ERR13363306&display=metadata). Compare the number of spots to make sure we have retrieved all the data.
+- Look at the metadata of the runs ([ERR13363306](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&page_size=10&acc=ERR13363306&display=metadata) and [ERR13363634](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&page_size=10&acc=ERR13363634&display=metadata)). Compare the number of spots to make sure we have retrieved all the data.
 
 ::: {.callout-tip title="Answer" collapse="true"}
-- spots read      : 1,769,462
-- reads read      : 3,538,924
+| Run | spots read | reads read |
+|---|---|---|
+| ERR13363306 (short reads) | 1,769,462 | 3,538,924 |
+| ERR13363634 (long reads) | 133,532 | 133,532 |
 
-We have paired reads, so this run has two reads per spot, hence : **N reads = 2* N spots**.
+A **spot** is one sequenced DNA fragment. The short reads are paired: each fragment is read from both ends, so this run has two reads per spot, hence : **N reads = 2 × N spots**. The long reads are single-end: each fragment gives one read, so **N reads = N spots**.
 
-- We have 1.8M spots in the metadata, same as in the log file, Good News !
+- The numbers of spots in the metadata are the same as in the log file, Good News !
 :::
 ::::
 
 ### Reads retrieved from NCBI
 
-Our **Single-end data (fasterq-dump)** file and **Other data (fasterq-dump)** file should be empty, as there is only pair-end data in this run.
-You can delete them by click on the 🗑️ (bin) icon.
-We will only use **Pair-end data (fasterq-dump)**.
+The reads were sorted in the output collections according to their type:
+
+- **Pair-end data (fasterq-dump)** contains the short reads of **ERR13363306** (a forward and a reverse file)
+- **Single-end data (fasterq-dump)** contains the long reads of **ERR13363634** (one file)
+- **Other data (fasterq-dump)** should be empty. You can delete it by clicking on the 🗑️ (bin) icon.
+
+::: {.callout-tip title="Rename the collections"}
+1. Next to **Pair-end data (fasterq-dump)**, click the ✏️ (pencil) icon and rename it to **Short Read**. Click **Save**.
+2. Next to **Single-end data (fasterq-dump)**, click the ✏️ (pencil) icon and rename it to **Long Read**. Click **Save**.
+:::
+
+Let's first look at the content of the short reads.
 
 ::: {.callout-tip title="View forward reads"}
-Next to the **Pair-end data (fasterq-dump)** in the history :
-
-1. click the ✏️ (pencil) icon to rename the file to **ERR13363306**. Click **Save**.
-2. Click on the file, inside you have a pair with 2 datasets, click on it.
-3. Click the 👁️ (eye) icon next forward, to look at the file content.
+1. Click on the **Short Read** collection, inside you have a pair (ERR13363306) with 2 datasets, click on it.
+2. Click the 👁️ (eye) icon next forward, to look at the file content.
 :::
 
 The contents of the file will be displayed in the central Galaxy panel. If the dataset is large, you will see a warning message which explains that only the first megabyte is shown.
@@ -232,44 +266,29 @@ The name of the first read is **@ERR13363306.1/1**. The length is this read is *
 The quality symbol in **FASTQ Format** can be hard to interpret, that's why we are going to use our first tool to have a better understanding of the data: **FastQE**.
 FastQE turns ASCII characters into emojis that are easy to interpret.
 
+We will run it on the long reads, the **Long Read** collection (run ERR13363634). This collection is a simple list with one dataset, so FastQE can use it directly.
+
+By default, FastQE only handles reads up to 500 bp, which is enough for Illumina reads, but not for Nanopore reads, which are several kb long. We need to increase the *Maximum read length*.
+
 ::: {.callout-important title="Exercice: Run FastQE tool" collapse="true"}
 1. Type **FastQE** in the tools panel search box (top)
 2. Click the tool (**FASTQE** visualize fastqfiles with emoji's)
 
-![fastqe click on the tool](images/03-intro-galaxy/fastqe-click.png)
+    ![fastqe click on the tool](images/03-intro-galaxy/fastqe-click.png)
 
-The tool will be displayed in the central Galaxy panel.
-:::
+    The tool will be displayed in the central Galaxy panel.
 
-What is happening in **"Raw read data from your current history"** ?
-
-We cannot use our dataset as there it is in the wrong format !
-First, we need to **Flatten the collection**.
-
-::: {.callout-important title="Exercice: Flatten the collection" collapse="true"}
-1. Type **Flatten Collection** in the tools panel search box (top)
-2. Click the tool (**Flatten Collection**)
-3. Read the description :
-    "This tool takes nested collections such as a list of lists or a list of dataset pairs and produces a flat list from the inputs. It effectively "flattens" the hierarchy"
-4. Select **ERR13363306** *Input Collection*.
-5. Click *Run Tool*
-6. Rename **data 13 and data 12 (flattened)** to **flattened ERR13363306**.
-:::
-
-Now that the data is at the good format, we can continue the workshop:
-
-::: {.callout-important title="Try FastQE again !" collapse="true"}
-1. Type **FastQE** in the tools panel search box (top)
-2. Click the tool (**FASTQE** visualize fastqfiles with emoji's)
 3. Select the following parameters:
-    - *FastQ data*: Select the format *Dataset Collection*, and selectt **flattened ERR13363306**
+    - *FastQ data*: Select the format *Dataset Collection*, and select **Long Read**
+    - *Maximum read length*: `5000`
     - No change in the other parameters
 4. Click **Run Tool**
 :::
 
-Now it works !
+FastQE shows one emoji per position of the reads: with a maximum read length of 5000, we get the quality of the first 5000 positions. This is just an overview of the quality of the reads.
+
 Let's look at the quality of the reads in this file.
-This tool will run and two one new output datasets will appear at the top of your history panel.
+This tool will run and one new output dataset will appear at the top of your history panel.
 
 ![fastqe sucess](images/03-intro-galaxy/fastqe-success.png){width="620px"}
 
@@ -302,12 +321,12 @@ Look on the [fastqe website](https://github.com/fastqe/fastqe/) or at the scale 
 ![fastqe-scale](images/03-intro-galaxy/fastqe-scale.png)
 
 ::: {.callout-tip title="Answer" collapse="true"}
-<!-- TODO: add the emojis and scores from your own FastQE run on ERR13363306 -->
+<!-- TODO: add the emojis and scores from your own FastQE run on ERR13363634 -->
 - For the max: the worst is … and the best is …
 - For the min: the worst is … and the best is …
 - For the mean: the worst is … and the best is …
 
-Note: our reads were sequenced on an **Illumina NovaSeq 6000**, which uses **binned quality scores**: only 4 values are possible (2 `#`, 11 `,`, 25 `:` and 37 `F`). This is why you see only a few different emojis.
+Note: our long reads were sequenced on an **Oxford Nanopore MinION**. Their quality is lower than for Illumina reads: the median quality of the reads is around **Q14** (~4% of errors), while most Illumina bases are above Q30 (0.1% of errors). Unlike our Illumina reads (NovaSeq 6000), whose quality scores are **binned** into only 4 values, Nanopore quality scores can take any value, so you see many different emojis.
 :::
 ::::
 
@@ -324,20 +343,19 @@ It creates an url, that you can share !
 
 ## Create a new history
 
-Now, let's create a new history for our next analysis, which will be the Quality Checking.
-We will name the new history according to the tool we will be using, here "FASTQC".
+Now, let's create a new history for our next analysis, which will be the quality control and trimming of the reads.
 
 ::: {.callout-tip title="New history"}
 1. Create a new history
-2. Rename it, e.g., "FASTQC"
+2. Rename it "Quality Control and Trimming"
 :::
 
 This new history has no datasets yet.
 
-## Copy the previous dataset in the new history
+## Copy the previous datasets in the new history
 
-We want to do the quality checking on the data from the sample ERR13363306.
-Because we already uploaded the forward reads form ERR13363306 (ERR13363306_1), we are going to copy the data from our first history "Galaxy Tutorial, to the history "FASTQC".
+We want to do the quality control on the reads of our sample.
+Because we already downloaded them, we are going to copy the 2 collections **Short Read** and **Long Read** from our first history "Galaxy Tutorial" to the history "Quality Control and Trimming".
 
 ::: {.callout-tip title="View histories in History Multiview"}
 1. Open **History Multiview** in the activity bar
@@ -345,7 +363,7 @@ Because we already uploaded the forward reads form ERR13363306 (ERR13363306_1), 
     ![history_multiview_tutorial.png](images/03-intro-galaxy/history_multiview.png)
 
 2. Or click **Show Histories side-by-side**
-3. Copy a dataset into your new history by dragging it from "Galaxy Tutorial" to "FASTQC"
+3. Copy the collections **Short Read** and **Long Read** into your new history by dragging them from "Galaxy Tutorial" to "Quality Control and Trimming"
 
     ![history_multiview_tutorial.png](images/03-intro-galaxy/history_multiview-data.png)
 
@@ -363,7 +381,8 @@ This is not the only way to view your histories in Galaxy:
 Well done! You have completed the short introduction to Galaxy:
 
 * Named a history
-* Uploaded a file
+* Downloaded the short and long reads of our sample from the SRA
 * Used a tool
 * Viewed results
+* Copied datasets to a new history
 
