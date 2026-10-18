@@ -55,6 +55,8 @@ website:
             href: pages/annotation/functional_annotation_lecture.md
           - text: Functional annotation (Practical)
             href: pages/annotation/functional_annotation.md
+          - text: AMR genes and virulence factors
+            href: pages/annotation/amr_abricate.md
       - text: Metabarcoding
         menu:
           - text: Introduction to the study
