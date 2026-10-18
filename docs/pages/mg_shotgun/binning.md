@@ -232,18 +232,32 @@ We are not set and ready for running the binning!
 
 ## Run 3 binning methods: MetaBAT2, MaxBin2, SemiBin
 
+### MetaBAT2
 We will now run MetaBAT2:
 
-::: {.callout-handson}
-We first need to calculate the contigs depth using the tool:
+MetaBAT stands for “Metagenome Binning based on Abundance and Tetranucleotide frequency”. 
 
-**Calculate contigs depths** for MetaBAT2
+MetaBAT is a popular software tool for metagenomics binning, and there are several reasons why it is often used:
+
+High accuracy: MetaBAT uses a combination of tetranucleotide frequency, coverage depth, and read linkage information to bin contigs, which has been shown to be highly accurate and efficient.
+Easy to use: MetaBAT has a user-friendly interface and can be run on a standard desktop computer, making it accessible to a wide range of researchers with varying levels of computational expertise.
+Flexibility: MetaBAT can be used with a variety of sequencing technologies, including Illumina, PacBio, and Nanopore, and can be applied to both microbial and viral metagenomes.
+Scalability: MetaBAT can handle large-scale datasets, and its performance has been shown to improve with increasing sequencing depth.
+Compatibility: MetaBAT outputs MAGs in standard formats that can be easily integrated into downstream analyses and tools, such as taxonomic annotation and functional prediction.
+
+
+::: {.callout-handson}
 
 Just provide the collection of *MEGAHIT* contigs to **MetaBAT2** 
 
 ::: 
 
+### MaxBin2 
+
 Run MaxBin2 directly after, you do not need to wait for MetaBAT2 to complete.
+
+MaxBin2 (Wu et al. 2015) is an automated metagenomic binning tool that uses an Expectation-Maximization algorithm to group contigs into genome bins based on abundance, tetranucleotide frequency, and single-copy marker genes.
+
 
 ::: {.callout-handson}
 
@@ -266,6 +280,8 @@ Once this step completes, we can search for **MaxBin2** in the tools menu.
 
 ![](images/maxbin2.png)
 
+### SemiBin
+
 Run SemBin directly after, you do not need to wait for MaxBin2 to complete.
 
 ::: {.callout-handson}
@@ -277,23 +293,154 @@ Setup the parameters as shown on the picture below.
 
 ![](images/semibin.png)
 
+SemiBin (Pan et al. 2022) is a semi-supervised deep learning method for metagenomic binning. It uses both must-link and cannot-link constraints derived from single-copy marker genes to guide binning, allowing higher accuracy than purely unsupervised methods.
+
+Metagenome binning is essential for recovering high-quality metagenome-assembled genomes (MAGs) from environmental samples. SemiBin applies a semi-supervised Siamese neural network that learns from both contig features and automatically generated constraints. It has been shown to recover more high-quality and near-complete genomes than MetaBAT2, MaxBin2, or VAMB across multiple benchmark datasets. SemiBin also supports single-sample, co-assembly, and multi-sample binning workflows, demonstrating excellent scalability and versatility.
+SemiBin is increasingly popular for metagenomic binning due to:
+
+High reconstruction quality: SemiBin usually recovers more high-quality and near-complete MAGs than traditional binners, including MetaBAT2.
+
+Semi-supervised learning: it combines deep learning with automatically generated constraints to better separate similar genomes.
+
+
+Support for multiple environments ; SemiBin includes trained models for:
+
+* human gut
+
+* dog gut
+
+* ocean
+
+* soil
+
+* a generic pretrained model.
+
+
 ::: {.callout-note}
 
 This step of the 3 binning methods running might take a while to compute.
 
-In the mean time, you can read about these binners and the next step of **binning refinement** on this [Galaxy tutorial](https://galaxyproject.github.io/training-material/topics/microbiome/tutorials/metagenomics-binning/tutorial.html) from which this one is largely inspired.
+In the mean time, you can read about these binners and the next step of **binning refinement** on this [Galaxy tutorial](https://galaxyproject.github.io/training-material/topics/microbiome/tutorials/metagenomics-binning/tutorial.html) from which the current one is largely inspired.
 :::
 
 
+::: {.callout-question}
 
---
-![](images/convert_bin2fasta.png)
-Use the tags for tagging each of the 3 bin2fasta collection: MetaBAT2 MaxBin2 SemiBin
+For each binning, try to answer the 2 following questions:
+
+1. How many bins where produced by SemiBin for our sample?
+
+2. How many contigs are in the bin with most contigs?
+
+:::
+
+
+## Some words about bin refinement
+
+Bin refinement tools can evaluate, combine, and improve the raw bins produced by primary binners such as MetaBAT2, MaxBin2, or SemiBin. These tools help remove contamination, merge complementary bins, and recover higher-quality MAGs.
+
+Several tools exist for performing this step:
+Automatic: MetaWRAP, DASTool and Binette.
+Interactive for manual bin refinement: Anvi'o
+
+
+## Prepare the bins from the 3 binners for bin refinement using Binette
+
+
+Binette (Mainguy and Hoede 2024): A fast and accurate bin refinement tool that constructs high-quality MAGs from the outputs of multiple binning tools. It generates hybrid bins using set operations on overlapping contigs — intersection, difference, and union — and evaluates their quality with CheckM2 to select the best bins. Compared to metaWRAP, Binette is faster and can process an unlimited number of input bin sets, making it highly scalable for large and complex metagenomic datasets.
+
+
+
+Now that we have produced bins with our favorite binners, we can refine the recovered bins. Therefore, we need to: 
+
+1. Convert the bins into a contig-to-bin mapping table,
+
+2. Combine the tables from each binner into one collection, and
+
+3. Use Binette (Mainguy and Hoede 2024) to create consensus bins.
+
+
+::: {.callout-handson}
+For each of the 3 bin collections produced, we will launch the tool:
+
+**Converts genome bins in fasta format** ; you provide the bin collection (bin sequences in fasta).
+
+Then, go to the right panel where you have all the history steps and add a tag to the collection you've just produced using the corresponding binner name tag.
+
+Click on check box on the left to *Select items* and then *add tags*.
+
+You will after each conversion with **Converts genome bins in fasta format** add the tags (*MetaBAT2, MaxBin2 or SemiBin*) to the corresponding collection.
+The picture below shows you how to do that.
+::: 
+
+
 ![](images/add_tag_collection.png)
-Prep for Binnette:
-  build list + insert 3 datasets (2 pics)
-Binette 
-GTDBTk
 
-Write about co-assembly
-Map host??
+
+Once all 3 collections of bin-table are ready and tagged, we will build the list of collections to provide Binette with.
+
+::: {.callout-handson}
+Build a list of the binning tables
+
+Search for the **Build list** tool.
+
+* Input Dataset: output of Converts genome bins in fasta format of the binning tool
+
+* Label to use: `Index`
+
+You will have the possibility to insert 3 datasets, one by one, like on the picture below.
+:::
+
+![](images/build_list.png)
+
+
+We can now refine the bins with Binette.
+
+::: {.callout-handson}
+
+Search for **Binette** in the tools menu. Provide the list that you have just made, and also the `MEGAHIT contigs collection`.
+
+::: 
+
+![](images/binette.png)
+
+::: {.callout-question}
+Inspect the results produced by Binette.
+
+1. How many bins are left after refinement?
+
+2. Can you check the bin quality from Binette results?
+:::
+
+
+## Checking the quality of the refined bins
+
+Checking the quality of the bins
+Once binning is done, it is important to check its quality.
+
+Binning results can be evaluated with CheckM (Parks et al. 2015). CheckM is a software tool used in metagenomics binning to assess the completeness and contamination of genome bins.
+
+CheckM compares the genome bins to a set of universal single-copy marker genes that are present in nearly all bacterial and archaeal genomes. By identifying the presence or absence of these marker genes in the bins, CheckM can estimate the completeness of each genome bin (i.e., the percentage of the total set of universal single-copy marker genes that are present in the bin) and the degree of contamination (i.e., the percentage of marker genes that are found in more than one bin).
+
+This information can be used to evaluate the quality of genome bins and to select high-quality bins for further analysis, such as genome annotation and comparative genomics. CheckM is widely used in metagenomics research and has been shown to be an effective tool for assessing the quality of genome bins. Some of the key functionalities of CheckM are:
+
+* Estimation of genome completeness: CheckM uses a set of universal single-copy marker genes to estimate the completeness of genome bins. The completeness score indicates the proportion of these marker genes that are present in the bin, providing an estimate of how much of the genome has been recovered.
+
+* Estimation of genome contamination: CheckM uses the same set of marker genes to estimate the degree of contamination in genome bins. The contamination score indicates the proportion of marker genes that are present in multiple bins, suggesting that the genome bin may contain DNA from more than one organism.
+
+* Identification of potential misassemblies: CheckM can identify potential misassemblies in genome bins based on the distribution of marker genes across the genome.
+
+* Visualization of results: CheckM can generate various plots and tables to visualize the completeness, contamination, and other quality metrics for genome bins, making it easier to interpret the results.
+
+Taxonomic classification: CheckM can also be used to classify genome bins taxonomically based on the presence of specific marker genes associated with different taxonomic groups.
+
+
+::: {.callout-note}
+**CheckM VS CheckM2**
+
+CheckM2 (Chklovski et al. 2023) is the successor of CheckM, but CheckM is still widely used, since its marker-based logic can be more interpretable in a biological sense. E.g., to date (2025-11-21), NCBI still allows submitting MAGs to GenBank if either checkM or checkM2 has a completeness of > 90%.
+
+If you’re working with MAGs from underrepresented taxa (novel lineages) or very small genomes (streamlined bacteria/archaea), CheckM2 tends to give more reliable estimates of completeness/contamination. For more “standard” microbial genomes from well-studied taxa, CheckM1 may still work well, but you may benefit from the improved performance with CheckM2.
+
+:::
+
