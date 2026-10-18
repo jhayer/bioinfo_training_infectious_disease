@@ -55,32 +55,6 @@ Think of it like a “car wash” for raw sequencing reads 🚿: it removes ever
 
 fastp is also very fast, and automatically detects adapters in paired-end data.
 
-## Reading a per-base quality plot
-
-The most important plot of a quality report shows the quality score at each position of the reads. The image below shows a very high-quality sample:
-
-![good quality plot](images/04-read-QC/good-fastqc.png)
-
-The x-axis displays the base position in the read, and the y-axis shows quality scores. In this
-example, the sample contains reads that are 40 bp long. This length is much shorter than the reads we
-are working on within our workflow. For each position, there is a box-and-whisker plot showing
-the distribution of quality scores for all reads at that position. The horizontal red line
-indicates the median quality score, and the yellow box shows the 1st to
-3rd quartile range. This range means that 50% of reads have a quality score that falls within the
-range of the yellow box at that position. The whiskers show the whole range covering
-the lowest (0th quartile) to highest (4th quartile) values.
-
-The quality values for each position in this sample do not drop much lower than 32, which is a high-quality score. The plot background is also color-coded to identify good (green),
-acceptable (yellow) and bad (red) quality scores.
-
-Now let's look at a quality plot on the other end of the spectrum.
-
-![bad quality plot](images/04-read-QC/bad-fastqc.png)
-
-Here, we see positions within the read in which the boxes span a much more comprehensive range. Also, quality scores drop pretty low into the "bad" range, particularly on the tail end of the reads.
-
-fastp shows the same information in a simpler way: one line per nucleotide (A, T, C, G) and one for the mean quality, at each position of the read.
-
 ## The cleaning steps
 
 We will follow a classic stepwise cleaning process:
@@ -166,7 +140,7 @@ Keep the default values for the other filtering options (quality filtering: qual
 
 **Reports**
 
-In **Output Options**, make sure the **HTML report** is produced (and optionally the JSON report, which can be read by MultiQC).
+In **Output Options**, make sure the **HTML report** is produced, and tick **JSON report**: we will need it later to aggregate the reports with MultiQC.
 
 **Run the tool**
 
@@ -177,9 +151,9 @@ Once you have selected all the parameters, click on **Run Tool**.
 
 The tool takes a few minutes to run. It creates:
 
-- **fastp on collection X: Paired-end output**: a paired collection with the cleaned forward and reverse reads
-- **fastp on collection X: HTML report**: the quality report, before and after filtering
-- (optional) **fastp on collection X: JSON report**
+- **fastp on collection X: Paired-end output**: a paired collection with the cleaned forward and reverse reads. Rename it **Trimmed short reads**.
+- **fastp on collection X: HTML report**: the quality report, before and after filtering. Rename it **fastp HTML short read**.
+- **fastp on collection X: JSON report**: needed to add the report in MultiQC.
 
 ::: {.callout-note title="What happens to reads whose mate was removed?"}
 fastp keeps the pairing of the reads: if one read of a pair is discarded (too short, too low quality), its mate is discarded too, so the forward and reverse files still correspond read by read.
@@ -189,6 +163,7 @@ fastp can also save these orphan reads in separate *unpaired* outputs, but we wi
 # Results
 
 Click on the 👁️ (eye) icon of the **HTML report** to open it.
+![fastp-preview](images/04-read-QC/fastp-preview.png)
 
 ## Summary
 
@@ -249,6 +224,7 @@ The **Before filtering** and **After filtering** sections contain, for read 1 an
 
 :::: {.callout-important title="Exercise: Discuss the quality of the reads" collapse="true"}
 Look at the **quality** plots of read 1 and read 2, before and after filtering.
+![fastp-filtering](images/04-read-QC/fastp-filtering.png)
 Discuss your results with a neighbor.
 
 1. What is a common trend among the 2 reads before filtering?
@@ -264,15 +240,12 @@ Discuss your results with a neighbor.
 fastp automatically detects the quality encoding of the reads (phred33 for all recent Illumina data). If you work with very old data (phred64), you need to tell it explicitly.
 :::
 
-## Quality of multiple samples, using MultiQC
-
-When you have many samples, opening one report per sample is tedious. [MultiQC](https://multiqc.info/) can aggregate the **JSON reports** of fastp for all samples in a single report.
 
 # Conclusion
 
 We have just successfully assessed the quality of our reads and cleaned them with fastp, in a single step!
 From now on, we will only keep the cleaned paired collection **fastp on collection X: Paired-end output**.
-Rename it **Trimmed Short Read**.
+Rename it **Trimmed Short Reads**.
 
 ::: {.callout-tip title="Key Points"}
 - It is important to know the quality of our data to make decisions in the subsequent steps.
@@ -284,7 +257,7 @@ Rename it **Trimmed Short Read**.
 
 # Read Quality and trimming of long reads 
 
-Now we are going to have a look at the long reads of the same sample: the collection **Long Read** (run **ERR13363634**), downloaded in the [Introduction to Galaxy](intro_galaxy.md) and copied in this history. It contains a single dataset: Nanopore reads are not paired.
+Now we are going to have a look at the long reads of the same sample: the collection **Long Reads** (run **ERR13363634**), downloaded in the [Introduction to Galaxy](intro_galaxy.md) and copied in this history. It contains a single dataset: Nanopore reads are not paired.
 
 ::: {.callout-note title="Our long reads"}
 According to the [ENA](https://www.ebi.ac.uk/ena/browser/view/ERR13363634), ERR13363634 was sequenced on an Oxford Nanopore **MinION** and contains **133,532 reads** for a total of **912.6 Mb**, i.e. a mean read length of ~6.8 kb.
@@ -357,7 +330,7 @@ In **Filter Options** → **Length filtering options**:
 
 **Reports**
 
-In the output options, make sure the **HTML report** is produced, and activate the **JSON report** (which can be read by MultiQC).
+In the output options, make sure the **HTML report** is produced, and tick **JSON report**: we will need it later to aggregate the reports with MultiQC.
 
 **Run the tool**
 
@@ -368,7 +341,7 @@ The tool creates:
 
 - **fastplong on data X: Reads**: the cleaned long reads
 - **fastplong on data X: HTML report**: the quality report, before and after filtering
-- **fastplong on data X: JSON report**
+- **fastplong on data X: JSON report**: needed to add the report in MultiQC
 
 Rename the cleaned reads **Trimmed Long Read**.
 
@@ -381,7 +354,7 @@ Click on the 👁️ (eye) icon of the **HTML report** to open it. Its structure
 2. In the **Filtering result** section, what percentage of reads passed the filters? What is the main reason why reads were removed?
 3. How did the mean read length and the mean quality change after filtering?
 4. What is the coverage of the trimmed long reads?
-5. Could reads from the 2.1 kb plasmid still be present?
+5. Which graphs are present in fastplong, that are not present in fastp ? 
 
 ::: {.callout-tip title="Answer" collapse="true"}
 <!-- TODO: add the numbers from your own run -->
@@ -389,7 +362,21 @@ Click on the 👁️ (eye) icon of the **HTML report** to open it. Its structure
 2. Look at the **Filtering result** section: reads are removed because of a low quality or because they are too short.
 3. The mean length and the mean quality increased: the short and low-quality reads were removed.
 4. Coverage = total bases / genome size: divide the *total bases* after filtering by 5.2 Mb. It should stay well above 50x.
-5. Yes, if they are longer than 1 kb and have a mean quality ≥ Q10. We will check in the assembly whether the small plasmids were recovered.
+5. fastplong has graphs that describe each **read as a whole**, which fastp does not have:
+    - **Read length distribution**: the percentage of reads and of bases for each read length
+    - **Cumulative yield by minimum read length**: how many reads and bases you keep if you only keep reads longer than a given length
+    - **Read mean quality distribution** and **Read median quality distribution**: one quality value per read, instead of one per position
+    - **Density plot of read median quality and read length**: are the long reads also good reads?
+    - **Read GC content distribution**: the GC content of each read
+
+    **Why are they important for long reads, and not for short reads?**
+
+    - **Read length varies a lot.** Illumina reads all have the same length (e.g. 150 bp), so a length graph would be a single bar. Nanopore reads range from a few hundred bases to tens of kilobases, and the length of the reads is what makes them useful: long reads span repeats and connect the contigs of the assembly. The length distribution, the N50 and the cumulative yield tell you how much useful long-read data you have, and help you choose the minimum length filter (here 1000 bp) without losing too many bases.
+    - **Quality is a property of each read, not of each position.** With Illumina, quality decreases along the read (the per-position graph shows it), so we trim the ends. With Nanopore, errors are spread along the read, and some reads are bad from start to end. That is why we filter whole reads on their mean quality (here Q10), and the per-read quality graphs show what this filter removes.
+    - **Long and good reads are not always the same reads.** The density plot shows if the longest reads are also of good quality, to choose the length and quality filters together.
+    - **Read GC content** helps to spot reads from a contaminant with a different GC content, which appear as a second peak.
+
+    On the other hand, fastp has graphs that make sense only for short reads: **duplication rate** and **insert size** (estimated from the overlap of the two reads of a pair).
 :::
 ::::
 
@@ -398,3 +385,56 @@ Click on the 👁️ (eye) icon of the **HTML report** to open it. Its structure
 Open the HTML report from **fastp** (short reads), and the HTML report from **fastplong** (long reads).
 Look at the average size. Look at the average quality. Discuss the pros and cons of each HTS technology.
 
+## Common problems to check
+
+The two technologies do not make the same kind of errors, so we do not look for the same problems in their QC reports.
+
+**Illumina (short reads)**: few errors, mostly **substitutions** (one base read as another), concentrated at the end of the reads.
+
+| Problem | Why it happens | Where to see it | What to do |
+|---------|----------------|-----------------|------------|
+| Quality drops at the end of the reads | The sequencing chemistry gets less accurate at each cycle | Quality curve along the read position | Trim the low-quality ends |
+| Adapters in the reads | The DNA fragment is shorter than the read, so the sequencer reads into the adapter | **Adapters** section, insert size | Trim the adapters |
+| Uneven base composition in the first ~10 bases | Bias of the library preparation (fragmentation, random primers) | Base content curve along the read position | Usually harmless; trim if it is strong |
+| Poly-G tails | On 2-colour sequencers (NextSeq, NovaSeq), "no signal" is read as a G with a high quality | Base content curve: G increases at the end of the reads | Poly-G trimming (fastp does it automatically for these sequencers) |
+| High duplication rate | Too many PCR cycles, or too little starting DNA | **Duplication** section | Interpret the coverage with caution |
+| Ambiguous bases (`N`) | The sequencer could not call the base | N content curve | Filter reads with too many N |
+
+**Nanopore (long reads)**: many more errors, mostly **insertions and deletions** (indels), often in **homopolymers** (e.g. `AAAAAAA`, where the number of A is hard to count), spread along the whole read.
+
+| Problem | Why it happens | Where to see it | What to do |
+|---------|----------------|-----------------|------------|
+| Low-quality reads | Some reads are bad from start to end (pore problems, damaged DNA) | Read mean quality distribution | Filter on mean read quality (e.g. Q10) |
+| Short reads | DNA fragmented during extraction or library preparation | Read length distribution, N50 | Filter on read length; improve the DNA extraction next time |
+| Adapters and barcodes | Adapters are ligated to both ends of the DNA | **Adapters** section | Trim the adapters |
+| Chimeric reads | Two DNA fragments ligated together and read as one | Adapters found in the **middle** of the reads | Split the reads at the internal adapters |
+| Homopolymer errors | The signal does not change along a run of the same base | Not visible in the QC report | Polish the assembly (e.g. with medaka, or with Illumina reads) |
+
+For both technologies, also check for **contamination** (reads from another organism): a second peak in the GC content distribution is a hint, and the [contamination check](contamination.md) confirms it.
+
+
+# (Optional), Use another tool: FastQC
+
+The most important plot of the FastQC quality report shows the quality score at each position of the reads. The image below shows a very high-quality sample:
+
+![good quality plot](images/04-read-QC/good-fastqc.png)
+
+The x-axis displays the base position in the read, and the y-axis shows quality scores. In this
+example, the sample contains reads that are 40 bp long. This length is much shorter than the reads we
+are working on within our workflow. For each position, there is a box-and-whisker plot showing
+the distribution of quality scores for all reads at that position. The horizontal red line
+indicates the median quality score, and the yellow box shows the 1st to
+3rd quartile range. This range means that 50% of reads have a quality score that falls within the
+range of the yellow box at that position. The whiskers show the whole range covering
+the lowest (0th quartile) to highest (4th quartile) values.
+
+The quality values for each position in this sample do not drop much lower than 32, which is a high-quality score. The plot background is also color-coded to identify good (green),
+acceptable (yellow) and bad (red) quality scores.
+
+Now let's look at a quality plot on the other end of the spectrum.
+
+![bad quality plot](images/04-read-QC/bad-fastqc.png)
+
+Here, we see positions within the read in which the boxes span a much more comprehensive range. Also, quality scores drop pretty low into the "bad" range, particularly on the tail end of the reads.
+
+fastp shows the same information in a simpler way: one line per nucleotide (A, T, C, G) and one for the mean quality, at each position of the read.

@@ -60,6 +60,10 @@ put the pdf file on Galaxy Introduction.
 Explain what it the concept, that it is present that they are servers all around the world. 
 Explain that bioinformatic is a world made out of tools for specific uses, and Galaxy allows you to use all these tools. 
 
+<iframe src="../../lectures/galaxy/intro_galaxy_slides.html" width="1280" height="720" style="border: 1px solid #ccc;" allowfullscreen="true"></iframe>
+
+[Open the slides in full screen](../../lectures/galaxy/intro_galaxy_slides.html){target="_blank"} — adapted from the [Galaxy Training Network](https://training.galaxyproject.org/training-material/topics/introduction/tutorials/introduction/slides.html) (CC-BY 4.0).
+
 ## What does Galaxy look like?
 
 :::: {.callout-tip title="Log in to Galaxy"}
@@ -115,6 +119,48 @@ In the **Data availability** part of [the E.Coli Paper](https://www.sciencedirec
 
 "Data availability: All sequencing data and assembled genomes are deposited at the European Nucleotide Archive under study PRJEB77560. A table with all accession numbers is in Supplementary Data (S13)."
 
+## What is European Nucleotide Archive ? 
+
+![International Nucleotide Sequence Database Collaboration](images/03-intro-galaxy/INSDC.png). 
+The International Nucleotide Sequence Database Collaboration (INSDC) archives nucleotide sequence data, from raw to assembled and annotated sequences, from around the world.
+There are three primary members DDBJ (DNA Databank Japan), NLM-NCBI (National Library Medicine – National Center for Biotechnology Information) and ENA (European Nucleotide Archive), which are mirrored, thus sequences shared with one are shared with all.Each of the repositories, DDBJ, ENA and NLM-NCBI all hold the same data, however each one has a different interface and mechanisms for uploading and downloading.
+
+| | **NCBI** | **ENA** | **DDBJ** |
+|---|---|---|---|
+| Full name | National Center for Biotechnology Information | European Nucleotide Archive | DNA Data Bank of Japan |
+| Host institution | NLM / NIH | EMBL-EBI | National Institute of Genetics (NIG) |
+| Region | USA | Europe (UK) | Japan |
+| Assembled / annotated sequences | GenBank | ENA sequence records | DDBJ sequence records |
+| Raw sequencing reads | SRA (Sequence Read Archive) | ENA read archive | DRA (DDBJ Sequence Read Archive) |
+| Raw-read accession prefixes | SRR, SRX, SRS, SRP | ERR, ERX, ERS, ERP | DRR, DRX, DRS, DRP |
+| BioProject prefix | PRJNA | PRJEB | PRJDB |
+| BioSample prefix | SAMN | SAMEA | SAMD |
+| Main submission portal | NCBI Submission Portal | Webin | D-way (DDBJ submission system) |
+| Website | ncbi.nlm.nih.gov | ebi.ac.uk/ena | ddbj.nig.ac.jp |
+
+This data is used in many tools:
+![INSDC-tools](images/03-intro-galaxy/INSDC-tools.png). 
+
+## The product of INSDC
+
+Every object in the INSDC system, whether a project, a sample, an experiment, a run, or an assembled sequence, gets its own unique accession number, and that number is the key to retrieving it : 
+
+| Level | What it describes | NCBI | ENA | DDBJ |
+|---|---|---|---|---|
+| **Project / Study** | The overall research effort | BioProject (`PRJNA`) | Study (`PRJEB`) | BioProject (`PRJDB`) |
+| **Sample** | The biological material sequenced | BioSample (`SAMN`) | Sample (`SAMEA`) | BioSample (`SAMD`) |
+| **Experiment** | Library prep and sequencing method | SRX | ERX | DRX |
+| **Run** | A set of reads from one sequencing run | SRR | ERR | DRR |
+| **Assembled sequences** | Genomes, genes, transcripts | GenBank | ENA records | DDBJ records |
+
+The hierarchy is like this : 
+Project / Study → Sample → Experiment → Run
+                     ↘ Assembled sequences (GenBank / ENA / DDBJ)
+
+ A project is retrieved through its BioProject accession (e.g., PRJNA…, PRJEB…, PRJDB…), a sample through its BioSample accession (e.g., SAMN…, SAMEA…, SAMD…), raw reads through run accessions (SRR/ERR/DRR), and assembled sequences through GenBank/ENA/DDBJ accessions (e.g., MN908947). Because the three databases synchronize daily, any of these accessions can be searched in NCBI, ENA, or DDBJ, regardless of where the data was first submitted. The accessions are also cross-linked: a BioProject page lists its associated BioSamples, runs, and sequences, and each sequence or run record points back to its BioProject and BioSample. This means you can start from any one accession and navigate to the rest of the related data, which makes records stable, citable in publications, and reproducible.
+
+## The ENA project of our study.
+
 Indeed, if you dug into the European Nucleotide Archive (ENA) website. You can find the project [PRJEB77560](https://www.ebi.ac.uk/ena/browser/view/PRJEB77560).
 
 In total, You have 12 run accessions from 6 Sample accessions: for each of the 6 samples you have 2 runs, one for the long reads, and another one for the short reads ! 
@@ -127,6 +173,8 @@ Throughout the tutorial, we will work on **1 sample**: [SAMEA115834835](https://
 | *ERR13363634* | Oxford Nanopore MinION | Long reads, single-end |
 
 We will download both runs now, and start by looking at the short reads.
+
+
 
 ### Galaxy Tool
 

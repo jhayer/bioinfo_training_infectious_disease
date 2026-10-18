@@ -75,8 +75,6 @@ Kraken2 uses a compact hash table, a probabilistic data structure that allows fo
 
 You can find more information about the Kraken2 algorithm in the paper Improved metagenomic analysis with Kraken 2.
 
-For this tutorial, we will use the PlusPF database which contains the Standard (archaea, bacteria, viral, plasmid, human, UniVec_Core), protozoa and fungi data.
-
 ## Kraken Reference dataset : Standard
 
 A Kraken dataset is essentially a collection of reference sequences (genomes or proteins) that the software uses to classify sequencing reads.
@@ -86,20 +84,25 @@ The process to build it involves:
 
 2. Breaking sequences into k-mers – Each reference sequence is split into short, fixed-length DNA fragments called k-mers (commonly 35 bp).
 
-In our study, we will use the Prebuild dataset Standard. 
-For this tutorial, we will use the PlusPF database which contains the Standard (archaea, bacteria, viral, plasmid, human, UniVec_Core). The PlusPF Kraken2 database uses a k-mer size of **35**. 
+For this tutorial, we will use the prebuilt **Standard-Full** database, which contains archaea, bacteria, viral, plasmid, human and UniVec_Core sequences. It uses a k-mer size of **35**.
 
-| Database     | Origin                                                                 |
-|-------------|------------------------------------------------------------------------|
-| Archaea     | RefSeq complete archaeal genomes/proteins                               |
-| Bacteria    | RefSeq complete bacterial genomes/proteins                              |
-| Plasmid     | RefSeq plasmid nucleotide/protein sequences                             |
-| Viral       | RefSeq complete viral genomes/proteins                                   |
-| Human       | GRCh38 human genome/proteins                                            |
-| Fungi       | RefSeq complete fungal genomes/proteins                                  |
-| Plant       | RefSeq complete plant genomes/proteins                                   |
-| Protozoa    | RefSeq complete protozoan genomes/proteins                               |
-| UniVec_Core | A subset of UniVec, NCBI-supplied database of vector, adapter, linker, and primer sequences that may be contaminating sequencing projects and/or assemblies, chosen to minimize false positive hits to the vector database |
+The table below lists the reference libraries that can be included in a Kraken2 database, and which ones are in Standard-Full. Other prebuilt databases add more libraries: for example, **PlusPF** adds protozoa and fungi.
+
+| Database    | Origin | In Standard-Full |
+|-------------|--------|:----------------:|
+| Archaea     | RefSeq complete archaeal genomes/proteins | ✅ |
+| Bacteria    | RefSeq complete bacterial genomes/proteins | ✅ |
+| Plasmid     | RefSeq plasmid nucleotide/protein sequences | ✅ |
+| Viral       | RefSeq complete viral genomes/proteins | ✅ |
+| Human       | GRCh38 human genome/proteins | ✅ |
+| UniVec_Core | A subset of UniVec, NCBI-supplied database of vector, adapter, linker, and primer sequences that may be contaminating sequencing projects and/or assemblies, chosen to minimize false positive hits to the vector database | ✅ |
+| Fungi       | RefSeq complete fungal genomes/proteins | ❌ |
+| Plant       | RefSeq complete plant genomes/proteins | ❌ |
+| Protozoa    | RefSeq complete protozoan genomes/proteins | ❌ |
+
+::: {.callout-note title="What Standard-Full cannot detect"}
+A contamination by a fungus, a plant or a protozoan will not be identified with this database: most of its reads will appear as **unclassified**. A large fraction of unclassified reads can therefore also be a hint of contamination.
+:::
 
 ::: {.callout-important title="Exercice: Run Kraken2 on Galaxy" collapse="true"}
 1. Search the tool **Kraken2**.
