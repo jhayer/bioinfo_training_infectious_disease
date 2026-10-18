@@ -135,7 +135,7 @@ SPAdes takes **FASTQ** files as input and outputs:
 
 # Running SPAdes on Galaxy
 
-We will use the trimmed short reads of run *ERR13363306* (collection **Trimmed Short Read**), from  [the E.Coli Paper](https://www.sciencedirect.com/science/article/pii/S2213716525002061?via%3Dihub). 
+We will use the trimmed short reads of run *ERR13363306* (collection **Trimmed Short Reads**), from  [the E.Coli Paper](https://www.sciencedirect.com/science/article/pii/S2213716525002061?via%3Dihub). 
 
 What parameters do I need to choose for SPAdes ? 
 the most important is k-mers.
@@ -162,7 +162,7 @@ Use the **History Multiview** panel.
 
 ::: {.callout-tip title="Import input reads"}
 1. Open the **History Multiview** (left panel).
-2. Drag your trimmed paired-end reads (**Trimmed Short Read**) from the previous history (e.g., “Quality Control and Trimming”).
+2. Drag your trimmed paired-end reads (**Trimmed Short Reads**) from the previous history (e.g., “Quality Control and Trimming”).
 3. Drop them into the **Short Read Genome Assembly** history.
 :::
 
@@ -191,7 +191,7 @@ SPAdes performs BayesHammer/Hammer error correction on the raw reads before doin
 
 - in **Pipeline Options**: tick **Isolate** (`--isolate`).
   This mode is recommended for the DNA of a single bacterial culture sequenced at high coverage, which is our case (~100x): it improves the assembly and reduces the running time.
-  Do **not** enable the careful mode (`--careful`): it is not compatible with the isolate mode, and SPAdes would refuse to run.
+
 
 - **Select additional outputs**:  
   - Contigs  
@@ -207,24 +207,12 @@ Assembly usually takes a few minutes depending on coverage and read depth.
 
 ## Galaxy Outputs 
 
-SPAdes generates several output files with different assembly representations:
+SPAdes generates several output files with different assembly representations. Rename them as indicated, so that you can find them easily in the next tutorials.
 
-Main assembly files:
-
-**SPAdes on data X and data X: Contigs**
-Basic contigs without scaffolding
-No gaps (N's)
-Most conservative assembly
-
-
-**SPAdes on data X and data X: Scaffolds**
-Contigs linked together using paired-end information
-Contains gaps represented as N's where SPAdes inferred connections
-Longer sequences, but includes uncertainties
-
-**SPAdes on data 2 and data 1: Assembly graph** and **SPAdes on data 2 and data 1: Assembly graph with scaffolds**
-Used for visualization (Bandage) and understanding assembly structure
-The difference between "Assembly graph" vs "Assembly graph with scaffolds":
-Assembly graph: The basic de Bruijn graph structure
-Assembly graph with scaffolds: Graph that includes scaffolding information (how contigs connect)
+| Galaxy output | Rename it | Content |
+|---|---|---|
+| **SPAdes on data X and data X: Contigs** | **SPAdes contigs Short Reads** | Basic contigs without scaffolding. No gaps (`N`): the most conservative assembly. |
+| **SPAdes on data X and data X: Scaffolds** | **SPAdes scaffolds Short Reads** | Contigs linked together using paired-end information. Gaps are represented as runs of `N` where SPAdes inferred a connection: longer sequences, but with uncertainties. |
+| **SPAdes on data X and data X: Assembly graph with scaffolds** | **SPAdes assembly graph Short Reads** | The de Bruijn graph, with the scaffolding information (how the contigs connect). Used for the visualisation with Bandage. |
+| **SPAdes on data X and data X: Log** | **SPAdes log Short Reads** | The messages written by SPAdes during the run: the k-mer sizes used, the steps, and the errors if the run failed. |
 

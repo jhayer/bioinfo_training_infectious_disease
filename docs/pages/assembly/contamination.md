@@ -2,7 +2,7 @@
 
 # Contamination or host screen
 
-In this tutorial, we check that our reads come from *E. coli* only. We work in the history **Quality Control and Trimming**, which contains the trimmed reads **Trimmed Short Read** and **Trimmed Long Read**.
+In this tutorial, we check that our reads come from *E. coli* only. We work in the history **Quality Control and Trimming**, which contains the trimmed reads **Trimmed Short Reads** and **Trimmed Long Reads**.
 
 ## SRA Taxonomy Analysis
 ON the SRA sample webpage, the taxonomy analysis is automatically computed for every sample. 
@@ -75,7 +75,7 @@ Kraken2 uses a compact hash table, a probabilistic data structure that allows fo
 
 You can find more information about the Kraken2 algorithm in the paper Improved metagenomic analysis with Kraken 2.
 
-## Kraken Reference dataset : Standard
+## Kraken reference database: Standard and MiniKraken2
 
 A Kraken dataset is essentially a collection of reference sequences (genomes or proteins) that the software uses to classify sequencing reads.
 The process to build it involves:
@@ -84,47 +84,61 @@ The process to build it involves:
 
 2. Breaking sequences into k-mers – Each reference sequence is split into short, fixed-length DNA fragments called k-mers (commonly 35 bp).
 
-For this tutorial, we will use the prebuilt **Standard-Full** database, which contains archaea, bacteria, viral, plasmid, human and UniVec_Core sequences. It uses a k-mer size of **35**.
+The **Standard** database contains archaea, bacteria, viral, plasmid, human and UniVec_Core sequences, with a k-mer size of **35**. It is large (more than 50 GB), so it needs a lot of memory and time to run.
 
-The table below lists the reference libraries that can be included in a Kraken2 database, and which ones are in Standard-Full. Other prebuilt databases add more libraries: for example, **PlusPF** adds protozoa and fungi.
+For this tutorial, we will use **MiniKraken2**, a reduced version built from the RefSeq bacteria, archaea and viral genomes and the human genome. It is capped at **8 GB**: only a subset of the k-mers of each genome is kept. It runs much faster, but it is less sensitive: some reads that would be classified with the Standard database stay unclassified.
 
-| Database    | Origin | In Standard-Full |
-|-------------|--------|:----------------:|
-| Archaea     | RefSeq complete archaeal genomes/proteins | ✅ |
-| Bacteria    | RefSeq complete bacterial genomes/proteins | ✅ |
-| Plasmid     | RefSeq plasmid nucleotide/protein sequences | ✅ |
-| Viral       | RefSeq complete viral genomes/proteins | ✅ |
-| Human       | GRCh38 human genome/proteins | ✅ |
-| UniVec_Core | A subset of UniVec, NCBI-supplied database of vector, adapter, linker, and primer sequences that may be contaminating sequencing projects and/or assemblies, chosen to minimize false positive hits to the vector database | ✅ |
-| Fungi       | RefSeq complete fungal genomes/proteins | ❌ |
-| Plant       | RefSeq complete plant genomes/proteins | ❌ |
-| Protozoa    | RefSeq complete protozoan genomes/proteins | ❌ |
+The table below lists the reference libraries that can be included in a Kraken2 database, and which ones are in each database.
 
-::: {.callout-note title="What Standard-Full cannot detect"}
-A contamination by a fungus, a plant or a protozoan will not be identified with this database: most of its reads will appear as **unclassified**. A large fraction of unclassified reads can therefore also be a hint of contamination.
+| Library     | Origin | Standard | MiniKraken2 |
+|-------------|--------|:--------:|:-----------:|
+| Archaea     | RefSeq complete archaeal genomes/proteins | ✅ | ✅ |
+| Bacteria    | RefSeq complete bacterial genomes/proteins | ✅ | ✅ |
+| Plasmid     | RefSeq plasmid nucleotide/protein sequences | ✅ | ❌ |
+| Viral       | RefSeq complete viral genomes/proteins | ✅ | ✅ |
+| Human       | GRCh38 human genome/proteins | ✅ | ✅ |
+| UniVec_Core | A subset of UniVec, NCBI-supplied database of vector, adapter, linker, and primer sequences that may be contaminating sequencing projects and/or assemblies, chosen to minimize false positive hits to the vector database | ✅ | ❌ |
+| Fungi       | RefSeq complete fungal genomes/proteins | ❌ | ❌ |
+| Plant       | RefSeq complete plant genomes/proteins | ❌ | ❌ |
+| Protozoa    | RefSeq complete protozoan genomes/proteins | ❌ | ❌ |
+
+::: {.callout-note title="What these databases cannot detect"}
+A contamination by a fungus, a plant or a protozoan will not be identified with these databases: most of its reads will appear as **unclassified**. A large fraction of unclassified reads can therefore also be a hint of contamination.
 :::
+
+## Run Kraken2 in Galaxy
+
+We run [Kraken2](https://github.com/DerrickWood/kraken2) ([Wood et al. 2019](https://doi.org/10.1186/s13059-019-1891-0)) on the trimmed short reads, with the following parameters:
+
+| Parameter | Value | Meaning |
+|---|---|---|
+| *Confidence* | 0.0 (default) | Minimum fraction of the k-mers of a read that must support its classification. 0.0 gives the most sensitive classification: we want to detect any contamination, even at a low level. Higher values increase the precision at the cost of sensitivity. |
+| *Minimum Base Quality* | 10 (default: 0) | Bases with a quality below 10 (more than 10% chance of error) are masked and ignored: a k-mer containing a wrong base can match the wrong taxon. Our reads are already trimmed, so very few bases are masked. |
+| *Create Report* | Yes | The report summarises how many reads are assigned to each taxon. We need it for the visualisation with Krona. |
 
 ::: {.callout-important title="Exercice: Run Kraken2 on Galaxy" collapse="true"}
 1. Search the tool **Kraken2**.
-2. Select paired reads, and the collection **Trimmed Short Read**.
-3. In *Minimum Base Quality*, select **20**.
-4. In *Select a Kraken2 Database*, select **Prebuilt Refseq indexes: Standard-Full (archaea, bacteria, viral, plasmid, human,UniVec_Core) (Version: 2022-06-07 - Downloaded: 2022-07-06T094102Z)**.
+2. In *Single or paired reads*, select **Paired Collection**, and the collection **Trimmed Short Reads**.
+3. In *Select a Kraken2 Database*, select **MiniKraken2**.
+4. In *Minimum Base Quality*, enter **10**.
 5. In *Create Report*, click **Yes** for *Print a report with aggregrate counts/clade to file*.
+6. Keep the default values for the other parameters, and click *Run Tool*.
 :::
 
+::: {.callout-note title="Do we need Bracken?"}
+[Bracken](https://github.com/jenniferlu717/Bracken) ([Lu et al. 2017](https://doi.org/10.7717/peerj-cs.104)) re-estimates the **abundance** of each species: Kraken2 assigns many reads only to the genus or family level (their k-mers are shared between several species), and Bracken redistributes them to the species level.
 
-The default confidence threshold of 0.0 will result in the most sensitive classification, while higher thresholds will increase precision at the cost of sensitivity, and we want to detect any contamination (even low-level).
-
-## Run Kraken2 in Galaxy 
+This is useful in metagenomics, to compare the abundance of species in a community. For a contamination check of a pure culture, we do not need it: we only want to know whether reads come from another organism, and in which proportion. The Kraken2 report already answers this question.
+:::
 
 ## Kraken2 Output Overview
 
 Kraken2 generates **two output files per dataset** (e.g., one per sample):
 
-- Classification table
-- Report: 
+- **Kraken2 on collection X: Classification**: the classification of each read. Rename it **Kraken2 classification short reads**.
+- **Kraken2 on collection X: Report**: the number of reads assigned to each taxon. Rename it **Kraken2 report Short Reads**.
 
-Classification
+### Classification
 
 Each line corresponds to one sequence and has **5 columns**:
 
@@ -152,7 +166,7 @@ Krakentools (Lu et al. 2017) is a suite of tools to work on Kraken outputs. It i
 
 ::: {.callout-important title="Exercice: Convert Kraken report file" collapse="true"}
 1. In the Tool, type : **Krakentools: Convert kraken report file to krona text file**
-2. Kraken report file, select **Kraken2 on collection X: Report**
+2. Kraken report file, select **Kraken2 report Short Reads**
 3. Click, Run tools
 :::
 
@@ -165,29 +179,36 @@ Let’s now run Krona !
 3. Click *Run Tool*
 :::
 
+![krona-view](images/05-2-contamination/krona-view.png)
+
+Does it look like there is contamination ? No, it does not !
+
 # Contamination screen of the long reads
 
 The long reads come from the same DNA extraction of the same sample, but it is still worth checking them: a contamination can also be introduced during the Nanopore library preparation, or come from another sample sequenced on the same flow cell (barcode cross-talk).
 
-Kraken2 works on reads of any length, as it only looks at the k-mers of each read. We can therefore use the same tool and the same database on the long reads **Trimmed Long Read**.
+Kraken2 works on reads of any length, as it only looks at the k-mers of each read. We can therefore use the same tool and the same database on the long reads **Trimmed Long Reads**.
 
 ## What changes for long reads?
 
 - **Single-end reads**: Nanopore reads are not paired.
-- **Base quality**: for the short reads, we masked the bases with a quality below 20. Our Nanopore reads have a median quality around **Q14**: with the same threshold, most of their bases would be masked, and many reads would stay unclassified. We keep the default value (`0`).
+- **Base quality**: for the short reads, we masked the bases with a quality below 10. Our Nanopore reads have a median quality around **Q14**: with the same threshold, a large part of their bases would be masked, and many k-mers would be lost. We keep the default value (`0`).
 - **Sequencing errors**: with ~4% of errors, many 35-mers of a long read contain an error and are not found in the database. But a read of several kb contains thousands of k-mers: enough of them are correct to classify the read.
 
 ::: {.callout-important title="Exercice: Run Kraken2 on the long reads" collapse="true"}
 1. Search the tool **Kraken2**.
-2. Select single-end reads, and the collection **Trimmed Long Read**.
+2. Select single-end reads, and the collection **Trimmed Long Reads**.
 3. Keep the default *Minimum Base Quality* (**0**).
-4. In *Select a Kraken2 Database*, select the same database as for the short reads: **Prebuilt Refseq indexes: Standard-Full (archaea, bacteria, viral, plasmid, human,UniVec_Core) (Version: 2022-06-07 - Downloaded: 2022-07-06T094102Z)**.
+4. In *Select a Kraken2 Database*, select the same database as for the short reads: **MiniKraken2**.
 5. In *Create Report*, click **Yes** for *Print a report with aggregrate counts/clade to file*.
 6. Click *Run Tool*
+7. Rename the outputs:
+    - **Kraken2 on collection X: Classification** → **Kraken2 classification long reads**
+    - **Kraken2 on collection X: Report** → **Kraken2 report Long Reads**
 :::
 
 ::: {.callout-important title="Exercice: Visualise the long read classification with Krona" collapse="true"}
-1. Run **Krakentools: Convert kraken report file to krona text file** on the new Kraken2 report.
+1. Run **Krakentools: Convert kraken report file to krona text file** on **Kraken2 report Long Reads**.
 2. Run **Krona pie chart from taxonomic profile** on its output.
 :::
 

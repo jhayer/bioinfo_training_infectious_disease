@@ -93,13 +93,13 @@ If the window at positions 32–36 drops below a quality of 20:
 | Adapter trimming | automatic detection (paired-end) | Remove adapters |
 | `cut_front` | window 4, mean quality 20 | Cut low-quality bases at the start of the read |
 | `cut_right` | window 4, mean quality 20 | Cut the read once the mean quality of the window drops below 20 |
-| `length_required` | 100 | Drop reads shorter than 100 bp |
+| `length_required` | 50 | Drop reads shorter than 50 bp |
 :::
 
 ### 4. Throw away reads that are now too short
 
 Finally, we will drop the reads shorter than a certain length.
-We will use a **minimum read length of 100 bp**, considering that shorter reads may result in fragmented assemblies.
+We will use a **minimum read length of 50 bp**, considering that very short reads map ambiguously and add noise to the assembly.
 
 In addition, by default fastp discards reads with too many low-quality bases (more than 40% of bases with a quality below 15) or with too many undetermined bases (`N`).
 
@@ -121,12 +121,16 @@ Type **fastp** in the tools panel search box, and click on **fastp: fast all-in-
 
 In **Adapter Trimming Options**, keep adapter trimming enabled. fastp will detect the adapters automatically.
 
-**STEP 2 and 3: Quality cutting**
+**STEP 2: PolyG tail trimming**
+
+**PolyG tail trimming** is enabled for NextSeq/NovaSeq data by default. On Illumina two-color chemistry (NextSeq, NovaSeq, iSeq), “no signal” is read as G. When a fragment is shorter than the read length, the read ends in a run of artificial Gs with very high quality scores, so quality trimming does not remove them.
+
+**STEP 3: Quality cutting**
 
 In **Read Modification Options** → **Per read cutting by quality options**:
 
 - *"Cut by quality in front (5')"*: `Yes`
-- *"Cut by quality in right"*: `Yes`
+- *"Cut by quality in tail (3')"*: `Yes`
 - *"Cutting window size"*: `4`
 - *"Cutting mean quality"*: `20`
 
@@ -134,26 +138,28 @@ In **Read Modification Options** → **Per read cutting by quality options**:
 
 In **Filter Options** → **Length filtering options**:
 
-- *"Length required"*: `100`
+- *"Length required"*: `50`. For 150 bp Illumina reads, a minimum length of 50 bp is a good choice (typical range 30 to 75). Very short reads map ambiguously and add noise to assembly, so the default of 15 is too permissive. Setting it too high (e.g., 100+) throws away reads that are still useful after adapter and tail trimming. Always check the fastp report to see if this threshold is relevant. 
 
 Keep the default values for the other filtering options (quality filtering: qualified quality 15, unqualified percent limit 40).
 
 **Reports**
 
-In **Output Options**, make sure the **HTML report** is produced, and tick **JSON report**: we will need it later to aggregate the reports with MultiQC.
+In **Output Options**, make sure the **HTML report** is produced, and tick **JSON report**: we will need it later to aggregate the reports with [MultiQC](https://github.com/MultiQC/MultiQC) ([Ewels et al. 2016](https://doi.org/10.1093/bioinformatics/btw354)).
 
 **Run the tool**
 
 Once you have selected all the parameters, click on **Run Tool**.
+If you have any questions regarding what the tool is doing, you can also have a look at the **help** section. 
 :::
+
 
 ## Output
 
 The tool takes a few minutes to run. It creates:
 
 - **fastp on collection X: Paired-end output**: a paired collection with the cleaned forward and reverse reads. Rename it **Trimmed short reads**.
-- **fastp on collection X: HTML report**: the quality report, before and after filtering. Rename it **fastp HTML short read**.
-- **fastp on collection X: JSON report**: needed to add the report in MultiQC.
+- **fastp on collection X: HTML report**: the quality report, before and after filtering. Rename it **fastp HTML short reads**.
+- **fastp on collection X: JSON report**: needed to add the report in MultiQC. Rename it **fastp JSON short reads**.
 
 ::: {.callout-note title="What happens to reads whose mate was removed?"}
 fastp keeps the pairing of the reads: if one read of a pair is discarded (too short, too low quality), its mate is discarded too, so the forward and reverse files still correspond read by read.
@@ -183,11 +189,10 @@ Coverage = total bases / genome size.
 The *total bases* given by fastp already include both the forward and reverse reads.
 Based on [the paper](https://doi.org/10.1016/j.jgar.2025.09.003) and the genome deposited by the authors ([GCA_964200035](https://www.ebi.ac.uk/ena/browser/view/GCA_964200035)), the genome of strain 368 is made of a chromosome of ~4.89 Mb and 6 plasmids (~0.31 Mb in total), so approximately **5.2 Mb**.
 
-1. Before filtering: ~531 Mb / 5.2 Mb ≈ **102x**.
-2. After filtering: divide the *total bases* after filtering by 5.2 Mb.
-<!-- TODO: add the total bases after filtering and the coverage from your own run -->
+1. Before filtering: 530.8 Mb / 5.2 Mb ≈ **102x**.
+2. After filtering: 490.9 Mb / 5.2 Mb ≈ **94x**.
 
-A coverage above ~30–40x is good for a bacterial genome assembly.
+The cleaning removed ~40 Mb (7.5% of the bases), but the coverage is still far above the ~30–40x that is enough for a bacterial genome assembly.
 :::
 ::::
 
@@ -198,19 +203,22 @@ The **Filtering result** section shows how many reads passed the filters, and wh
 - **reads passed filters**
 - **reads with low quality**: too many bases below the quality threshold
 - **reads with too many N**
-- **reads too short**: shorter than 100 bp after trimming
+- **reads too short**: shorter than 50 bp after trimming
+- **reads with adapter dimer**: reads made only of two adapters ligated together, with no DNA insert
 
 :::: {.callout-important title="Exercise: What did fastp do?" collapse="true"}
 1. Should the output FASTQ files be smaller or bigger than the input files?
 2. What percentage of reads passed the filters?
 3. What is the main reason why reads were removed?
-4. Were adapters found? (see the **Adapters** section)
+4. How did the mean read length change?
+5. Were adapters found? Look at the **Detected read1 adapter** line of the **Summary** and at the **Adapters** section. What does it tell you about the library preparation?
 
 ::: {.callout-tip title="Answer" collapse="true"}
 1. Smaller: we have trimmed bases and removed reads.
-2. and 3. Look at the **Filtering result** section.
-4. Look at the **Adapters** section: it shows the adapter sequences detected and how many reads were trimmed.
-<!-- TODO: add the percentages from your own run -->
+2. **94.5%** of the reads passed the filters (3.34 M out of 3.54 M).
+3. Reads that became **too short** after trimming: 192,872 reads (5.45%). Only 1,044 reads (0.03%) were removed for low quality, 2,252 (0.06%) were adapter dimers, and none had too many N.
+4. It went from 150 bp to **147 bp** (read 1) and **146 bp** (read 2): only a few bases were trimmed from most reads.
+5. Yes, but only a few: about **0.8%** of the reads contain an adapter (fastp even suggests that the reads were probably trimmed before). The detected sequence `CTGTCTCTTATACACATCT` is the **Nextera transposase** adapter. The paper does not name the library kit, but this tells us it was a Nextera-based kit (e.g. Nextera XT or Illumina DNA Prep), which uses a transposase (Tn5) to fragment the DNA and add the adapters at the same time.
 :::
 ::::
 
@@ -227,12 +235,16 @@ Look at the **quality** plots of read 1 and read 2, before and after filtering.
 ![fastp-filtering](images/04-read-QC/fastp-filtering.png)
 Discuss your results with a neighbor.
 
-1. What is a common trend among the 2 reads before filtering?
-2. How did the filtering change the quality profiles?
+1. What is a common trend among the 2 reads before filtering? Which read is of lower quality?
+2. How did the filtering change the quality profiles and the Q30 rate?
+3. Look at the **base contents** plots. The lines are flat along most of the read, except in the first ~15 bases. Why? Did fastp remove this pattern?
+4. Look at the **quality score histogram**. Why are there only 4 bars, and why is the Q40 rate 0%?
 
 ::: {.callout-tip title="Solution" collapse="true"}
-1. The quality decreases toward the end of the reads. For Illumina data it is normal that the first few bases are of some lower quality and the longer the reads get the worse the quality becomes. This is often due to signal decay or phasing during the sequencing run. The reverse reads (read 2) are usually of lower quality than the forward reads.
-2. After filtering, the low-quality ends have been removed: the mean quality stays high along the reads, and the reads now have different lengths.
+1. The mean quality decreases slowly toward the end of the reads: from ~36 to ~35.7 for read 1, and from ~36 to ~35.0 for read 2. With Illumina data the quality gets worse as the read gets longer, because of signal decay and phasing during the sequencing run. As usual, the reverse reads (read 2) are of lower quality than the forward reads. Overall these reads are of **very good quality**: the mean quality stays above Q35 along the whole read.
+2. The worst bases have been removed, so the mean quality at the end of the reads is a bit higher (~36.2 for read 1, ~35.6 for read 2), and the reads now have different lengths. The Q30 rate went from **93.1%** to **95.0%**. The change is small because the raw reads were already good.
+3. This bias comes from the **Nextera library preparation**: the Tn5 transposase does not cut the DNA completely at random, but prefers some sequences. The first bases of each read therefore have a biased composition. These are real genomic bases, not sequencing errors, so fastp does not remove them (and we do not need to: this bias is harmless for an assembly).
+4. Recent Illumina sequencers (NovaSeq, NextSeq) **bin the quality scores**: instead of every value from 2 to 41, they only report a few values (here 2, 11, 25 and 37) to make the files smaller. The highest value is 37, so no base can reach Q40.
 :::
 ::::
 
@@ -296,11 +308,11 @@ The two technologies do not make the same kind of errors, so we do not look for 
 | Short reads | DNA fragmented during extraction or library preparation | Read length distribution, N50 | Filter on read length; improve the DNA extraction next time |
 | Adapters and barcodes | Adapters are ligated to both ends of the DNA | **Adapters** section | Trim the adapters |
 | Chimeric reads | Two DNA fragments ligated together and read as one | Adapters found in the **middle** of the reads | Split the reads at the internal adapters |
-| Homopolymer errors | The signal does not change along a run of the same base | Not visible in the QC report | Polish the assembly (e.g. with medaka, or with Illumina reads) |
+| Homopolymer errors | The signal does not change along a run of the same base | Not visible in the QC report | Polish the assembly (e.g. with [medaka](https://github.com/nanoporetech/medaka) (Oxford Nanopore Technologies), or with Illumina reads) |
 
 ## fastplong: fastp for long reads
 
-[fastplong](https://github.com/OpenGene/fastplong) is the long-read version of fastp, from the same developers. It works in the same way: in a single run, it computes quality statistics on the raw reads, cleans the reads, computes the same statistics on the cleaned reads, and writes an HTML and a JSON report **before and after filtering**.
+[fastplong](https://github.com/OpenGene/fastplong) ([Chen 2023](https://doi.org/10.1002/imt2.107)) is the long-read version of fastp, from the same developers. It works in the same way: in a single run, it computes quality statistics on the raw reads, cleans the reads, computes the same statistics on the cleaned reads, and writes an HTML and a JSON report **before and after filtering**.
 
 What it can do on long reads:
 
@@ -313,8 +325,8 @@ What it can do on long reads:
 
 Several things must be taken into account:
 
-- **Coverage**: our raw reads cover the genome (~5.2 Mb) about **175x**. Flye needs ~30–50x, so we can afford to lose some reads.
-- **Length**: very short reads do not help the assembly, as they do not span repeats. But they must not be removed too aggressively: the genome of strain 368 contains **small plasmids of 2.1, 3.6 and 7.9 kb**. Their reads are short, as a read cannot be longer than the circular plasmid it comes from. A high minimum length would remove them, and the plasmids would be lost from the assembly. We will remove reads shorter than **1000 bp**.
+- **Coverage**: our raw reads cover the genome (~5.2 Mb) about **175x**. The assembler [Flye](https://github.com/mikolmogorov/Flye) ([Kolmogorov et al. 2019](https://doi.org/10.1038/s41587-019-0072-8)) needs ~30–50x, so we can afford to lose some reads.
+- **Length**: very short reads do not help the assembly, as they do not span repeats. But they must not be removed too aggressively: the genome of strain 368 contains **small plasmids of 2.1, 3.6 and 7.9 kb**. Their reads are short, as a read cannot be longer than the circular plasmid it comes from. A high minimum length would remove them, and the plasmids would be lost from the assembly. We will only remove reads shorter than **500 bp**, well below the size of our smallest plasmid (2.1 kb).
 - **Quality**: removing the worst reads improves the accuracy of the assembly. We will remove reads with a mean quality below **Q10** (10% of errors): with a median quality around Q14, a higher threshold would remove too many reads.
 
 ::: {.callout-note title="Summary of the fastplong options we will use"}
@@ -323,7 +335,7 @@ Several things must be taken into account:
 | Adapter trimming | automatic detection (default) | Remove adapters at the start and end of the reads |
 | Chimeric reads | split (default) | Split reads with an internal adapter into separate reads |
 | `mean_qual` | 10 | Drop reads with a mean quality below Q10 |
-| `length_required` | 1000 | Drop reads shorter than 1000 bp |
+| `length_required` | 500 | Drop reads shorter than 500 bp |
 :::
 
 ## Running fastplong on Galaxy
@@ -333,7 +345,7 @@ Type **fastplong** in the tools panel search box, and click on the **fastplong**
 
 **Input**
 
-- *"Input Long Reads"*: the **Long Read** collection
+- *"Input Long Reads"*: the **Long Reads** collection
 
 **STEP 1 and 2: Adapters and chimeric reads**
 
@@ -349,7 +361,7 @@ In **Filter Options** → **Quality filtering options**:
 
 In **Filter Options** → **Length filtering options**:
 
-- *"Length required"*: `1000`
+- *"Length required"*: `500`
 
 **Reports**
 
@@ -366,7 +378,7 @@ The tool creates:
 - **fastplong on data X: HTML report**: the quality report, before and after filtering
 - **fastplong on data X: JSON report**: needed to add the report in MultiQC
 
-Rename the cleaned reads **Trimmed Long Read**.
+Rename the cleaned reads **Trimmed Long Reads**.
 
 ## Results
 
@@ -381,10 +393,10 @@ Click on the 👁️ (eye) icon of the **HTML report** to open it. Its structure
 
 ::: {.callout-tip title="Answer" collapse="true"}
 <!-- TODO: add the numbers from your own run -->
-1. The mean read length is ~6.8 kb (912.6 Mb / 133,532 reads). The mean quality is much lower than for the Illumina reads, which is normal for Nanopore data.
-2. Look at the **Filtering result** section: reads are removed because of a low quality or because they are too short.
-3. The mean length and the mean quality increased: the short and low-quality reads were removed.
-4. Coverage = total bases / genome size: divide the *total bases* after filtering by 5.2 Mb. It should stay well above 50x.
+1. The mean read length is ... and the mean quality is .... The mean quality is much lower than for the Illumina reads, which is normal for Nanopore data.
+2. ...% of the reads passed the filters. The main reason why reads were removed is ....
+3. The mean read length went from ... to ..., and the mean quality from ... to ...: the short and low-quality reads were removed.
+4. Coverage = total bases / genome size = ... Mb / 5.2 Mb ≈ ...x.
 5. fastplong has graphs that describe each **read as a whole**, which fastp does not have:
     - **Read length distribution**: the percentage of reads and of bases for each read length
     - **Cumulative yield by minimum read length**: how many reads and bases you keep if you only keep reads longer than a given length
@@ -394,7 +406,7 @@ Click on the 👁️ (eye) icon of the **HTML report** to open it. Its structure
 
     **Why are they important for long reads, and not for short reads?**
 
-    - **Read length varies a lot.** Illumina reads all have the same length (e.g. 150 bp), so a length graph would be a single bar. Nanopore reads range from a few hundred bases to tens of kilobases, and the length of the reads is what makes them useful: long reads span repeats and connect the contigs of the assembly. The length distribution, the N50 and the cumulative yield tell you how much useful long-read data you have, and help you choose the minimum length filter (here 1000 bp) without losing too many bases.
+    - **Read length varies a lot.** Illumina reads all have the same length (e.g. 150 bp), so a length graph would be a single bar. Nanopore reads range from a few hundred bases to tens of kilobases, and the length of the reads is what makes them useful: long reads span repeats and connect the contigs of the assembly. The length distribution, the N50 and the cumulative yield tell you how much useful long-read data you have, and help you choose the minimum length filter (here 500 bp) without losing too many bases.
     - **Quality is a property of each read, not of each position.** With Illumina, quality decreases along the read (the per-position graph shows it), so we trim the ends. With Nanopore, errors are spread along the read, and some reads are bad from start to end. That is why we filter whole reads on their mean quality (here Q10), and the per-read quality graphs show what this filter removes.
     - **Long and good reads are not always the same reads.** The density plot shows if the longest reads are also of good quality, to choose the length and quality filters together.
     - **Read GC content** helps to spot reads from a contaminant with a different GC content, which appear as a second peak.
@@ -413,6 +425,7 @@ For both technologies, also check for **contamination** (reads from another orga
 
 # (Optional), Use another tool: FastQC
 
+[FastQC](https://github.com/s-andrews/FastQC) ([Andrews 2010](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)) is another widely used quality control tool for sequencing reads.
 The most important plot of the FastQC quality report shows the quality score at each position of the reads. The image below shows a very high-quality sample:
 
 ![good quality plot](images/04-read-QC/good-fastqc.png)

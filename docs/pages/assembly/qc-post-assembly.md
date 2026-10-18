@@ -61,7 +61,7 @@ We need the contigs (FASTA files) produced by the 3 assemblers, from the 3 previ
 ::: {.callout-tip title="Import the assemblies"}
 1. Open the **History Multiview** (left panel).
 2. Drag the following datasets into the **Assembly QC** history:
-    - from **Short Read Genome Assembly**: **SPAdes on data X and data X: Contigs**
+    - from **Short Read Genome Assembly**: **SPAdes contigs Short Reads**
     - from **Long Read Genome Assembly**: **Flye on data X: consensus**
     - from **Hybrid Genome Assembly**: **Unicycler on data X: Final Assembly**
 3. Rename them **Short read assembly**, **Long read assembly** and **Hybrid assembly**.
@@ -71,6 +71,35 @@ We need the contigs (FASTA files) produced by the 3 assemblers, from the 3 previ
 For SPAdes, we use the **contigs** and not the scaffolds: scaffolds contain runs of `N` where SPAdes guessed a connection between contigs, which may not be biologically real. Flye and Unicycler only output contigs.
 :::
 
+Before running QUAST on the 3 assemblies, we will create a collection !
+
+First, we need to extract the hybrid assembly, as the output is already a collection of 1 files. 
+For this, we will use the tool "Extract Dataset", on "Hybrid Assembly". And select "the first dataset"  to "How should be dataset be selected ?". 
+
+**ERR13363634** should be extracted. You can rename it to **Hybrid Assembly**. 
+
+### Create a collection 
+
+1. Select the 3 assemblies that we want to compile in a collection : 
+![select-items](images/06-assembly/select-items.png)
+
+2. Select **Auto Build List**:
+![build-list](images/06-assembly/build-list.png)
+
+3. Select the name **Assemblies**, and Click on **Build**. 
+
+![create-list](images/06-assembly/create-list.png)
+
+### Import the reference genome from E.Coli
+
+QUAST needs the reference genome to ...
+
+The primary official reference genome for Escherichia coli is E. coli str. K-12 substr. MG1655 (refseq accession number :: **NC_000913.3**)
+
+Run a Tool: Use **NCBI Accession Download**
+Download sequences from GenBank/RefSeq by accession through the NCBI ENTREZ API.
+Type the refseq  accession number : **NC_000913.3**. 
+
 # Run QUAST on the 3 assemblies
 
 We expect a genome of ~**5.2 Mb**: the genome of strain 368 deposited by the authors ([GCA_964200035](https://www.ebi.ac.uk/ena/browser/view/GCA_964200035)) is 5,202,684 bp long. Giving this size to QUAST lets it compute the **NG50**, the N50 computed on the expected genome size rather than on the assembly size.
@@ -78,12 +107,10 @@ We expect a genome of ~**5.2 Mb**: the genome of strain 368 deposited by the aut
 ::: {.callout-tip title="Run QUAST"}
 1. Search for **QUAST** in the Galaxy Tools panel.
 2. Select the following parameters:
-    - *"Assembly mode?"*: `Individual assembly (1 contig file per sample)`
-    - *"Use customized names for the input files?"*: `Yes, specify custom names`, and give the names `Short read`, `Long read` and `Hybrid`, in the same order as the input files
-    - *"Contigs/scaffolds file"*: select the 3 datasets **Short read assembly**, **Long read assembly** and **Hybrid assembly** (hold *Ctrl* / *Cmd* to select several datasets)
+    - *"Assembly mode?"*: `Co Assembly`
     - *"Reference genome"*: `No reference`
     - *"Estimated reference genome size (in bp) for computing NGx statistics"*: `5200000`
-    - No change in the other parameters
+    - In Reference, select **Reference E.Coli**.
 3. Click **Run Tool**.
 :::
 
@@ -196,11 +223,7 @@ Lead to errors in graph construction.
 ## Conclusion
 In this tutorial, we compared the short read, long read and hybrid assemblies of the same sample. The short read assembly is fragmented but accurate, the long read assembly is contiguous, and the hybrid assembly combines the contiguity of the long reads with the accuracy of the short reads. The hybrid assembly is the one to use in downstream analyses, like MLST or AMR.
 
-## Which file do I use from now on ?
-→ If your assembler produced contigs + scaffolds, **use contigs for all downstream analyses**.
-No fake gaps (scaffolds include "N" runs that may not be biologically real), Lower risk of misassembly, More conservative and reliable
 
-→ Use scaffolds only for visualization or when your analysis truly needs chromosome-level continuity.
 
 # Summary
 
@@ -211,8 +234,3 @@ No fake gaps (scaffolds include "N" runs that may not be biologically real), Low
 - A high N50 does not guarantee a correct assembly: the total length, the GC content and the comparison to a reference must be checked too.
 :::
 
-# Contamination Checking 
-
-DO A PARAGRAPH on why we should do contamination checking. 
-
-Use checkM2, and also tools from Jacques (?)
