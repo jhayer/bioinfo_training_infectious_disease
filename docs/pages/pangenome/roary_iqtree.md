@@ -45,6 +45,12 @@ We will compare five *E. coli* assemblies from the [Data preparation](/pages/ann
 | GCA_964200035.1 | 368_BP0078U |
 | GCA_964200045.1 | 366_BP0076U |
 
+::: {.callout-note}
+The answers given in this page were obtained with these five complete genomes (one chromosome and 2 to 6 plasmids each). In the results, isolate 364_BP0073U appears as `364_BP0073U-1`, the name of its file.
+
+You can look at the complete results here: [Pangenome Roary](https://usegalaxy.org.au/u/rahi_praveen/h/pangenome-roary).
+:::
+
 Roary needs one annotation file per genome, in **GFF3 format with the genome sequence at the end of the file** (after a `##FASTA` line).
 
 ::: {.callout-warning}
@@ -114,32 +120,83 @@ Roary produces three main outputs:
 
 ::: {.callout-caution collapse="true"}
 ## How many genes are in the pangenome of these five isolates? How many are core genes?
-<!-- TODO: fill in with the Summary statistics of the run -->
 Look at the `Total genes` and `Core genes` lines of the summary statistics.
+
+| Category | Number of genes |
+| --- | --- |
+| Core genes (99% ≤ genomes ≤ 100%) | 3,393 |
+| Soft core genes (95% ≤ genomes < 99%) | 0 |
+| Shell genes (15% ≤ genomes < 95%) | 4,376 |
+| Cloud genes (0% ≤ genomes < 15%) | 0 |
+| **Total genes** | **7,769** |
+
+The pangenome of these five isolates contains **7,769 genes**, of which **3,393 are core genes**, present in all five isolates. Each isolate carries between 4,527 and 5,207 genes.
 :::
 
 ::: {.callout-caution collapse="true"}
 ## Why are there no soft core genes and no cloud genes?
-With only five genomes, each genome represents 20% of the dataset. A gene present in 4 genomes is present in 80% of them (shell), and a gene present in 1 genome is present in 20% of them, above the 15% limit of the cloud genes (shell too). The soft core (95–99%) and cloud (< 15%) categories can only be filled with larger datasets: with five genomes, the accessory genome is entirely in the shell category.
+Indeed, both categories are empty (0 genes). With only five genomes, each genome represents 20% of the dataset. A gene present in 4 genomes is present in 80% of them (shell), and a gene present in 1 genome is present in 20% of them, above the 15% limit of the cloud genes (shell too). The soft core (95–99%) and cloud (< 15%) categories can only be filled with larger datasets: with five genomes, the accessory genome is entirely in the shell category.
 :::
 
 ::: {.callout-caution collapse="true"}
 ## What proportion of the pangenome is the core genome? What does it say about *E. coli*?
-<!-- TODO: fill in with the Summary statistics of the run -->
-Divide the number of core genes by the total number of genes. An *E. coli* genome contains about 4,500–5,500 genes, but the *E. coli* pangenome is huge (tens of thousands of genes): it is an **open pangenome**, meaning that new genes keep being discovered as new genomes are sequenced. Each new genome brings its own accessory genes, often acquired by horizontal gene transfer.
+Divide the number of core genes by the total number of genes: 3,393 / 7,769 = **44%**. In other words, more than half of the pangenome (4,376 genes) is accessory, although we only compared five isolates of the same species:
+
+| Present in | Number of genes |
+| --- | --- |
+| 5 isolates (core) | 3,393 |
+| 4 isolates | 246 |
+| 3 isolates | 612 |
+| 2 isolates | 1,106 |
+| 1 isolate (isolate-specific) | 2,412 |
+
+An *E. coli* genome contains about 4,500–5,500 genes, but the *E. coli* pangenome is huge (tens of thousands of genes): it is an **open pangenome**, meaning that new genes keep being discovered as new genomes are sequenced. Each new genome brings its own accessory genes, often acquired by horizontal gene transfer.
 :::
 
-Now open the `Gene Presence Absence` table. The `No. isolates` column gives the number of genomes carrying each gene.
+Now open the `Gene Presence Absence` table. The `No. isolates` column gives the number of genomes carrying each gene, and the last five columns give the ID of the gene in each isolate (empty if absent).
+
+::: {.callout-caution collapse="true"}
+## Which isolate has the most isolate-specific genes? Can you explain why?
+Count the genes with `No. isolates` = 1 for each isolate (e.g. with the `Filter` tool, then look at which column is not empty):
+
+| Isolate | Genes | Isolate-specific genes | Plasmids |
+| --- | --- | --- | --- |
+| 323_BP0014P | 4,815 | 161 | 4 |
+| 372_BP0083B | 4,870 | 242 | 2 |
+| 364_BP0073U | 4,527 | 388 | 2 |
+| 368_BP0078U | 4,990 | 785 | 6 |
+| 366_BP0076U | 5,207 | 836 | 6 |
+
+366_BP0076U and 368_BP0078U have the most specific genes. They also carry the most plasmids (6 each, see the sequence names in the FASTA files): plasmids, together with phages and genomic islands, bring many accessory genes. 323_BP0014P and 372_BP0083B have few specific genes because they are very closely related to each other (see the tree below): most of their accessory genes are shared.
+:::
 
 ::: {.callout-caution collapse="true"}
 ## Can you find the AMR genes detected with ABRicate (e.g. `blaCTX-M-55`, `tet(A)`, `sul2`) in the table? Are they core or accessory?
-<!-- TODO: fill in with the Gene Presence Absence of the run -->
 Use the search box (or the `Filter` tool on the `Annotation` column). AMR genes carried by plasmids are generally part of the accessory genome: they are present in only some of the isolates.
+
+All the acquired AMR genes found with ABRicate in 364_BP0073U (`blaCTX-M-55`, `blaTEM-1`, `floR`, `catA2`, `sul2`, `sul3`, `dfrA14`, `tet(A)`, `aadA1`, `aph(3')-Ia`, `aph(3'')-Ib`, `aph(6)-Id`, `aac(3)-IIe`, `estX-3`, `qacL`) are in the **accessory** genome. The only resistance gene of the core genome is `blaEC`, the chromosomal AmpC beta-lactamase intrinsic to *E. coli*.
+
+Looking at the five isolates, the main acquired AMR genes are:
+
+| Isolate | Beta-lactamases | Other AMR genes |
+| --- | --- | --- |
+| 323_BP0014P | `blaCTX-M-27` (ESBL) | `aadA5`, `aph(3'')-Ib`, `aph(6)-Id`, `dfrA17`, `mph(A)`, `sul1`, `sul2`, `tet(A)` |
+| 372_BP0083B | `blaCTX-M-27` (ESBL) | `aadA5`, `aph(3'')-Ib`, `aph(6)-Id`, `dfrA17`, `mph(A)`, `sul1`, `sul2`, `tet(A)` |
+| 364_BP0073U | `blaCTX-M-55` (ESBL), `blaTEM-1` | `aac(3)-IIe`, `aadA1`, `aph(3')-Ia`, `aph(3'')-Ib`, `aph(6)-Id`, `catA2`, `dfrA14`, `floR`, `sul2`, `sul3`, `tet(A)` |
+| 368_BP0078U | `blaOXA-48` (**carbapenemase**), `blaCTX-M-27` (ESBL), `blaDHA-1` (AmpC) | `aadA1`, `aadA5`, `aph(3'')-Ib`, `aph(6)-Id`, `dfrA1`, `dfrA17`, `erm(B)`, `mph(A)`, `qnrB`, `sul1`, `sul2`, `tet(A)` |
+| 366_BP0076U | `blaNDM-5` (**carbapenemase**), `blaCTX-M-15` (ESBL), `blaOXA-1` | `aac(3)-IIe`, `aac(6')-Ib`, `aadA5`, `dfrA17`, `sul1`, `tet(B)` |
+
+Two isolates carry a carbapenemase gene (`blaNDM-5` or `blaOXA-48`), conferring resistance to carbapenems, antibiotics of last resort.
 :::
 
 ::: {.callout-caution collapse="true"}
-## Many accessory genes are annotated as "hypothetical protein". Why?
-Accessory genes often come from mobile genetic elements (phages, plasmids, genomic islands) which are less well studied than the core genes, so their function is often unknown. This is one of the challenges of pangenome analysis.
+## 364_BP0073U carries two copies of `blaCTX-M-55` (see the ABRicate practical), but only one appears in the `blaCTX-M-55` line. Where is the second one?
+The second copy is in the line `blaCTX-M-15`, together with the `blaCTX-M-15` gene of 366_BP0076U. Roary clusters proteins with at least 95% identity, and CTX-M-15 and CTX-M-55 differ by a single amino acid, so they can end up in the same cluster. In addition, Roary separates the copies of a gene present several times in the same genome (paralogs) into different clusters. Be careful when interpreting gene names in a pangenome: one line is a cluster of similar genes, not necessarily one exact gene variant.
+:::
+
+::: {.callout-caution collapse="true"}
+## Are genes of unknown function ("hypothetical protein") more frequent in the core or in the accessory genome? Why?
+In the accessory genome. With Bakta, 1.4% of the accessory genes are annotated as `hypothetical protein`, against 0.1% of the core genes (14 times more). Accessory genes often come from mobile genetic elements (phages, plasmids, genomic islands) which are less well studied than the core genes, so their function is more often unknown. This is one of the challenges of pangenome analysis.
 :::
 
 ## Core-genome phylogeny with IQ-TREE
@@ -172,14 +229,24 @@ IQ-TREE produces several outputs. The most important ones are:
 
 ::: {.callout-caution collapse="true"}
 ## What is the length of the core gene alignment, and how many sites are parsimony-informative?
-<!-- TODO: fill in with the IQ-TREE report of the run -->
-Look at the beginning of the `Report and Final Tree` (`Input data` section). Most of the sites are constant: the isolates belong to the same species and their core genes are very similar. Only the variable sites (and, among them, the parsimony-informative ones) carry information about the relationships between isolates.
+Look at the beginning of the `Report and Final Tree` (`SEQUENCE ALIGNMENT` section):
+
+```
+Input data: 5 sequences with 3312502 nucleotide sites
+Number of constant sites: 3.18469e+06 (= 96.1416% of all sites)
+Number of parsimony informative sites: 70491
+```
+
+The core gene alignment is **3.3 Mb** long (3,393 genes), and **96%** of the sites are constant: the isolates belong to the same species and their core genes are very similar. Only the variable sites (about 128,000) carry information about the relationships between isolates, and among them 70,491 are parsimony-informative (at least two different nucleotides, each present in at least two isolates).
 :::
 
 ::: {.callout-caution collapse="true"}
 ## Which substitution model was selected by ModelFinder?
-<!-- TODO: fill in with the IQ-TREE report of the run -->
-Look for `Best-fit model according to BIC` in the `Report and Final Tree`.
+Look for `Best-fit model according to BIC` in the `Report and Final Tree`: **GTR+F+I**.
+
+- `GTR` (General Time Reversible): each of the 6 types of substitution (A↔C, A↔G, ...) has its own rate. Look at the `Rate parameter R` section: transitions (A↔G = 4.5, C↔T = 7.2) are much more frequent than transversions (≈ 1), as usual in DNA.
+- `+F`: the base frequencies are estimated from the alignment.
+- `+I`: a proportion of the sites are invariable (here 89%).
 :::
 
 ## Visualise the tree
@@ -187,6 +254,10 @@ Look for `Best-fit model according to BIC` in the `Report and Final Tree`.
 * Search for the `Newick Display` tool in Galaxy.
 
 * In `Newick file`, select the IQ-TREE `MaxLikelihood Tree`.
+
+::: {.callout-warning}
+Do not select the `Report and Final Tree`: it is a text report, not a tree file, and Newick Display fails with the error `missing ';' at end of tree`.
+:::
 
 * In `Branch support`, select `Display branch support`.
 
@@ -210,19 +281,40 @@ You can colour the isolates by any information you have (sample type, AMR profil
 
 ::: {.callout-caution collapse="true"}
 ## Which isolates are the most closely related? Are the branches well supported?
-<!-- TODO: fill in with the tree of the run -->
 Look at the topology of the tree and at the bootstrap values on the branches. Remember that this tree is **unrooted**: it shows the relationships between the isolates, but not which one diverged first.
+
+```
+(323_BP0014P:0.0000674141,((364_BP0073U-1:0.0061152445,368_BP0078U:0.0085744840)100:0.0056828866,366_BP0076U:0.0111294983)100:0.0187722743,372_BP0083B:0.0000879027);
+```
+
+The isolates form two groups separated by a long branch:
+
+- **323_BP0014P and 372_BP0083B** are almost identical: their branches are very short, and their core genomes differ by only **510 SNPs** over 3.3 Mb. They belong to the same lineage.
+- **364_BP0073U, 368_BP0078U and 366_BP0076U** form the second group. Within this group, 364_BP0073U and 368_BP0078U are the closest (43,279 SNPs).
+- The two groups differ by about 80,000 SNPs.
+
+Both internal branches have a bootstrap support of **100%**: the tree is very well supported, which is expected with such a long alignment. The consensus tree of the 1000 bootstrap trees is identical to the ML tree.
+
+To count the SNPs between two isolates, you can compare their sequences in the `Core Gene Alignment`. The `MaxLikelihood Distance Matrix` gives the corresponding distances corrected by the model.
 :::
 
 ::: {.callout-caution collapse="true"}
 ## Do closely related isolates share the same AMR genes?
-<!-- TODO: fill in by comparing the tree with the ABRicate results of the five isolates -->
 Compare the tree with the presence/absence of AMR genes (Gene Presence Absence table, or ABRicate results). AMR genes carried by plasmids can be shared by distantly related isolates (horizontal transfer), and absent from very closely related isolates (loss of the plasmid): the accessory genome does not always follow the core-genome phylogeny.
+
+In our dataset, both situations are visible (see the AMR table above):
+
+- 323_BP0014P and 372_BP0083B, the two almost identical isolates, have exactly the **same AMR genes**, including the ESBL `blaCTX-M-27`: they probably inherited them from their common ancestor.
+- `blaCTX-M-27`, `mph(A)`, `sul1`, `dfrA17` and `aadA5` are also found in 368_BP0078U, which belongs to the other group (about 80,000 SNPs away): these genes were probably acquired by horizontal gene transfer, e.g. on a plasmid.
+- 364_BP0073U and 368_BP0078U are the closest isolates of their group, but they have very different AMR genes (`blaCTX-M-55` vs `blaOXA-48` and `blaCTX-M-27`).
+- The two carbapenemase genes are each found in only one isolate (`blaNDM-5` in 366_BP0076U, `blaOXA-48` in 368_BP0078U), in different branches of the tree: they were acquired independently.
+
+To confirm that genes are carried by the same plasmid in different isolates, the plasmids themselves need to be compared (e.g. with PlasmidFinder replicons, or by aligning the plasmid sequences).
 :::
 
 ## Run the whole analysis as a workflow
 
-The annotation, pangenome and phylogeny steps have been bundled into a Galaxy workflow: `Genome assemblies` (collection) → `Bakta` → `Roary` → `IQ-TREE`, with the same parameters as above. The tree visualisation (Newick Display or iTOL) is done afterwards.
+All the steps above have been bundled into a Galaxy workflow: `Genome assemblies` (collection) → `Bakta` → `Roary` → `IQ-TREE` → `Newick Display`, with the same parameters as above. The iTOL annotation is done afterwards, on the downloaded `MaxLikelihood Tree`.
 
 * Import the workflow from: [Pangenome Workflow](https://usegalaxy.org.au/u/rahi_praveen/w/pangenome-workflow)
 
