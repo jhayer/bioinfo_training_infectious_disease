@@ -241,8 +241,6 @@ fastp automatically detects the quality encoding of the reads (phred33 for all r
 :::
 
 
-# Conclusion
-
 We have just successfully assessed the quality of our reads and cleaned them with fastp, in a single step!
 From now on, we will only keep the cleaned paired collection **fastp on collection X: Paired-end output**.
 Rename it **Trimmed Short Reads**.
@@ -274,6 +272,31 @@ Nanopore reads are very different from Illumina reads:
 | Main errors | Substitutions, at the end of the reads | Insertions and deletions, especially in homopolymers (e.g. `AAAAAA`) |
 
 Because of this, the cleaning of long reads focuses on removing **whole reads** that are too short or of too low quality, rather than cutting the end of every read. For an assembly, what matters is to keep the **long** and **accurate** reads.
+
+## Common problems to check
+
+The two technologies do not make the same kind of errors, so we do not look for the same problems in their QC reports.
+
+**Illumina (short reads)**: few errors, mostly **substitutions** (one base read as another), concentrated at the end of the reads.
+
+| Problem | Why it happens | Where to see it | What to do |
+|---------|----------------|-----------------|------------|
+| Quality drops at the end of the reads | The sequencing chemistry gets less accurate at each cycle | Quality curve along the read position | Trim the low-quality ends |
+| Adapters in the reads | The DNA fragment is shorter than the read, so the sequencer reads into the adapter | **Adapters** section, insert size | Trim the adapters |
+| Uneven base composition in the first ~10 bases | Bias of the library preparation (fragmentation, random primers) | Base content curve along the read position | Usually harmless; trim if it is strong |
+| Poly-G tails | On 2-colour sequencers (NextSeq, NovaSeq), "no signal" is read as a G with a high quality | Base content curve: G increases at the end of the reads | Poly-G trimming (fastp does it automatically for these sequencers) |
+| High duplication rate | Too many PCR cycles, or too little starting DNA | **Duplication** section | Interpret the coverage with caution |
+| Ambiguous bases (`N`) | The sequencer could not call the base | N content curve | Filter reads with too many N |
+
+**Nanopore (long reads)**: many more errors, mostly **insertions and deletions** (indels), often in **homopolymers** (e.g. `AAAAAAA`, where the number of A is hard to count), spread along the whole read.
+
+| Problem | Why it happens | Where to see it | What to do |
+|---------|----------------|-----------------|------------|
+| Low-quality reads | Some reads are bad from start to end (pore problems, damaged DNA) | Read mean quality distribution | Filter on mean read quality (e.g. Q10) |
+| Short reads | DNA fragmented during extraction or library preparation | Read length distribution, N50 | Filter on read length; improve the DNA extraction next time |
+| Adapters and barcodes | Adapters are ligated to both ends of the DNA | **Adapters** section | Trim the adapters |
+| Chimeric reads | Two DNA fragments ligated together and read as one | Adapters found in the **middle** of the reads | Split the reads at the internal adapters |
+| Homopolymer errors | The signal does not change along a run of the same base | Not visible in the QC report | Polish the assembly (e.g. with medaka, or with Illumina reads) |
 
 ## fastplong: fastp for long reads
 
@@ -384,31 +407,6 @@ Click on the 👁️ (eye) icon of the **HTML report** to open it. Its structure
 
 Open the HTML report from **fastp** (short reads), and the HTML report from **fastplong** (long reads).
 Look at the average size. Look at the average quality. Discuss the pros and cons of each HTS technology.
-
-## Common problems to check
-
-The two technologies do not make the same kind of errors, so we do not look for the same problems in their QC reports.
-
-**Illumina (short reads)**: few errors, mostly **substitutions** (one base read as another), concentrated at the end of the reads.
-
-| Problem | Why it happens | Where to see it | What to do |
-|---------|----------------|-----------------|------------|
-| Quality drops at the end of the reads | The sequencing chemistry gets less accurate at each cycle | Quality curve along the read position | Trim the low-quality ends |
-| Adapters in the reads | The DNA fragment is shorter than the read, so the sequencer reads into the adapter | **Adapters** section, insert size | Trim the adapters |
-| Uneven base composition in the first ~10 bases | Bias of the library preparation (fragmentation, random primers) | Base content curve along the read position | Usually harmless; trim if it is strong |
-| Poly-G tails | On 2-colour sequencers (NextSeq, NovaSeq), "no signal" is read as a G with a high quality | Base content curve: G increases at the end of the reads | Poly-G trimming (fastp does it automatically for these sequencers) |
-| High duplication rate | Too many PCR cycles, or too little starting DNA | **Duplication** section | Interpret the coverage with caution |
-| Ambiguous bases (`N`) | The sequencer could not call the base | N content curve | Filter reads with too many N |
-
-**Nanopore (long reads)**: many more errors, mostly **insertions and deletions** (indels), often in **homopolymers** (e.g. `AAAAAAA`, where the number of A is hard to count), spread along the whole read.
-
-| Problem | Why it happens | Where to see it | What to do |
-|---------|----------------|-----------------|------------|
-| Low-quality reads | Some reads are bad from start to end (pore problems, damaged DNA) | Read mean quality distribution | Filter on mean read quality (e.g. Q10) |
-| Short reads | DNA fragmented during extraction or library preparation | Read length distribution, N50 | Filter on read length; improve the DNA extraction next time |
-| Adapters and barcodes | Adapters are ligated to both ends of the DNA | **Adapters** section | Trim the adapters |
-| Chimeric reads | Two DNA fragments ligated together and read as one | Adapters found in the **middle** of the reads | Split the reads at the internal adapters |
-| Homopolymer errors | The signal does not change along a run of the same base | Not visible in the QC report | Polish the assembly (e.g. with medaka, or with Illumina reads) |
 
 For both technologies, also check for **contamination** (reads from another organism): a second peak in the GC content distribution is a hint, and the [contamination check](contamination.md) confirms it.
 
