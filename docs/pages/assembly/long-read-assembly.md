@@ -11,7 +11,8 @@ title: "Long Read Assembly with Flye"
 
 **Objectives**
 
-- Understand the Overlap–Layout–Consensus (OLC) approach and how Flye works.
+
+approach and how Flye works.
 - Assemble the trimmed Nanopore reads of sample 368 with **Flye** in Galaxy.
 - Interpret the Flye outputs: contigs, circularity, coverage and assembly graph.
 - Compare the assembly with the genome published by the authors.
@@ -24,16 +25,6 @@ We can now assemble the long reads of the same sample, using the tool named **Fl
 
 Short reads (150 bp) are very accurate, but they are shorter than many repeated regions of the genome (insertion sequences, rRNA operons, transposons…). The assembler cannot know how to connect the regions on each side of a repeat, and the assembly breaks into many contigs. Nanopore reads are much longer (several kb, sometimes more than 100 kb): a single read can span a whole repeat, which allows the assembler to resolve it. The price is a higher error rate, which the assembler must tolerate.
 
-# Theory on Long Read assembly
-
-## OLC (Overlap–Layout–Consensus)
-
-De Bruijn graphs, used by SPAdes, break the reads into short k-mers: this works for accurate short reads, but sequencing errors in long reads would create too many wrong k-mers. Long-read assemblers instead use the **OLC** approach:
-
-1. **Overlap**: find overlaps between all pairs of reads.
-2. **Layout**: build a graph of overlaps, and resolve paths through it to order the reads into contigs.
-3. **Consensus**: for each position of a contig, take the base supported by most reads, which corrects most sequencing errors.
-
 ## How does Flye work?
 
 The Flye assembly is based on finding overlapping reads of variable length with a high error tolerance. Flye then builds a **repeat graph**, in which every repeated region of the genome is collapsed into a single edge, and uses the long reads to find the correct path through the repeats.
@@ -45,7 +36,7 @@ Here is an analogy. The genome is a book that was shredded into strips, and the 
 - **Step 3, pick the road (repeat resolution)**: a long strip that runs through a repeated paragraph, with text visible on both sides, shows which road leads in and which leads out.
 - **Step 4, proofreading (polishing)**: you compare all the strips covering each page to correct the typos.
 
-<!-- TODO: add a scheme of the Flye algorithm -->
+![repeat-graph](images/06-assembly/repeat-graph.png)
 
 # Our data
 
@@ -58,28 +49,6 @@ We assemble the long reads of sample **368** ([SAMEA115834835](https://www.ebi.a
 | Total bases (raw) | 912.6 Mb |
 | Mean read length (raw) | ~6.8 kb |
 
-The authors deposited the final genome of this strain at the ENA ([GCA_964200035](https://www.ebi.ac.uk/ena/browser/view/GCA_964200035)). It was obtained with a **hybrid assembly** (Unicycler, combining the short and long reads), and is made of **7 circular sequences**, for a total of **5,202,684 bp**:
-
-| Sequence | Length (bp) |
-|---|---|
-| Chromosome | 4,894,004 |
-| Plasmid p1 | 149,835 |
-| Plasmid p2 | 110,246 |
-| Plasmid p3 | 34,980 |
-| Plasmid p4 | 7,872 |
-| Plasmid p5 | 3,646 |
-| Plasmid p6 | 2,101 |
-
-We will use this genome as the "expected result" to evaluate our long-read assembly.
-
-:::: {.callout-important title="Question: Coverage of the long reads" collapse="true"}
-1. What is the coverage of the raw long reads?
-2. Using the fastplong report, what is the coverage of the trimmed long reads?
-
-::: {.callout-tip title="Answer" collapse="true"}
-1. 912.6 Mb / 5.2 Mb ≈ **175x**.
-2. Divide the *Total bases* of the trimmed reads by 5.2 Mb.
-<!-- TODO: add the total bases and coverage after fastplong from your own run -->
 
 Flye needs a coverage of at least ~30x for a good bacterial assembly: we have more than enough.
 :::
@@ -103,7 +72,7 @@ We use the long reads cleaned with **fastplong** in the [Read Quality Control](a
 
 ::: {.callout-tip title="Import input reads"}
 1. Open the **History Multiview** (left panel).
-2. Drag **Trimmed Long Read** (the fastplong output) from the previous history (e.g., "Quality Control and Trimming").
+2. Drag **Trimmed Long Reads** (the fastplong output) from the previous history (e.g., "Quality Control and Trimming").
 3. Drop it into the **Long Read Genome Assembly** history.
 :::
 
@@ -144,7 +113,7 @@ A quality of Q14 corresponds to an error rate of 10^(−14/10) ≈ **4%**. Witho
 ::: {.callout-important title="Exercise: Run Flye" collapse="true"}
 1. In the Galaxy tools panel, search for **Flye** and click **Flye de novo assembler for single-molecule sequencing reads**.
 2. Select the following parameters:
-    - *"Input reads"*: `Trimmed Long Read`
+    - *"Input reads"*: `Trimmed Long Reads`
     - *"Mode"*: `Nanopore raw (--nano-raw)`
     - *"Number of polishing iterations"*: `1`
     - *"Perform metagenomic assembly"*: `No`
@@ -189,7 +158,7 @@ Open the **assembly info** and the end of the **log**.
 
 ::: {.callout-tip title="Answer" collapse="true"}
 1. and 2. With ~175x of long reads, Flye should recover the chromosome as a single circular contig of ~4.89 Mb.
-3. The large plasmids (p1, p2, p3) should be recovered as circular contigs. The **small plasmids** (p4–p6, 2–8 kb) are often missing or incomplete in long-read assemblies: they are shorter than many reads, and fastplong may have removed their reads with the minimum read length (1000 bp) or the mean quality filter. This is one reason why the authors used a hybrid assembly.
+3. The large plasmids (p1, p2, p3) should be recovered as circular contigs. The **small plasmids** (p4–p6, 2–8 kb) are often missing or incomplete in long-read assemblies: they are shorter than many reads, and fastplong may have removed their reads with the minimum read length (500 bp) or the mean quality filter. This is one reason why the authors used a hybrid assembly.
 4. The coverage of a plasmid relative to the chromosome estimates its **copy number** per cell: small plasmids often have a much higher coverage than the chromosome.
 <!-- TODO: add the contigs, lengths, coverage and circularity from your own run -->
 :::
@@ -203,34 +172,9 @@ If small plasmids are missing, you can:
 - use a hybrid assembly (see [Hybrid assembly](hybrid-assembly.md)), as the authors did
 :::
 
-## Visualise the assembly graph
 
-::: {.callout-tip title="Bandage"}
-1. In **Tools**, select **Bandage Image, visualize de novo assembly graphs**.
-2. In *"Graphical Fragment Assembly"*, select **Flye on data X: graphical fragment assembly**.
-3. Click **Run Tool**
-:::
-
-:::: {.callout-important title="Question: Compare with the short read assembly" collapse="true"}
-Compare the Bandage image of the Flye assembly with the one of the SPAdes assembly. Which assembly is the most contiguous? Why?
-
-::: {.callout-tip title="Answer" collapse="true"}
-The Flye graph should show a few circular contigs (the chromosome and the large plasmids), while the SPAdes graph is fragmented into many contigs connected by repeats. Long reads span the repeats that short reads cannot resolve.
-:::
-::::
-
-::: {.callout-note title="Accuracy of the long-read assembly"}
-A long-read assembly is very **contiguous**, but the consensus can still contain errors, mostly small insertions and deletions in homopolymers (e.g. `AAAAAA`). These errors can create false stop codons in genes. They are corrected by **polishing** the assembly with the reads (e.g. **Medaka** with the long reads, **Polypolish** or **Pilon** with the accurate short reads), or by using a hybrid assembly.
-:::
 
 # Conclusion
 
 We assembled the Nanopore reads of sample 368 with Flye. Thanks to the length of the reads, Flye could resolve the repeats of the genome and recover the chromosome and the large plasmids as complete, circular contigs, which is not possible with short reads only. In the next steps, we will evaluate the quality of the assemblies and compare them with a hybrid assembly.
 
-::: {.callout-tip title="Key Points"}
-- Long-read assemblers use the **Overlap–Layout–Consensus** approach, which tolerates the higher error rate of long reads.
-- Flye builds a **repeat graph** and uses the long reads to resolve the repeats.
-- The read type (`--nano-raw`, `--nano-hq`…) must match the sequencing technology and basecalling quality.
-- The **assembly info** table shows the length, coverage and circularity of each contig: a complete bacterial genome is made of circular contigs.
-- Small plasmids are easily lost in long-read assemblies; hybrid assembly and polishing improve completeness and accuracy.
-:::

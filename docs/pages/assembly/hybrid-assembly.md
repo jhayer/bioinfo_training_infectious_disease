@@ -81,8 +81,8 @@ We use the reads cleaned in the [Read Quality Control](assessing-read-quality.md
 ::: {.callout-tip title="Import input reads"}
 1. Open the **History Multiview** (left panel).
 2. From the previous history (e.g., "Quality Control and Trimming"), drag into the **Hybrid Genome Assembly** history:
-    - **Trimmed Short Read**: the trimmed paired-end short reads
-    - **Trimmed Long Read**: the trimmed long reads
+    - **Trimmed Short Reads**: the trimmed paired-end short reads
+    - **Trimmed Long Reads**: the trimmed long reads
 :::
 
 # Unicycler in Galaxy
@@ -118,8 +118,8 @@ When would you choose the `conservative` or the `bold` bridging mode?
 1. In the Galaxy tools panel, search for **Unicycler** and click on **Create assemblies with Unicycler**.
 2. Select the following parameters:
     - *"Paired or Single end data?"*: `Paired Collection`
-        - *"Select a paired collection"*: `Trimmed Short Read`
-    - *"Select long reads. If there are no long reads, leave this empty"*: `Trimmed Long Read`
+        - *"Select a paired collection"*: `Trimmed Short Reads`
+    - *"Select long reads. If there are no long reads, leave this empty"*: `Trimmed Long Reads`
     - *"Select Bridging mode"*: `Normal (moderate contig size and misassembly rate)`
     - No change in the other parameters
 3. Click **Run Tool**

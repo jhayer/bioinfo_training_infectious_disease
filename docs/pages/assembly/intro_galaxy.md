@@ -60,6 +60,10 @@ put the pdf file on Galaxy Introduction.
 Explain what it the concept, that it is present that they are servers all around the world. 
 Explain that bioinformatic is a world made out of tools for specific uses, and Galaxy allows you to use all these tools. 
 
+<iframe src="../../lectures/galaxy/intro_galaxy_slides.html" width="1280" height="720" style="border: 1px solid #ccc;" allowfullscreen="true"></iframe>
+
+[Open the slides in full screen](../../lectures/galaxy/intro_galaxy_slides.html){target="_blank"} — adapted from the [Galaxy Training Network](https://training.galaxyproject.org/training-material/topics/introduction/tutorials/introduction/slides.html) (CC-BY 4.0).
+
 ## What does Galaxy look like?
 
 :::: {.callout-tip title="Log in to Galaxy"}
@@ -115,7 +119,51 @@ In the **Data availability** part of [the E.Coli Paper](https://www.sciencedirec
 
 "Data availability: All sequencing data and assembled genomes are deposited at the European Nucleotide Archive under study PRJEB77560. A table with all accession numbers is in Supplementary Data (S13)."
 
+## What is European Nucleotide Archive ? 
+
+![International Nucleotide Sequence Database Collaboration](images/03-intro-galaxy/INSDC.png). 
+The International Nucleotide Sequence Database Collaboration (INSDC) archives nucleotide sequence data, from raw to assembled and annotated sequences, from around the world.
+There are three primary members DDBJ (DNA Databank Japan), NLM-NCBI (National Library Medicine – National Center for Biotechnology Information) and ENA (European Nucleotide Archive), which are mirrored, thus sequences shared with one are shared with all.Each of the repositories, DDBJ, ENA and NLM-NCBI all hold the same data, however each one has a different interface and mechanisms for uploading and downloading.
+
+| | **NCBI** | **ENA** | **DDBJ** |
+|---|---|---|---|
+| Full name | National Center for Biotechnology Information | European Nucleotide Archive | DNA Data Bank of Japan |
+| Host institution | NLM / NIH | EMBL-EBI | National Institute of Genetics (NIG) |
+| Region | USA | Europe (UK) | Japan |
+| Assembled / annotated sequences | GenBank | ENA sequence records | DDBJ sequence records |
+| Raw sequencing reads | SRA (Sequence Read Archive) | ENA read archive | DRA (DDBJ Sequence Read Archive) |
+| Raw-read accession prefixes | SRR, SRX, SRS, SRP | ERR, ERX, ERS, ERP | DRR, DRX, DRS, DRP |
+| BioProject prefix | PRJNA | PRJEB | PRJDB |
+| BioSample prefix | SAMN | SAMEA | SAMD |
+| Main submission portal | NCBI Submission Portal | Webin | D-way (DDBJ submission system) |
+| Website | ncbi.nlm.nih.gov | ebi.ac.uk/ena | ddbj.nig.ac.jp |
+
+This data is used in many tools:
+![INSDC-tools](images/03-intro-galaxy/INSDC-tools.png). 
+
+## The product of INSDC
+
+Every object in the INSDC system, whether a project, a sample, an experiment, a run, or an assembled sequence, gets its own unique accession number, and that number is the key to retrieving it : 
+
+| Level | What it describes | NCBI | ENA | DDBJ |
+|---|---|---|---|---|
+| **Project / Study** | The overall research effort | BioProject (`PRJNA`) | Study (`PRJEB`) | BioProject (`PRJDB`) |
+| **Sample** | The biological material sequenced | BioSample (`SAMN`) | Sample (`SAMEA`) | BioSample (`SAMD`) |
+| **Experiment** | Library prep and sequencing method | SRX | ERX | DRX |
+| **Run** | A set of reads from one sequencing run | SRR | ERR | DRR |
+| **Assembled sequences** | Genomes, genes, transcripts | GenBank | ENA records | DDBJ records |
+
+The hierarchy is like this : 
+Project / Study → Sample → Experiment → Run
+                     ↘ Assembled sequences (GenBank / ENA / DDBJ)
+
+ A project is retrieved through its BioProject accession (e.g., PRJNA…, PRJEB…, PRJDB…), a sample through its BioSample accession (e.g., SAMN…, SAMEA…, SAMD…), raw reads through run accessions (SRR/ERR/DRR), and assembled sequences through GenBank/ENA/DDBJ accessions (e.g., MN908947). Because the three databases synchronize daily, any of these accessions can be searched in NCBI, ENA, or DDBJ, regardless of where the data was first submitted. The accessions are also cross-linked: a BioProject page lists its associated BioSamples, runs, and sequences, and each sequence or run record points back to its BioProject and BioSample. This means you can start from any one accession and navigate to the rest of the related data, which makes records stable, citable in publications, and reproducible.
+
+## The ENA project of our study.
+
 Indeed, if you dug into the European Nucleotide Archive (ENA) website. You can find the project [PRJEB77560](https://www.ebi.ac.uk/ena/browser/view/PRJEB77560).
+
+![ena-project](images/03-intro-galaxy/ena-project.png)
 
 In total, You have 12 run accessions from 6 Sample accessions: for each of the 6 samples you have 2 runs, one for the long reads, and another one for the short reads ! 
 
@@ -127,6 +175,8 @@ Throughout the tutorial, we will work on **1 sample**: [SAMEA115834835](https://
 | *ERR13363634* | Oxford Nanopore MinION | Long reads, single-end |
 
 We will download both runs now, and start by looking at the short reads.
+
+
 
 ### Galaxy Tool
 
@@ -144,10 +194,11 @@ To download several runs at once, we first give Galaxy the list of accessions in
     ```
 
 4. Name the dataset **SRA accessions**
+![SRA-accessions](images/03-intro-galaxy/SRA-accessions.png)
 5. Click **Start**, then **Close**
 :::
 
-The dataset is automatically recognised as a `txt` file and should appear in your history.
+The dataset  should appear in your history.
 
 ::: {.callout-important title="Exercice: Upload the FASTQ from SRA to Galaxy" collapse="true"}
 1. Type **fastq sra** in the tools panel search box (top)
@@ -168,6 +219,7 @@ format from NCBI SRA)
         ```
 
     - No change in the other parameters
+![fastq-sra-params](images/03-intro-galaxy/fastq-sra-params.png)    
 4. Click **Run Tool**
 :::
 
@@ -200,12 +252,27 @@ When the file has uploaded to Galaxy, it will turn green.
 After this you will see your first history item (called a "dataset") in Galaxy's right panel. It will go through
 the gray (preparing/queued) and yellow (running) states to become green (success).
 
+### Rename the outputs
+
+The reads were sorted in the output collections according to their type:
+
+- **Pair-end data (fasterq-dump)** contains the short reads of **ERR13363306** (a forward and a reverse file)
+- **Single-end data (fasterq-dump)** contains the long reads of **ERR13363634** (one file)
+- **Other data (fasterq-dump)** should be empty. You can delete it by clicking on the 🗑️ (bin) icon.
+
+::: {.callout-tip title="Rename the collections"}
+![rename-outputs](images/03-intro-galaxy/rename-outputs.png)
+1. Next to **Pair-end data (fasterq-dump)**, click the ✏️ (pencil) icon and rename it to **Short Reads**. Click **Save**.
+2. Next to **Single-end data (fasterq-dump)**, click the ✏️ (pencil) icon and rename it to **Long Reads**. Click **Save**.
+:::
+
 ### LOG FILE
 
 First, we wil look at the **fasterq-dump log** file.
 
 :::: {.callout-important title="Excercise: View log contents" collapse="true"}
 1. Click the 👁️ (eye) icon next to the file **fasterq-dump log**, to look at the file content.
+![view log](images/03-intro-galaxy/fasterq-dump-view.png)
 The contents of the file will be displayed in the central Galaxy panel.
 
 The log contains one block of statistics for each of the 2 accessions.
@@ -213,7 +280,7 @@ The log contains one block of statistics for each of the 2 accessions.
 - How many spots have been read for each run ?
 - How many reads have been read for each run ?
 - How can you explain the difference between the number of spots and reads ?
-- Look at the metadata of the runs ([ERR13363306](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&page_size=10&acc=ERR13363306&display=metadata) and [ERR13363634](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&page_size=10&acc=ERR13363634&display=metadata)). Compare the number of spots to make sure we have retrieved all the data.
+
 
 ::: {.callout-tip title="Answer" collapse="true"}
 | Run | spots read | reads read |
@@ -223,27 +290,15 @@ The log contains one block of statistics for each of the 2 accessions.
 
 A **spot** is one sequenced DNA fragment. The short reads are paired: each fragment is read from both ends, so this run has two reads per spot, hence : **N reads = 2 × N spots**. The long reads are single-end: each fragment gives one read, so **N reads = N spots**.
 
-- The numbers of spots in the metadata are the same as in the log file, Good News !
 :::
 ::::
 
 ### Reads retrieved from NCBI
 
-The reads were sorted in the output collections according to their type:
-
-- **Pair-end data (fasterq-dump)** contains the short reads of **ERR13363306** (a forward and a reverse file)
-- **Single-end data (fasterq-dump)** contains the long reads of **ERR13363634** (one file)
-- **Other data (fasterq-dump)** should be empty. You can delete it by clicking on the 🗑️ (bin) icon.
-
-::: {.callout-tip title="Rename the collections"}
-1. Next to **Pair-end data (fasterq-dump)**, click the ✏️ (pencil) icon and rename it to **Short Read**. Click **Save**.
-2. Next to **Single-end data (fasterq-dump)**, click the ✏️ (pencil) icon and rename it to **Long Read**. Click **Save**.
-:::
-
 Let's first look at the content of the short reads.
 
 ::: {.callout-tip title="View forward reads"}
-1. Click on the **Short Read** collection, inside you have a pair (ERR13363306) with 2 datasets, click on it.
+1. Click on the **Short Reads** collection, inside you have a pair (ERR13363306) with 2 datasets, click on it.
 2. Click the 👁️ (eye) icon next forward, to look at the file content.
 :::
 
@@ -251,13 +306,35 @@ The contents of the file will be displayed in the central Galaxy panel. If the d
 
 This file contains DNA sequencing reads from a bacteria, in FASTQ format:
 
-![A FastQ file has four lines per record: the record identifier (`@mutant-no_snps.gff-24960/`), the sequence (`AATG…`), the plus character (`+`), and then the quality scores for the sequence (`5??A…`).](images/03-intro-galaxy/fastq-ncbi.png){width="620px" fig-alt="preview of a fastq file showing the 4 line structure described in fig caption. 3 reads are shown."}
+![A FastQ file has four lines per record: the record identifier (`@mutant-no_snps.gff-24960/`), the sequence (`AATG…`), the plus character (`+`), and then the quality scores for the sequence (`5??A…`).](images/03-intro-galaxy/fastq-look.png){width="620px" fig-alt="preview of a fastq file showing the 4 line structure described in fig caption. 3 reads are shown."}
 
 :::: {.callout-important title="Extract the fastq file" collapse="true"}
-What is the name of the first read ? What is the length of the first read ?
+1. What is the name of the first read ? What is the length of the first read ?
+2. Look at this  ASCII characters encoding table :
+![ascii-table](images/03-intro-galaxy/ascii-table.png)
+What is the Q score for the symbol "F" ? What is the error probability linked with this symbol ? Reminder : The quality score (Phred score, Q) is a logarithmic measure of how likely a base call is to be wrong. It converts to an error probability with P = 10^(−Q/10), and the reverse is Q = −10 · log10(P). So Q10 means a 1 in 10 chance of error (90% accuracy), Q20 means 1 in 100 (99%), Q30 means 1 in 1,000 (99.9%), and Q40 means 1 in 10,000 (99.99%).
+
 
 ::: {.callout-tip title="Answer" collapse="true"}
-The name of the first read is **@ERR13363306.1/1**. The length is this read is **150**.
+1. The name of the first read is **@ERR13363306.A00924:312:H5C55DRX2:2:2101:1579:1000/1**. The length is this read is **150**.
+2. “F” is ASCII 70. With the Phred+33 encoding, Q = 70 − 33 = 37.
+
+Error probability: P = 10^(−37/10) = 10^(−3.7) ≈ 2 × 10⁻⁴ (about 1 error in 5,000 bases, or ~99.98% accuracy).
+:::
+::::
+
+
+
+::: {.callout-tip title="View long reads"}
+1. Click on the **Long Reads** collection, inside you have **ERR13363634** 
+2. Click the 👁️ (eye) icon, to look at the file content.
+:::
+
+:::: {.callout-important title="Extract the fastq file" collapse="true"}
+What is the name of the first read ? What is the length of the first read ? What is the difference with the forward short read ? 
+
+::: {.callout-tip title="Answer" collapse="true"}
+The name of the first read is **@ERR13363634.037cd229-9c79-45ad-b03b-fa987cfc58c4/1 **. The length in this read is **520**.
 :::
 ::::
 
@@ -266,9 +343,9 @@ The name of the first read is **@ERR13363306.1/1**. The length is this read is *
 The quality symbol in **FASTQ Format** can be hard to interpret, that's why we are going to use our first tool to have a better understanding of the data: **FastQE**.
 FastQE turns ASCII characters into emojis that are easy to interpret.
 
-We will run it on the long reads, the **Long Read** collection (run ERR13363634). This collection is a simple list with one dataset, so FastQE can use it directly.
+We will run it on the long reads, the **Long Reads** collection (run ERR13363634). 
 
-By default, FastQE only handles reads up to 500 bp, which is enough for Illumina reads, but not for Nanopore reads, which are several kb long. We need to increase the *Maximum read length*.
+By default, FastQE only handles reads up to 500 bp, which is enough for Illumina reads, but not for Nanopore reads, which are several kb long. We need to increase the *Maximum read length*. For the tool to run quick, and as an example we will just increase it to **1000**, but be aware that Nanopore reads can be longer than 10 kb.  
 
 ::: {.callout-important title="Exercice: Run FastQE tool" collapse="true"}
 1. Type **FastQE** in the tools panel search box (top)
@@ -279,9 +356,10 @@ By default, FastQE only handles reads up to 500 bp, which is enough for Illumina
     The tool will be displayed in the central Galaxy panel.
 
 3. Select the following parameters:
-    - *FastQ data*: Select the format *Dataset Collection*, and select **Long Read**
-    - *Maximum read length*: `5000`
+    - *FastQ data*: Select the format *Dataset Collection*, and select **Long Reads**
+    - *Maximum read length*: `1000`
     - No change in the other parameters
+    ![fastqe-params](images/03-intro-galaxy/fastqe-params.png)
 4. Click **Run Tool**
 :::
 
@@ -294,7 +372,7 @@ This tool will run and one new output dataset will appear at the top of your his
 
 ## View results
 
-We will now look at the output dataset called *FastQE on data 1*.
+We will now look at the output dataset called *FastQE on data 1*. Rename it **FastQE Long Reads**. 
 
 ::: {.callout-note title="Comment"}
 * Note that Galaxy has given this dataset a name according to both the tool name ("FastQE") and the input ("data 1") that it used.

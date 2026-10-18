@@ -8,6 +8,7 @@ Tutorial pages for the training: Bioinformatics for Infectious Disease Ecology R
 
 <img src="docs/pages/images/IRD.png" width="300" height="100" style="height: 100px" />
 <img src="docs/pages/images/USTH.png" width="200" height="100" style="height: 100px" />
+<img src="docs/pages/images/IPC_logo.png" width="133" height="100" style="height: 100px" />
 
 ## Table of Contents
 

@@ -12,7 +12,7 @@ title: "SARS-CoV-2 genome reconstruction and lineage assignment from ONT tiled-a
 **Objectives**
 
 - Obtain the recommended Galaxy workflows for SARS-CoV-2 ONT tiled-amplicon data
-- Run a workflow to discover mutations in a batch of viral samples amplified with the ARTIC v4 primers
+- Run a workflow to discover mutations in a batch of viral samples amplified with the ARTIC v5.3.2 primers
 - Run a workflow to summarise and visualise the mutations of a batch of samples
 - Run a workflow to construct viral consensus sequences
 - Assign the samples to lineages with **Pangolin** and **Nextclade**
@@ -53,7 +53,7 @@ A few highlights of these workflows:
 
 The SARS-CoV-2 genome is ~30 kb long. In clinical samples, viral RNA is often present in low amounts and mixed with a lot of human RNA. To sequence it efficiently, the viral genome is first amplified by **multiplex PCR** with a set of primers producing short, overlapping amplicons that together tile the whole genome.
 
-The most widely used primer sets were designed by the [ARTIC network](https://artic.network/). With **ARTIC v4**, the genome is covered by ~100 amplicons of ~400 bp, split into two pools so that overlapping amplicons are not amplified in the same reaction. ARTIC v4 was released in 2021 to restore the amplification of regions where mutations of new variants (e.g. Delta) prevented some v3 primers from binding.
+The most widely used primer sets were designed by the [ARTIC network](https://artic.network/). In this tutorial, we use **ARTIC v5.3.2**: the genome is covered by ~100 amplicons of ~400 bp, split into two pools so that overlapping amplicons are not amplified in the same reaction. The primer schemes are regularly updated, because mutations of new variants can prevent some primers from binding: ARTIC v5 was released in 2022 to restore the amplification of regions affected by the mutations of the Omicron variants.
 
 This approach has consequences for the analysis:
 
@@ -85,7 +85,7 @@ The workflow for ONT tiled-amplicon data runs:
 We will get the sequencing data from [a household cohort study published in the Lancet Southeast Asia](https://pmc.ncbi.nlm.nih.gov/articles/PMC12810560).
 If we look at the data sharing in the paper, we can see that the data is available under [the ENA Project PRJEB104853](https://www.ebi.ac.uk/ena/browser/view/PRJEB104853).
 
-The workflow expects a **list** collection with one FASTQ file per sample (ONT reads are single reads, not pairs). You need at least two samples, sequenced with ONT after amplification with the ARTIC v4 primers.
+The workflow expects a **list** collection with one FASTQ file per sample (ONT reads are single reads, not pairs). You need at least two samples, sequenced with ONT after amplification with the ARTIC v5.3.2 primers.
 
 We will take the first 3 
 
@@ -114,7 +114,7 @@ We will take the first 3
 :::
 
 ::: {.callout-note title="Using your own data"}
-If your reads are on your computer, upload them with **Upload** → **Collection**, with *"Collection Type"*: `List` and *"File Type"*: `fastqsanger.gz`. If your samples were amplified with a primer set other than ARTIC v4, you will need the primer BED file matching it (see below).
+If your reads are on your computer, upload them with **Upload** → **Collection**, with *"Collection Type"*: `List` and *"File Type"*: `fastqsanger.gz`. If your samples were amplified with a primer set other than ARTIC v5.3.2, you will need the primer BED file matching it (see below).
 :::
 
 ## Import the reference sequence and auxiliary datasets
@@ -150,8 +150,10 @@ All workflows of the Galaxy Covid-19 project are published by the **IWC** (Inter
 
 ::: {.callout-tip title="Import the workflows"}
 1. In Galaxy, click on **Workflows** in the top menu, then **Public Workflows**
-2. Type "COVID-19 variation analysis of ARTIC ONT data  Version 1", or click on the [workflow link](https://usegalaxy.org.au/published/workflow?id=47ce6a2d30887637)
-3. Click on "Import Worflow".  
+2. Type "COVID-19 variation analysis of ARTIC ONT data  Version 1", or click on the [workflow link](https://usegalaxy.org.au/published/workflow?id=47ce6a2d30887637).
+It should open the workflow preview:
+![workflow-preview](images/sars-cov-2/workflow-preview.png)
+3. Click on **Import Worflow**.  
 :::
 
 ## From sequencing data to annotated mutations per sample
@@ -160,15 +162,85 @@ All workflows of the Galaxy Covid-19 project are published by the **IWC** (Inter
 1. Open the **COVID-19: variation analysis of ARTIC ONT data** workflow and set:
     - *"ONT-sequenced reads"*: `ONT reads`
     - *"NC_045512.2 FASTA sequence of SARS-CoV-2"*: `SARS-CoV-2 reference`
-    - *"Primer binding sites info in BED format"*: `ARTIC v4 primers`
+    - *"Primer binding sites info in BED format"*: `ARTIC v5.3.2 primers`
 2. Click **Run Workflow**
 :::
+
+### Outputs of the variation analysis workflow
+
+Each output is a **collection** with one element per sample. In the order in which the tools run, the workflow produces:
+
+| Step | Tool | Output | Format | What it is |
+|------|------|--------|--------|------------|
+| Read filtering | **fastp** | Length-filtered reads | `fastqsanger` | The reads that pass the minimum and maximum read length filters |
+| | | fastp report | `html` | Read statistics before and after filtering |
+| Mapping | **minimap2** | Mapped reads | `bam` | The reads aligned to the reference genome |
+| | **Samtools view** | Filtered mapped reads | `bam` | Mapped reads only: unmapped reads, secondary alignments and reads with a mapping quality of 0 are removed |
+| | **Samtools stats** | Mapped reads stats | `tabular` | Mapping statistics (number of mapped reads, error rate...) |
+| Primer removal | **ivar trim** | Primer-trimmed reads | `bam` | The primer sequences are cut from the reads using the primer BED file |
+| | **BamLeftAlign** | Realigned reads | `bam` | Insertions and deletions are shifted to their left-most position, so that the same indel is always reported at the same position. These are the **fully processed reads** used for variant calling |
+| Coverage QC | **QualiMap BamQC** | BamQC report | `html` | Coverage of the genome by the reads, per sample |
+| | **MultiQC** | Preprocessing and mapping reports | `html` | One report gathering the Samtools stats and QualiMap results of **all** samples |
+| Variant calling | **medaka consensus** | Consensus probabilities | `h5` | Intermediate file: medaka's neural network predictions for each position, used by the next step |
+| | **medaka variant** | Variant calls | `vcf` | The mutations found in each sample, annotated with read depth information |
+| Variant filtering | **LoFreq filter** | Soft-filtered variants | `vcf` | Variants with a **strand bias** are flagged in the `FILTER` column, but **kept** in the file (*soft* filter) |
+| Annotation | **SnpEff** (4.5covid19) | **Annotated variants** | `vcf` | The **final** VCF: each mutation is annotated with its effect on the viral genes and proteins |
+| | | Annotated variants stats | `html` | Summary of the types and effects of the mutations |
+
+The most important outputs for the rest of the tutorial are:
+
+- the **Preprocessing and mapping reports** (MultiQC), to check the quality of the samples (see below)
+- the **annotated variants** (SnpEff VCF), the input of the reporting workflow
+- the **fully processed reads** (BamLeftAlign BAM), used to calculate the coverage in the consensus workflow
+
+### What is a VCF file?
+
+The **Variant Call Format** (VCF) is the standard text format to store genetic variants: the positions where a sample differs from the reference genome. It is a tab-separated file with two parts:
+
+![Structure of a VCF file](images/sars-cov-2/vcf_example.png)
+
+1. The **header**: lines starting with `##` that describe the file: the format version, the reference genome, the tools that created the file, and the meaning of each field used in the `INFO`, `FILTER` and `FORMAT` columns. **Read the header** when you don't understand a field: its definition is there.
+2. The **body**: one line per variant, with 8 mandatory columns, optionally followed by a `FORMAT` column and one column per sample:
+
+| Column | Meaning | In our SARS-CoV-2 VCFs |
+|--------|---------|------------------------|
+| `CHROM` | Name of the reference sequence | Always `NC_045512.2`: the viral genome is a single sequence |
+| `POS` | Position of the variant on the reference (1-based) | Between 1 and 29,903, the length of the genome |
+| `ID` | Identifier of the variant in a database (e.g. dbSNP) | Usually `.` (empty) |
+| `REF` | Base(s) in the reference genome | e.g. `A` |
+| `ALT` | Base(s) observed in the sample | e.g. `G` |
+| `QUAL` | Confidence that the variant is real, as a [Phred score](https://en.wikipedia.org/wiki/Phred_quality_score) | Higher is better |
+| `FILTER` | `PASS` if the variant passed all filters, otherwise the name of the failed filter | Variants with a strand bias are flagged here by LoFreq |
+| `INFO` | Additional information, as `KEY=value` pairs separated by `;` | Read depth (`DP`) and read counts per strand from medaka, and the effect of the mutation (`EFF`) from SnpEff |
+
+The type of variant can be read from the `REF` and `ALT` columns:
+
+- **SNP** (single nucleotide polymorphism): one base replaced by another, e.g. `REF=A`, `ALT=G`
+- **Deletion**: `REF` is longer than `ALT`, e.g. `REF=ATAC`, `ALT=A`
+- **Insertion**: `ALT` is longer than `REF`, e.g. `REF=A`, `ALT=ATT`
+
+
+
+The SnpEff annotation tells us that this SNP is in the gene `S` (Spike) and is **non-synonymous**: it changes the amino acid at position 614 of the protein from aspartic acid (`D`) to glycine (`G`). A **synonymous** mutation, on the contrary, changes the codon but not the amino acid.
+
+::: {.callout-note title="VCF files of viruses"}
+VCF was designed for diploid organisms such as humans, where a sample can carry 0, 1 or 2 copies of a variant (its *genotype*, `GT`). A SARS-CoV-2 sample is a population of viral genomes: what matters is the **allele frequency** (the fraction of reads carrying the mutation), not the genotype. The reporting workflow calculates it for each mutation.
+:::
+
+:::: {.callout-important title="Question: VCF files" collapse="true"}
+1. Open the annotated VCF of one sample with the eye icon. How many mutations were found in this sample?
+2. Do all the mutations have `PASS` in the `FILTER` column?
+
+::: {.callout-tip title="Answer" collapse="true"}
+1. Count the lines of the body (the lines that don't start with `#`). Expanding the dataset in the history shows the number of lines, but it includes the header lines.
+2. Variants with a strand bias (reads supporting the mutation coming mostly from one DNA strand) are flagged by LoFreq, but kept in the file. Strand bias can indicate a sequencing artefact.
+:::
+::::
 
 ::: {.callout-note title="Read length filtering"}
 The optional parameters *"Minimum read length"* and *"Maximum read length"* should match the amplicon sizes of the primer scheme. The workflow defaults are appropriate for the ARTIC primers. For another primer scheme, the [ARTIC network's recommendations](https://artic.network/ncov-2019/ncov2019-bioinformatics-sop.html) (section "Read filtering") are a good starting point: set the minimum to the size of the smallest amplicon, and the maximum to the size of the largest amplicon plus 200 nucleotides, to exclude obviously chimeric reads.
 :::
 
-The workflow takes a while to complete. One of the last datasets added to the history is the **Preprocessing and mapping reports**, the first overview report of the analysis. It contains statistics on the quality of the reads and on the **coverage** of the reference genome by the mapped reads. Technical issues with some samples of a batch are typically visible in this report already, and spotting them early prevents overinterpreting later reports.
 
 :::: {.callout-important title="Question: Preprocessing and mapping" collapse="true"}
 1. Are there samples with a much lower number of reads or a lower coverage than the others?
@@ -281,7 +353,7 @@ Not all consensus sequences have the same quality: uncertain mutations and low c
 
 ::: {.callout-tip title="Answer" collapse="true"}
 1. Yes: a low coverage leads to large masked regions, sometimes most of the genome.
-2. With tiled-amplicon data, a masked stretch often corresponds to one or several **failed amplicons** (~400 bp with ARTIC v4), for example because a mutation prevents a primer from binding.
+2. With tiled-amplicon data, a masked stretch often corresponds to one or several **failed amplicons** (~400 bp with ARTIC v5.3.2), for example because a mutation prevents a primer from binding.
 3. If a mutation falls in an N-masked region, it cannot be determined: there is no objective reason to think that the sample lacks it, and therefore that it belongs to a different lineage.
 <!-- TODO: add the observations from your own run -->
 :::
@@ -383,7 +455,7 @@ The two tools should mostly agree. Differences often concern low-quality samples
 
 # Conclusion
 
-In this tutorial, we used a set of Galaxy workflows to analyse a batch of SARS-CoV-2 samples sequenced with ONT after amplification with the ARTIC v4 primers:
+In this tutorial, we used a set of Galaxy workflows to analyse a batch of SARS-CoV-2 samples sequenced with ONT after amplification with the ARTIC v5.3.2 primers:
 
 1. The **variation analysis** workflow filtered the reads, mapped them to the reference genome, removed the primers and called the mutations of each sample
 2. The **reporting** workflow summarised the mutations per sample and across the batch
