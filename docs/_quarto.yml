@@ -17,12 +17,16 @@ website:
         href: index.md
       - text : Assembly
         menu:
+          - text: Lecture QC reads
+            href: pages/assembly/qc_lecture.md
           - text: Introduction to Galaxy
             href: pages/assembly/intro_galaxy.md
           - text: Read QC and trimming
             href: pages/assembly/assessing-read-quality.md
           - text: Raw read contamination check
             href: pages/assembly/contamination.md
+          - text: Lecture assembly
+            href: pages/assembly/assembly_lecture.md
           - text: Assembly (Short-read)
             href: pages/assembly/short-read-assembly.md
           - text: Assembly (Long-read)
