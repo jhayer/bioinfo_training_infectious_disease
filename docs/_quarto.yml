@@ -65,6 +65,8 @@ website:
             href: pages/metagenomics/16S-sequencing.md
           - text: Diversity Analysis
             href: pages/metagenomics/diversity-analysis.md  
+      - text: Pangenome and phylogenomics
+        href: pages/pangenome/roary_iqtree.md
       - text: PanExplorer
         href: pages/panexplorer/panexplorer.md
       - text: Shotgun Metagenomics
