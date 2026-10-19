@@ -40,6 +40,8 @@ Bakta is a complex workflow involving numerous steps and, despite the small size
 
 ![](/pages/annotation/images/bakta/output_files.png)
 
+* Run the tool
+
 ::: {.callout-note}
 In case of metagenomic assemblies, do not forget to activate the `metagenome mode` option within the `Optional annotation` section.
 :::
