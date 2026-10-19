@@ -1,1 +1,3 @@
 - Own a laptop. 
+- Have a galaxy account
+- [link to access the training group](https://usegalaxy.org.au/join-training/mathis-arnal)
