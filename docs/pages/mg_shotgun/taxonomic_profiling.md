@@ -20,9 +20,9 @@
 
 For metagenomic data analysis we start with sequences derived from DNA fragments that are isolated from the sample of interest. Ideally, the sequences from all microbes in the sample are present. The underlying idea of taxonomic assignment is to compare the DNA sequences found in the sample (reads) to DNA sequences of a database. When a read matches a database DNA sequence of a known microbe, we can derive a list with microbes present in the sample.
 
-When talking about taxonomic assignment or taxonomic classification, most of the time we actually talk about two methods, that in practice are often used interchangeably:
+When talking about taxonomic assignment or taxonomic classification, most of the time we actually talk about two methods:
 
-- **taxonomic binning**: the clustering of individual sequence reads based on similarities criteria and assignation of clusters to reference taxa
+- **taxonomic binning**: the clustering of individual sequences (contigs) based on similarities criteria and assignation of clusters to reference taxa
 
 - **taxonomic profiling**: classification of individual reads to reference taxa to extract the relative abundances of the different taxa
 
@@ -35,10 +35,10 @@ This tutorial focuses on reads obtained from shotgun metagenomic sequencing.
 ## The datasets
 
 We will use 4 samples from the following study: [16S rRNA and metagenomic shotgun sequencing data revealed consistent patterns of gut microbiome signature in pediatric ulcerative colitis](https://www.nature.com/articles/s41598-022-07995-7).
-In this study, the authors have explored the gut microbiome of pediatrics patients with ulcerative colitis; using both metabarcoding of 16S gene amplicons and shotgun metagenomics.
+In this study, the authors have explored the gut microbiome of pediatrics patients with ulcerative colitis (UC); using both metabarcoding of 16S gene amplicons and shotgun metagenomics.
 In this tutorial, we will focus on the taxonomic profiling of 4 samples sequenced using shotgun metagenomics.
 
-We will retrieve the 4 datasets (2 IBD samples and 2 healthy samples) using the SRA tool 
+We will retrieve the 4 datasets (2 UC samples and 2 healthy samples) using the SRA tool 
 
 The list of accession numbers is the following: 
 
@@ -189,7 +189,7 @@ __Krona__ creates an interactive HTML file allowing hierarchical data to be expl
 
 Kraken outputs can not be given directly to **Krona**, they first need to be converted.
 
-__Krakentools__ ({% cite Lu.2017 %}) is a suite of tools to work on Kraken outputs. It include a tool designed to translate results of the Kraken metagenomic classifier to the full representation of NCBI taxonomy. The output of this tool can be directly visualized by the Krona tool.
+__Krakentools__ (Lu.2017 %) is a suite of tools to work on Kraken outputs. It include a tool designed to translate results of the Kraken metagenomic classifier to the full representation of NCBI taxonomy. The output of this tool can be directly visualized by the Krona Pie Chart tool.
 
 ::: {.callout-handson}
 Search for the tool **Krakentools: Convert kraken report file to krona text file**

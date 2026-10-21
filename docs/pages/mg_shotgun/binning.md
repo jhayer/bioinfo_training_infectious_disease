@@ -1,4 +1,4 @@
-# MAGs: Assembly and binning shotgun metagenomics data
+# MAGs: Assembly and binning of shotgun metagenomics data
 
 ::: {.callout-note}
 **Time:** 120 min
@@ -443,4 +443,18 @@ CheckM2 (Chklovski et al. 2023) is the successor of CheckM, but CheckM is still 
 If you’re working with MAGs from underrepresented taxa (novel lineages) or very small genomes (streamlined bacteria/archaea), CheckM2 tends to give more reliable estimates of completeness/contamination. For more “standard” microbial genomes from well-studied taxa, CheckM1 may still work well, but you may benefit from the improved performance with CheckM2.
 
 :::
+
+::: {.callout-handson}
+
+Assign the taxonomy of your refined bins using GTDBTk
+:::
+
+
+::: {.callout-question}
+What are the taxa identified? 
+Is there any known species?
+:::
+
+The bins can be extracted as genomes and can be functionally annotated, can be compared to others using comparative genomics methods.
+So for complete and good quality bins, you could basically apply many of the analysis steps that we have learnt for bacterial genomics during this training :-)
 
