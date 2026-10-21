@@ -455,6 +455,6 @@ What are the taxa identified?
 Is there any known species?
 :::
 
-The bins can be extracted as genomes and can be functionally annotated, can be compared to others using comparative genomics methods.
-So for complete and good quality bins, you could basically apply many of the analysis steps that we have learnt for bacterial genomics during this training :-)
+The bins can be extracted as genomes and can be functionally annotated, to understand their functional role in the community. They can also be compared to others using comparative genomics methods. 
+So for complete and good quality bins, you could basically apply many of the analysis steps that we have learnt for bacterial genomics during this training, if suitable to answer your scientific questions :-)
 
