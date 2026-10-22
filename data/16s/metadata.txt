@@ -1,43 +1,43 @@
-SampleID	shotgun.SampleID	description	Gender	Age	SampleType	antibiotics	probiotics	PPI	biologic	immunomodulator	current.steroid.use	ASA	group	run_accession
-012618.SM1	SM030818.1	D2003_UC_6m	m	18	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702568
-012618.SM100	SM030818.100	Canada IBD Study Box2	f	16	UC	no	no	no	no	no	no	no	UC	SRR15702561
-012618.SM101	SM030818.101	Canada IBD Study Box2	m	7	UC	no	no	no	no	no	no	no	UC	SRR15702560
-012618.SM102	SM030818.102	Canada IBD Study Box2	f	12	UC	no	no	no	no	no	no	no	UC	SRR15702559
-012618.SM104	SM030818.104	Canada IBD Study Box2	m	14	UC	no	no	no	no	no	no	no	UC	SRR15702558
-012618.SM105	SM030818.105	Canada IBD Study Box2	f	17	UC	no	no	no	no	no	no	no	UC	SRR15702556
-012618.SM106	SM030818.106	Canada IBD Study Box2	m	13	UC	no	no	no	no	no	no	no	UC	SRR15702554
-012618.SM107	SM030818.107	Canada IBD Study Box2	m	15	UC	no	no	no	no	no	no	no	UC	SRR15702552
-012618.SM110	SM030818.110	Canada IBD Study Box3	f	13	UC	no	no	no	no	no	no	no	UC	SRR15702548
-012618.SM24	SM030818.24	MUC3B	f	8	UC	no	no	no	yes	yes	yes	no	UC with BIS	SRR15702567
-012618.SM33	SM030818.33	MUC5B	m	17	UC	no	no	no	no	no	no	yes	UC with A	SRR15702566
-012618.SM92	SM030818.92	Canada IBD Study Box1	m	15	UC	no	no	no	no	no	no	no	UC	SRR15702564
-012618.SM97	SM030818.97	Canada IBD Study Box1	m	16	UC	no	no	no	no	no	no	no	UC	SRR15702563
-012618.SM99	SM030818.99	Canada IBD Study Box1	f	10	UC	no	no	no	no	no	no	no	UC	SRR15702562
-060619.SM66	SM071219.66	UC024_BL	m	16	UC	no	no	no	yes	no	no	no	UC with B	SRR15702631
-060619.SM89	SM071219.89	SC006_Donor	m	18	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702630
-060619.SM92	SM071219.92	SC008_donor	f	8	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702629
-060619.SM95	SM071219.95	SC010_donor	f	21	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702628
-090918.SM113	SM111418.113	D1004_CR_P_07/31/18	f	21	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702632
-090918.SM12	SM111418.12	UC003_BL	f	19	UC	no	no	no	no	no	no	yes	UC with A	SRR15702635
-090918.SM44	SM111418.44	UC011_BL	m	19	UC	no	no	no	yes	no	no	no	UC with B	SRR15702634
-090918.SM59	SM111418.59	UC016_BL	m	14	UC	no	no	no	yes	yes	no	no	UC with BI	SRR15702633
-3.1	SM030818.121	3.1	f	20	UC	no	no	no	no	no	yes	no	UC with S	SRR15702546
-4.8.08	SM030818.148	4.8.08	m	9	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702636
-6.14	SM030818.128	6.14	f	14	UC	no	no	no	no	no	yes	no	UC with S	SRR15702544
-PT.11	SM030818.134	PT#11	f	14	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702536
-PT.12	SM030818.135	PT#12	f	10	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702535
-PT.16	SM030818.136	PT#16	f	10	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702534
-PT.23	SM030818.138	PT#23	m	15	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702532
-PT.28	SM030818.139	PT#28	f	14	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702531
-PT.36	SM030818.140	PT#36	f	15	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702530
-PT.40	SM030818.141	PT#40	m	11	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702529
-PT.52	SM030818.142	PT#52	f	13	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702528
-PT.55	SM030818.143	PT#55	f	14	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702642
-PT.56	SM030818.144	PT#56	m	16	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702641
-PT.57	SM030818.145	PT#57	m	13	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702640
-PT.58	SM030818.146	PT#58	m	10	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702639
-PT.6	SM030818.130	PT#6	f	14	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702542
-PT.68	SM030818.147	PT#68	m	15	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702638
-PT.7	SM030818.131	PT#7	f	12	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702540
-PT.8	SM030818.132	PT#8	m	16	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702538
-PT.9	SM030818.133	PT#9	f	16	Healthy	no	no	no	no	no	no	no	Healthy	SRR15702537
+run_accession	Gender	Age	SampleType	antibiotics	probiotics	PPI	biologic	immunomodulator	current.steroid.use	ASA
+SRR15702568	m	18	Healthy	no	no	no	no	no	no	no
+SRR15702561	f	16	UC	no	no	no	no	no	no	no
+SRR15702560	m	7	UC	no	no	no	no	no	no	no
+SRR15702559	f	12	UC	no	no	no	no	no	no	no
+SRR15702558	m	14	UC	no	no	no	no	no	no	no
+SRR15702556	f	17	UC	no	no	no	no	no	no	no
+SRR15702554	m	13	UC	no	no	no	no	no	no	no
+SRR15702552	m	15	UC	no	no	no	no	no	no	no
+SRR15702548	f	13	UC	no	no	no	no	no	no	no
+SRR15702567	f	8	UC	no	no	no	yes	yes	yes	no
+SRR15702566	m	17	UC	no	no	no	no	no	no	yes
+SRR15702564	m	15	UC	no	no	no	no	no	no	no
+SRR15702563	m	16	UC	no	no	no	no	no	no	no
+SRR15702562	f	10	UC	no	no	no	no	no	no	no
+SRR15702631	m	16	UC	no	no	no	yes	no	no	no
+SRR15702630	m	18	Healthy	no	no	no	no	no	no	no
+SRR15702629	f	8	Healthy	no	no	no	no	no	no	no
+SRR15702628	f	21	Healthy	no	no	no	no	no	no	no
+SRR15702632	f	21	Healthy	no	no	no	no	no	no	no
+SRR15702635	f	19	UC	no	no	no	no	no	no	yes
+SRR15702634	m	19	UC	no	no	no	yes	no	no	no
+SRR15702633	m	14	UC	no	no	no	yes	yes	no	no
+SRR15702546	f	20	UC	no	no	no	no	no	yes	no
+SRR15702636	m	9	Healthy	no	no	no	no	no	no	no
+SRR15702544	f	14	UC	no	no	no	no	no	yes	no
+SRR15702536	f	14	Healthy	no	no	no	no	no	no	no
+SRR15702535	f	10	Healthy	no	no	no	no	no	no	no
+SRR15702534	f	10	Healthy	no	no	no	no	no	no	no
+SRR15702532	m	15	Healthy	no	no	no	no	no	no	no
+SRR15702531	f	14	Healthy	no	no	no	no	no	no	no
+SRR15702530	f	15	Healthy	no	no	no	no	no	no	no
+SRR15702529	m	11	Healthy	no	no	no	no	no	no	no
+SRR15702528	f	13	Healthy	no	no	no	no	no	no	no
+SRR15702642	f	14	Healthy	no	no	no	no	no	no	no
+SRR15702641	m	16	Healthy	no	no	no	no	no	no	no
+SRR15702640	m	13	Healthy	no	no	no	no	no	no	no
+SRR15702639	m	10	Healthy	no	no	no	no	no	no	no
+SRR15702542	f	14	Healthy	no	no	no	no	no	no	no
+SRR15702638	m	15	Healthy	no	no	no	no	no	no	no
+SRR15702540	f	12	Healthy	no	no	no	no	no	no	no
+SRR15702538	m	16	Healthy	no	no	no	no	no	no	no
+SRR15702537	f	16	Healthy	no	no	no	no	no	no	no
