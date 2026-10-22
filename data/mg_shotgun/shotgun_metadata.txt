@@ -1,43 +1,43 @@
-run_accession	Gender	Age	Status	antibiotics	probiotics	PPI	biologic	immunomodulator	current.steroid.use	ASA
-SRR15702660	m	18	Healthy	no	no	no	no	no	no	no
-SRR15702565	f	16	UC	no	no	no	no	no	no	no
-SRR15702550	m	7	UC	no	no	no	no	no	no	no
-SRR15702533	f	12	UC	no	no	no	no	no	no	no
-SRR15702637	m	14	UC	no	no	no	no	no	no	no
-SRR15702658	f	17	UC	no	no	no	no	no	no	no
-SRR15702647	m	13	UC	no	no	no	no	no	no	no
-SRR15702626	m	15	UC	no	no	no	no	no	no	no
-SRR15702625	f	13	UC	no	no	no	no	no	no	no
-SRR15702659	f	8	UC	no	no	no	yes	yes	yes	no
-SRR15702616	m	17	UC	no	no	no	no	no	no	yes
-SRR15702598	m	15	UC	no	no	no	no	no	no	no
-SRR15702587	m	16	UC	no	no	no	no	no	no	no
-SRR15702576	f	10	UC	no	no	no	no	no	no	no
-SRR15702589	m	16	UC	no	no	no	yes	no	no	no
-SRR15702588	m	18	Healthy	no	no	no	no	no	no	no
-SRR15702586	f	8	Healthy	no	no	no	no	no	no	no
-SRR15702585	f	21	Healthy	no	no	no	no	no	no	no
-SRR15702590	f	21	Healthy	no	no	no	no	no	no	no
-SRR15702593	f	19	UC	no	no	no	no	no	no	yes
-SRR15702592	m	19	UC	no	no	no	yes	no	no	no
-SRR15702591	m	14	UC	no	no	no	yes	yes	no	no
-SRR15702624	f	20	UC	no	no	no	no	no	yes	no
-SRR15702594	m	9	Healthy	no	no	no	no	no	no	no
-SRR15702623	f	14	UC	no	no	no	no	no	yes	no
-SRR15702614	f	14	Healthy	no	no	no	no	no	no	no
-SRR15702612	f	10	Healthy	no	no	no	no	no	no	no
-SRR15702610	f	10	Healthy	no	no	no	no	no	no	no
-SRR15702608	m	15	Healthy	no	no	no	no	no	no	no
-SRR15702606	f	14	Healthy	no	no	no	no	no	no	no
-SRR15702604	f	15	Healthy	no	no	no	no	no	no	no
-SRR15702602	m	11	Healthy	no	no	no	no	no	no	no
-SRR15702601	f	13	Healthy	no	no	no	no	no	no	no
-SRR15702600	f	14	Healthy	no	no	no	no	no	no	no
-SRR15702599	m	16	Healthy	no	no	no	no	no	no	no
-SRR15702597	m	13	Healthy	no	no	no	no	no	no	no
-SRR15702596	m	10	Healthy	no	no	no	no	no	no	no
-SRR15702622	f	14	Healthy	no	no	no	no	no	no	no
-SRR15702595	m	15	Healthy	no	no	no	no	no	no	no
-SRR15702621	f	12	Healthy	no	no	no	no	no	no	no
-SRR15702620	m	16	Healthy	no	no	no	no	no	no	no
-SRR15702618	f	16	Healthy	no	no	no	no	no	no	no
+sample-id	run_accession	Gender	Age	SampleType	antibiotics	probiotics	PPI	biologic	immunomodulator	current.steroid.use	ASA
+0-kraken_report	SRR15702660	m	18	Healthy	no	no	no	no	no	no	no
+1-kraken_report	SRR15702565	f	16	UC	no	no	no	no	no	no	no
+2-kraken_report	SRR15702550	m	7	UC	no	no	no	no	no	no	no
+3-kraken_report	SRR15702533	f	12	UC	no	no	no	no	no	no	no
+4-kraken_report	SRR15702637	m	14	UC	no	no	no	no	no	no	no
+5-kraken_report	SRR15702658	f	17	UC	no	no	no	no	no	no	no
+6-kraken_report	SRR15702647	m	13	UC	no	no	no	no	no	no	no
+7-kraken_report	SRR15702626	m	15	UC	no	no	no	no	no	no	no
+8-kraken_report	SRR15702625	f	13	UC	no	no	no	no	no	no	no
+9-kraken_report	SRR15702659	f	8	UC	no	no	no	yes	yes	yes	no
+10-kraken_report	SRR15702616	m	17	UC	no	no	no	no	no	no	yes
+11-kraken_report	SRR15702598	m	15	UC	no	no	no	no	no	no	no
+12-kraken_report	SRR15702587	m	16	UC	no	no	no	no	no	no	no
+13-kraken_report	SRR15702576	f	10	UC	no	no	no	no	no	no	no
+14-kraken_report	SRR15702589	m	16	UC	no	no	no	yes	no	no	no
+15-kraken_report	SRR15702588	m	18	Healthy	no	no	no	no	no	no	no
+16-kraken_report	SRR15702586	f	8	Healthy	no	no	no	no	no	no	no
+17-kraken_report	SRR15702585	f	21	Healthy	no	no	no	no	no	no	no
+18-kraken_report	SRR15702590	f	21	Healthy	no	no	no	no	no	no	no
+19-kraken_report	SRR15702593	f	19	UC	no	no	no	no	no	no	yes
+20-kraken_report	SRR15702592	m	19	UC	no	no	no	yes	no	no	no
+21-kraken_report	SRR15702591	m	14	UC	no	no	no	yes	yes	no	no
+22-kraken_report	SRR15702624	f	20	UC	no	no	no	no	no	yes	no
+23-kraken_report	SRR15702594	m	9	Healthy	no	no	no	no	no	no	no
+24-kraken_report	SRR15702623	f	14	UC	no	no	no	no	no	yes	no
+25-kraken_report	SRR15702614	f	14	Healthy	no	no	no	no	no	no	no
+26-kraken_report	SRR15702612	f	10	Healthy	no	no	no	no	no	no	no
+27-kraken_report	SRR15702610	f	10	Healthy	no	no	no	no	no	no	no
+28-kraken_report	SRR15702608	m	15	Healthy	no	no	no	no	no	no	no
+29-kraken_report	SRR15702606	f	14	Healthy	no	no	no	no	no	no	no
+30-kraken_report	SRR15702604	f	15	Healthy	no	no	no	no	no	no	no
+31-kraken_report	SRR15702602	m	11	Healthy	no	no	no	no	no	no	no
+32-kraken_report	SRR15702601	f	13	Healthy	no	no	no	no	no	no	no
+33-kraken_report	SRR15702600	f	14	Healthy	no	no	no	no	no	no	no
+34-kraken_report	SRR15702599	m	16	Healthy	no	no	no	no	no	no	no
+35-kraken_report	SRR15702597	m	13	Healthy	no	no	no	no	no	no	no
+36-kraken_report	SRR15702596	m	10	Healthy	no	no	no	no	no	no	no
+37-kraken_report	SRR15702622	f	14	Healthy	no	no	no	no	no	no	no
+38-kraken_report	SRR15702595	m	15	Healthy	no	no	no	no	no	no	no
+39-kraken_report	SRR15702621	f	12	Healthy	no	no	no	no	no	no	no
+40-kraken_report	SRR15702620	m	16	Healthy	no	no	no	no	no	no	no
+41-kraken_report	SRR15702618	f	16	Healthy	no	no	no	no	no	no	no
