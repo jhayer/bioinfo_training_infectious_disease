@@ -1,3 +1,51 @@
+# Prepare the metadata and the phyloseq object
+
+**phyloseq** ([McMurdie & Holmes 2013](https://doi.org/10.1371/journal.pone.0061217)) is an R framework to store, analyse and plot microbiome data. A phyloseq object combines the ASV table, the taxonomy table and a **metadata table** describing the samples. We will use it for the diversity analysis.
+
+## Create the metadata table 
+
+
+
+::: {.callout-tip title="Create the metadata table"}
+1. Click **Upload** → **Paste/Fetch data** and paste the following table:
+
+    ```
+    Sample	sample_name	Metadata
+    SRR15702564	012618.SM92 UC
+    SRR15702563	012618.SM97 UC
+    SRR15702530	SM030818.140    Healthy
+    SRR15702529	SM030818.141    Healthy
+    ```
+
+2. In the upload settings, set the datatype to `tabular` and check **Convert spaces to tabs** (in case the tabs were replaced by spaces when copying)
+3. Rename it `Metadata table`
+:::
+
+::: {.callout-tip title="Import the metadata for the 42 samples"}
+
+If you want to do any analysis with 42 samples, you can find here the 42 samples metadata:
+
+1. Click **Upload** → **Paste/Fetch data** and paste the following link:
+
+    ```
+https://raw.githubusercontent.com/jhayer/bioinfo_training_infectious_disease/main/data/16s/metadata.txt
+
+    ```
+:::
+
+
+::: {.callout-tip title="Create the phyloseq object"}
+1. Open **Create phyloseq object from dada2** with:
+    - *"Sequence table"*: output of **dada2: removeBimeraDenovo**
+    - *"Taxonomy table"*: output of **dada2: assignTaxonomy and addSpecies**
+    - *"Sample table"*: `Metadata table`
+2. Click **Run Tool** and rename the output `phyloseq object`
+:::
+
+
+
+The `phyloseq object` is the starting point of the diversity analysis.
+
 # Diversity analysis
 
 In this part, we explore the ASVs obtained with DADA2 using **phyloseq** ([McMurdie & Holmes 2013](https://doi.org/10.1371/journal.pone.0061217)). We use **Shiny-phyloseq** ([McMurdie & Holmes 2015](https://doi.org/10.1093/bioinformatics/btu616)), an interactive web interface to phyloseq that runs as a Galaxy interactive tool.
@@ -15,7 +63,9 @@ A new page opens with Shiny-phyloseq, ready to explore the phyloseq object. The 
 In the plots below, we color the samples by `sequencing_run`, the only grouping variable in our metadata table. Once the disease status of each sample is added to the metadata table, use it instead to compare UC cases and healthy controls, as the authors did.
 :::
 
-<!-- TODO: replace `sequencing_run` by `disease_status` once the group of each sample is known -->
+## Import the history
+
+I have [run the analysis of the 42 samples on this history](https://usegalaxy.org.au/u/mathis-arnal/h/16s-sequencing-42-samples). 
 
 ## Alpha diversity
 

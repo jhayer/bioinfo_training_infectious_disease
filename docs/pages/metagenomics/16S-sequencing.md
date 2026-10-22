@@ -78,20 +78,23 @@ The authors collected stool samples from **19 children and young adults with UC*
 
 To keep the analysis short, we will use **4 samples** out of the 42:
 
-| SRA run | Sample name |
-|---|---|
-| [SRR15702564](https://www.ncbi.nlm.nih.gov/sra/SRR15702564) | 012618.SM92 |
-| [SRR15702563](https://www.ncbi.nlm.nih.gov/sra/SRR15702563) | 012618.SM97 |
-| [SRR15702530](https://www.ncbi.nlm.nih.gov/sra/SRR15702530) | PT.36 |
-| [SRR15702529](https://www.ncbi.nlm.nih.gov/sra/SRR15702529) | PT.40 |
+| SRA run | Sample name | Metadata |
+|---|---| ---|
+| [SRR15702564](https://www.ncbi.nlm.nih.gov/sra/SRR15702564) | 012618.SM92 | UC |
+| [SRR15702563](https://www.ncbi.nlm.nih.gov/sra/SRR15702563) | 012618.SM97 |UC |
+| [SRR15702530](https://www.ncbi.nlm.nih.gov/sra/SRR15702530) | SM030818.140 |Healthy |
+| [SRR15702529](https://www.ncbi.nlm.nih.gov/sra/SRR15702529) | SM030818.141 | Healthy |
 
-<!-- TODO: add the group (UC / healthy control) of each sample -->
 
 ::: {.callout-note title="A small dataset"}
 With only 4 samples, we can learn every step of the workflow, but statistical tests (e.g. comparing groups) will have very little power. The results will not necessarily reproduce the conclusions of the paper, which were obtained on 42 samples.
 :::
 
 # Prepare Galaxy and data
+
+## Import the workflow
+
+You can either follow the tutorial below, or [import the dada2 workflow](https://usegalaxy.org.au/u/mathis-arnal/w/binder-dada2-amplicon-analysis-pipeline-for-paired-end-reads).
 
 ## Create a history
 
@@ -509,36 +512,3 @@ DADA2 makes [species level assignments by **exact matching**](https://benjjneb.g
 ::: {.callout-note title="Wrong kingdom"}
 If your reads do not seem to be appropriately assigned, for example lots of bacterial 16S sequences assigned as `Eukaryota`, your reads may be in the opposite orientation to the reference database. Set *"Try reverse complement"* to `Yes` in **dada2: assignTaxonomy and addSpecies** and see if this fixes the assignments.
 :::
-
-# Prepare the metadata and the phyloseq object
-
-**phyloseq** ([McMurdie & Holmes 2013](https://doi.org/10.1371/journal.pone.0061217)) is an R framework to store, analyse and plot microbiome data. A phyloseq object combines the ASV table, the taxonomy table and a **metadata table** describing the samples. We will use it for the diversity analysis.
-
-The first column of the metadata table must contain the sample names used by DADA2, here the **SRA accessions**. We add the original sample name and the sequencing run of each sample (`run1`: 2 × 150/140 bp, `run2`: 2 × 150/151 bp).
-
-<!-- TODO: add a `disease_status` column (UC / Healthy) once the group of each sample is known, and use it instead of `sequencing_run` in the diversity analysis -->
-
-::: {.callout-tip title="Create the metadata table"}
-1. Click **Upload** → **Paste/Fetch data** and paste the following table:
-
-    ```
-    Sample	sample_name	sequencing_run
-    SRR15702564	012618.SM92	run1
-    SRR15702563	012618.SM97	run1
-    SRR15702530	PT.36	run2
-    SRR15702529	PT.40	run2
-    ```
-
-2. In the upload settings, set the datatype to `tabular` and check **Convert spaces to tabs** (in case the tabs were replaced by spaces when copying)
-3. Rename it `Metadata table`
-:::
-
-::: {.callout-tip title="Create the phyloseq object"}
-1. Open **Create phyloseq object from dada2** with:
-    - *"Sequence table"*: output of **dada2: removeBimeraDenovo**
-    - *"Taxonomy table"*: output of **dada2: assignTaxonomy and addSpecies**
-    - *"Sample table"*: `Metadata table`
-2. Click **Run Tool** and rename the output `phyloseq object`
-:::
-
-The `phyloseq object` is the starting point of the diversity analysis.
