@@ -56,6 +56,11 @@ In this tutorial, we will learn how to run metagenomic assembly tool and evaluat
 
 We will use the same 4 datasets that we used previously in the taxonomic profiling.
 
+
+# (Optional) Retrieve the binning history
+
+ You can find the binning analysis for in [this history](https://usegalaxy.org.au/u/jhayer/h/binning). 
+
 ## Prepare the data and run *de novo* assembly using MEGAHIT
 
 ::: {.callout-handson}

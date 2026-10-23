@@ -33,7 +33,7 @@ This tutorial focuses on reads obtained from shotgun metagenomic sequencing.
 
 ## (Optional) Retrieve the Galaxy history
 
-If you want to have a look at all the outputs for the 42 samples, you can find the whole analysis of shotgun metagenomic (taxonomy profiling + MAG assembly and binning) in [this history](https://usegalaxy.org.au/u/jhayer/h/42-gut-shotgun). 
+If you want to have a look at all the outputs for the 42 samples, you can find the whole analysis  in [this history](https://usegalaxy.org.au/u/jhayer/h/42-gut-shotgun). 
 
 ## The datasets
 
