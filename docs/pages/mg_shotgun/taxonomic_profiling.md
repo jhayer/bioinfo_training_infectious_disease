@@ -272,5 +272,21 @@ You can read more about the calculation of α and β diversity on this [Galaxy T
 :::
 
 
+# Diversity Analysis
 
+::: {.callout-tip title="Import the metadata for the 42 samples"}
+
+If you want to do any analysis with 42 samples, you can find here the 42 samples metadata:
+
+1. Click **Upload** → **Paste/Fetch data** and paste the following link:
+
+    ```
+https://raw.githubusercontent.com/jhayer/bioinfo_training_infectious_disease/main/data/mg_shotgun/shotgun_metadata.txt
+
+    ```
+:::
+
+Then you can convert the Braken report file into the BIOM format, than can be used for visualisation, with the tool **Kraken-biom**. 
+
+A BIOM (Biological Observation Matrix) file is a standard format for storing a table of counts, with samples in one dimension and observations (taxa, OTUs, or ASVs) in the other, along with their metadata.
 
