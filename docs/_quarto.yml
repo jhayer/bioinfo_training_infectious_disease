@@ -75,6 +75,8 @@ website:
         href: pages/panexplorer/panexplorer.md
       - text: Shotgun Metagenomics
         menu:
+          - text: Lecture shotgun MG
+            href: pages/mg_shotgun/lecture_sg_mg.md
           - text: Taxonomic profiling
             href: pages/mg_shotgun/taxonomic_profiling.md
           - text: MAG assembly and binning
